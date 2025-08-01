@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AddBookForm } from "@/components/AddBookForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw } from "lucide-react";
 
@@ -34,6 +35,7 @@ export const BookList = () => {
   const [activeTab, setActiveTab] = useState<'reading' | 'to-read' | 'finished'>('reading');
   const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+  const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
 
   const addBook = (newBook: Omit<Book, 'id' | 'createdAt'>) => {
     const book: Book = {
@@ -105,13 +107,6 @@ export const BookList = () => {
 
   const currentBooks = filterBooksByStatus(activeTab);
 
-  // Load AI recommendations when books change
-  useEffect(() => {
-    if (books.length > 0) {
-      loadRecommendations();
-    }
-  }, [books]);
-
   const loadRecommendations = async () => {
     setLoadingRecommendations(true);
     try {
@@ -121,6 +116,13 @@ export const BookList = () => {
       console.error('Failed to load recommendations:', error);
     } finally {
       setLoadingRecommendations(false);
+    }
+  };
+
+  const handleGetRecommendations = async () => {
+    setShowRecommendationsModal(true);
+    if (recommendations.length === 0) {
+      await loadRecommendations();
     }
   };
 
@@ -140,14 +142,115 @@ export const BookList = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-foreground">My Library</h2>
-        <Button 
-          variant="hero" 
-          onClick={() => setShowAddForm(true)}
-          className="gap-2"
-        >
-          <Plus className="h-4 w-4" />
-          Add Book
-        </Button>
+        <div className="flex gap-3">
+          <Dialog open={showRecommendationsModal} onOpenChange={setShowRecommendationsModal}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="accent" 
+                onClick={handleGetRecommendations}
+                className="gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                AI Suggestions
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  AI Book Recommendations
+                  <Badge variant="secondary" className="text-xs">
+                    Powered by AI
+                  </Badge>
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-muted-foreground">
+                    Based on your reading history and preferences
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={loadRecommendations}
+                    disabled={loadingRecommendations}
+                    className="gap-2"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loadingRecommendations ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
+                </div>
+
+                {loadingRecommendations ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <Card key={i} className="p-4 bg-gradient-card animate-pulse">
+                        <div className="space-y-3">
+                          <div className="h-4 bg-muted rounded w-3/4"></div>
+                          <div className="h-3 bg-muted rounded w-1/2"></div>
+                          <div className="h-2 bg-muted rounded w-full"></div>
+                          <div className="h-2 bg-muted rounded w-2/3"></div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {recommendations.map((rec, index) => (
+                      <Card key={index} className="p-4 bg-gradient-card hover:shadow-medium transition-all duration-300">
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-card-foreground line-clamp-2">
+                                {rec.title}
+                              </h4>
+                              <p className="text-sm text-muted-foreground">by {rec.author}</p>
+                            </div>
+                            <div className="flex items-center gap-1 text-accent">
+                              <Star className="h-3 w-3 fill-current" />
+                              <span className="text-xs font-medium">{rec.rating}</span>
+                            </div>
+                          </div>
+                          
+                          <Badge variant="outline" className="text-xs">
+                            {rec.genre}
+                          </Badge>
+                          
+                          <p className="text-xs text-muted-foreground line-clamp-3">
+                            {rec.reason}
+                          </p>
+                          
+                          <Button
+                            variant="accent"
+                            size="sm"
+                            onClick={() => {
+                              addRecommendedBook(rec);
+                              setShowRecommendationsModal(false);
+                            }}
+                            className="w-full gap-2"
+                          >
+                            <Plus className="h-3 w-3" />
+                            Add to Library
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <Button 
+            variant="hero" 
+            onClick={() => setShowAddForm(true)}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Book
+          </Button>
+        </div>
       </div>
 
       {showAddForm && (
@@ -286,85 +389,6 @@ export const BookList = () => {
               </div>
             </Card>
           ))}
-        </div>
-      )}
-
-      {/* AI Recommendations */}
-      {books.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <h3 className="text-xl font-semibold text-foreground">AI Recommendations</h3>
-              <Badge variant="secondary" className="text-xs">
-                Powered by AI
-              </Badge>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={loadRecommendations}
-              disabled={loadingRecommendations}
-              className="gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${loadingRecommendations ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
-          </div>
-
-          {loadingRecommendations ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-4 bg-gradient-card animate-pulse">
-                  <div className="space-y-3">
-                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                    <div className="h-2 bg-muted rounded w-full"></div>
-                    <div className="h-2 bg-muted rounded w-2/3"></div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recommendations.map((rec, index) => (
-                <Card key={index} className="p-4 bg-gradient-card hover:shadow-medium transition-all duration-300">
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-card-foreground line-clamp-2">
-                          {rec.title}
-                        </h4>
-                        <p className="text-sm text-muted-foreground">by {rec.author}</p>
-                      </div>
-                      <div className="flex items-center gap-1 text-accent">
-                        <Star className="h-3 w-3 fill-current" />
-                        <span className="text-xs font-medium">{rec.rating}</span>
-                      </div>
-                    </div>
-                    
-                    <Badge variant="outline" className="text-xs">
-                      {rec.genre}
-                    </Badge>
-                    
-                    <p className="text-xs text-muted-foreground line-clamp-3">
-                      {rec.reason}
-                    </p>
-                    
-                    <Button
-                      variant="accent"
-                      size="sm"
-                      onClick={() => addRecommendedBook(rec)}
-                      className="w-full gap-2"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Add to Library
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>
