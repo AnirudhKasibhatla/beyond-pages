@@ -54,25 +54,52 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
     
     setIsSearching(true);
     try {
-      // Simulate API call to Open Library
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      let results = [];
       
-      // Mock search results
-      const mockResults = [
-        {
-          title: searchQuery,
-          author: "Sample Author",
-          isbn: "1234567890",
-          subjects: ["Fiction", "Adventure"]
+      // Check if search query is an ISBN (10 or 13 digits with possible hyphens)
+      const isISBN = /^[\d\-]{10,17}$/.test(searchQuery.replace(/\s/g, ''));
+      
+      if (isISBN) {
+        // Search by ISBN using Open Library
+        const isbn = searchQuery.replace(/[\s\-]/g, '');
+        const response = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+        const data = await response.json();
+        
+        const bookKey = `ISBN:${isbn}`;
+        if (data[bookKey]) {
+          const book = data[bookKey];
+          results = [{
+            title: book.title || 'Unknown Title',
+            author: book.authors?.[0]?.name || 'Unknown Author',
+            isbn: isbn,
+            subjects: book.subjects?.map(s => s.name).slice(0, 3) || [],
+            cover: book.cover?.medium,
+            publishYear: book.publish_date
+          }];
         }
-      ];
+      } else {
+        // Search by title/author using Open Library search API
+        const query = encodeURIComponent(searchQuery);
+        const response = await fetch(`https://openlibrary.org/search.json?q=${query}&limit=5`);
+        const data = await response.json();
+        
+        results = data.docs?.slice(0, 5).map(book => ({
+          title: book.title || 'Unknown Title',
+          author: book.author_name?.[0] || 'Unknown Author',
+          isbn: book.isbn?.[0] || '',
+          subjects: book.subject?.slice(0, 3) || [],
+          cover: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : null,
+          publishYear: book.first_publish_year
+        })) || [];
+      }
       
-      setSearchResults(mockResults);
+      setSearchResults(results);
       toast({
         title: "Search completed",
-        description: `Found ${mockResults.length} book(s)`,
+        description: `Found ${results.length} book(s)`,
       });
     } catch (error) {
+      console.error('Search error:', error);
       toast({
         title: "Search failed",
         description: "Unable to fetch book data. Please try again.",
