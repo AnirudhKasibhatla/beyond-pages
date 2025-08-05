@@ -151,7 +151,7 @@ export const BookList = () => {
                 className="gap-2"
               >
                 <Sparkles className="h-4 w-4" />
-                AI Suggestions
+                Suggest me
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
