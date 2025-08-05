@@ -9,8 +9,9 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { User, Trophy, Star, Book, Edit, Save, X } from "lucide-react";
+import { User, Trophy, Star, Book, Edit, Save, X, Quote } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { HighlightsList } from "@/components/HighlightsList";
 import badgeImage from "@/assets/badge-reading.png";
 
 interface UserProfile {
@@ -298,6 +299,9 @@ export const Profile = () => {
               </p>
             </div>
           </Card>
+
+          {/* Highlights Section */}
+          <HighlightsList />
         </div>
       </div>
     </div>

@@ -5,6 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AddBookForm } from "@/components/AddBookForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { HighlightConfirmation } from "@/components/HighlightConfirmation";
+import { useHighlights } from "@/hooks/useHighlights";
+import { detectPotentialQuote } from "@/utils/textAnalysis";
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw } from "lucide-react";
 
@@ -36,6 +39,21 @@ export const BookList = () => {
   const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
+  
+  // Highlight detection state
+  const [showHighlightConfirmation, setShowHighlightConfirmation] = useState(false);
+  const [detectedQuote, setDetectedQuote] = useState('');
+  
+  const { addHighlight } = useHighlights();
+
+  // Quote detection function
+  const checkForQuotes = (reviewText: string, bookTitle: string) => {
+    const potentialQuote = detectPotentialQuote(reviewText);
+    if (potentialQuote) {
+      setDetectedQuote(potentialQuote);
+      setShowHighlightConfirmation(true);
+    }
+  };
 
   const addBook = (newBook: Omit<Book, 'id' | 'createdAt'>) => {
     const book: Book = {
@@ -45,6 +63,11 @@ export const BookList = () => {
     };
     setBooks(prev => [...prev, book]);
     setShowAddForm(false);
+    
+    // Check for quotes in review text
+    if (newBook.reviewText) {
+      checkForQuotes(newBook.reviewText, newBook.title);
+    }
   };
 
   const updateBookStatus = (bookId: string, newStatus: Book['status']) => {
@@ -391,6 +414,14 @@ export const BookList = () => {
           ))}
         </div>
       )}
+      
+      {/* Highlight Confirmation Dialog */}
+      <HighlightConfirmation
+        isOpen={showHighlightConfirmation}
+        onClose={() => setShowHighlightConfirmation(false)}
+        selectedText={detectedQuote}
+        onConfirm={addHighlight}
+      />
     </div>
   );
 };
