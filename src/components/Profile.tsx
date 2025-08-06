@@ -34,21 +34,21 @@ interface UserProfile {
 
 export const Profile = () => {
   const [profile, setProfile] = useState<UserProfile>({
-    name: 'Book Lover',
-    bio: 'Passionate reader exploring new worlds through literature. Always looking for my next great read!',
+    name: '',
+    bio: '',
     socialMedia: {
       facebook: '',
       twitter: '',
       linkedin: ''
     },
     profilePicUrl: '',
-    xp: 125,
-    level: 3,
+    xp: 0,
+    level: 1,
     isPublic: true,
-    favoriteGenres: ['Fiction', 'Mystery', 'Sci-Fi'],
-    badges: ['First Book', 'Review Master', 'Community Helper'],
-    booksRead: 7,
-    currentStreak: 5
+    favoriteGenres: [],
+    badges: [],
+    booksRead: 0,
+    currentStreak: 0
   });
   
   const [isEditing, setIsEditing] = useState(false);
