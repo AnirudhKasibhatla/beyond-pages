@@ -24,6 +24,7 @@ export default function Auth() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(false);
   const [phoneLoading, setPhoneLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [userDetails, setUserDetails] = useState<UserDetails>({
     name: '',
@@ -132,6 +133,36 @@ export default function Auth() {
       });
     }
     setLoading(false);
+  };
+
+  const resetPassword = async () => {
+    if (!authData.email) {
+      toast({
+        title: "Error",
+        description: "Please enter your email address",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setResetLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(authData.email, {
+      redirectTo: `${window.location.origin}/auth`
+    });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Reset email sent",
+        description: "Check your email for password reset instructions.",
+      });
+    }
+    setResetLoading(false);
   };
 
   const sendOTP = async () => {
@@ -363,6 +394,17 @@ export default function Auth() {
                   <Button onClick={signInWithEmail} className="w-full" disabled={loading}>
                     {loading ? "Signing In..." : "Sign In"}
                   </Button>
+                  <div className="text-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={resetPassword}
+                      disabled={resetLoading}
+                      className="text-muted-foreground hover:text-primary"
+                    >
+                      {resetLoading ? "Sending..." : "Forgot Password?"}
+                    </Button>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="signup" className="space-y-4">
