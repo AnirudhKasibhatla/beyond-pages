@@ -2,12 +2,26 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useHighlights, Highlight } from '@/hooks/useHighlights';
+import { useState } from 'react';
 import { Quote, BookOpen, Trash2, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 
+interface Highlight {
+  id: string;
+  quote_text: string;
+  book_title: string;
+  book_author?: string;
+  page_number?: string;
+  created_at: string;
+}
+
 export const HighlightsList = () => {
-  const { highlights, loading, deleteHighlight } = useHighlights();
+  const [highlights] = useState<Highlight[]>([]);
+  const [loading] = useState(false);
+  
+  const deleteHighlight = (id: string) => {
+    // Local deletion logic can be added here
+  };
 
   if (loading) {
     return (

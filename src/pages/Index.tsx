@@ -69,7 +69,7 @@ const Index = () => {
               <Button 
                 variant="hero" 
                 size="xl"
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate('/dashboard')}
                 className="animate-glow gap-3"
               >
                 Start Your Journey
@@ -160,7 +160,7 @@ const Index = () => {
           <Button 
             variant="hero" 
             size="xl"
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/dashboard')}
             className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 gap-3 shadow-glow"
           >
             Get Started Now

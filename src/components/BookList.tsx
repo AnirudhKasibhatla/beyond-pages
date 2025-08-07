@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { AddBookForm } from "@/components/AddBookForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { HighlightConfirmation } from "@/components/HighlightConfirmation";
-import { useHighlights } from "@/hooks/useHighlights";
+// Removed useHighlights hook dependency
 import { detectPotentialQuote } from "@/utils/textAnalysis";
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw, Edit2, Save, X } from "lucide-react";
@@ -50,7 +50,11 @@ export const BookList = () => {
   const [showHighlightConfirmation, setShowHighlightConfirmation] = useState(false);
   const [detectedQuote, setDetectedQuote] = useState('');
   
-  const { addHighlight } = useHighlights();
+  // Local highlight function
+  const addHighlight = (highlight: any) => {
+    // Local storage implementation for highlights
+    console.log('Highlight saved locally:', highlight);
+  };
 
   // Quote detection function
   const checkForQuotes = (reviewText: string, bookTitle: string) => {

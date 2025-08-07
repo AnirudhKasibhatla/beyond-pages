@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,8 +34,8 @@ interface UserProfile {
 
 export const Profile = () => {
   const [profile, setProfile] = useState<UserProfile>({
-    name: '',
-    bio: '',
+    name: 'Guest Reader',
+    bio: 'Welcome to your reading journey! Edit your profile to get started.',
     socialMedia: {
       facebook: '',
       twitter: '',
@@ -45,8 +45,8 @@ export const Profile = () => {
     xp: 0,
     level: 1,
     isPublic: true,
-    favoriteGenres: [],
-    badges: [],
+    favoriteGenres: ['Fiction', 'Mystery'],
+    badges: ['First Steps'],
     booksRead: 0,
     currentStreak: 0
   });
@@ -54,6 +54,16 @@ export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState(profile);
   const { toast } = useToast();
+
+  // Load profile from localStorage on mount
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('userProfile');
+    if (savedProfile) {
+      const parsed = JSON.parse(savedProfile);
+      setProfile(parsed);
+      setEditForm(parsed);
+    }
+  }, []);
 
   // Calculate XP progress to next level
   const xpForCurrentLevel = (profile.level - 1) * 50 + 50; // 50 XP for level 1, then +50 per level
@@ -72,11 +82,13 @@ export const Profile = () => {
   const currentLeague = getLeague(profile.level);
 
   const handleSave = () => {
+    // Save to localStorage for persistence without auth
+    localStorage.setItem('userProfile', JSON.stringify(editForm));
     setProfile(editForm);
     setIsEditing(false);
     toast({
       title: "Profile updated!",
-      description: "Your changes have been saved successfully.",
+      description: "Your changes have been saved locally.",
     });
   };
 
