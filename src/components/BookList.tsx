@@ -9,7 +9,8 @@ import { HighlightConfirmation } from "@/components/HighlightConfirmation";
 import { useHighlights } from "@/hooks/useHighlights";
 import { detectPotentialQuote } from "@/utils/textAnalysis";
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
-import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw } from "lucide-react";
+import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw, Edit2, Save, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Book {
   id: string;
@@ -39,6 +40,11 @@ export const BookList = () => {
   const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
+  
+  // Edit review state
+  const [editingBookId, setEditingBookId] = useState<string | null>(null);
+  const [editReviewText, setEditReviewText] = useState('');
+  const [editRating, setEditRating] = useState<number>(0);
   
   // Highlight detection state
   const [showHighlightConfirmation, setShowHighlightConfirmation] = useState(false);
@@ -78,6 +84,37 @@ export const BookList = () => {
 
   const deleteBook = (bookId: string) => {
     setBooks(prev => prev.filter(book => book.id !== bookId));
+  };
+
+  const startEditingReview = (book: Book) => {
+    setEditingBookId(book.id);
+    setEditReviewText(book.reviewText || '');
+    setEditRating(book.rating || 0);
+  };
+
+  const saveReviewEdit = (bookId: string) => {
+    setBooks(prev => prev.map(book => 
+      book.id === bookId 
+        ? { ...book, reviewText: editReviewText, rating: editRating || undefined }
+        : book
+    ));
+    setEditingBookId(null);
+    setEditReviewText('');
+    setEditRating(0);
+    
+    // Check for quotes in the updated review
+    if (editReviewText) {
+      const book = books.find(b => b.id === bookId);
+      if (book) {
+        checkForQuotes(editReviewText, book.title);
+      }
+    }
+  };
+
+  const cancelEditingReview = () => {
+    setEditingBookId(null);
+    setEditReviewText('');
+    setEditRating(0);
   };
 
   const filterBooksByStatus = (status: Book['status']) => {
@@ -364,19 +401,96 @@ export const BookList = () => {
                   </p>
                 )}
 
-                {book.rating && (
-                  <div className="flex items-center gap-2">
-                    {renderStars(book.rating)}
-                    <span className="text-sm text-muted-foreground">
-                      {book.rating}/5
-                    </span>
+                {editingBookId === book.id ? (
+                  <div className="space-y-3">
+                    {/* Edit Rating */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Rating</label>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-5 w-5 cursor-pointer transition-colors ${
+                              star <= editRating ? 'text-accent fill-current' : 'text-muted-foreground hover:text-accent'
+                            }`}
+                            onClick={() => setEditRating(star)}
+                          />
+                        ))}
+                        {editRating > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditRating(0)}
+                            className="ml-2 h-6 px-2 text-xs"
+                          >
+                            Clear
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Edit Review */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Review</label>
+                      <Textarea
+                        value={editReviewText}
+                        onChange={(e) => setEditReviewText(e.target.value)}
+                        placeholder="Write your review..."
+                        className="min-h-[100px]"
+                      />
+                    </div>
+                    
+                    {/* Edit Actions */}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="accent"
+                        size="sm"
+                        onClick={() => saveReviewEdit(book.id)}
+                        className="gap-2"
+                      >
+                        <Save className="h-3 w-3" />
+                        Save
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={cancelEditingReview}
+                        className="gap-2"
+                      >
+                        <X className="h-3 w-3" />
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
-                )}
+                ) : (
+                  <div className="space-y-2">
+                    {book.rating && (
+                      <div className="flex items-center gap-2">
+                        {renderStars(book.rating)}
+                        <span className="text-sm text-muted-foreground">
+                          {book.rating}/5
+                        </span>
+                      </div>
+                    )}
 
-                {book.reviewText && (
-                  <p className="text-sm text-muted-foreground line-clamp-3">
-                    {book.reviewText}
-                  </p>
+                    {book.reviewText && (
+                      <p className="text-sm text-muted-foreground line-clamp-3">
+                        {book.reviewText}
+                      </p>
+                    )}
+
+                    {(book.reviewText || book.rating) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEditingReview(book)}
+                        className="gap-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                        Edit Review
+                      </Button>
+                    )}
+                  </div>
                 )}
 
                 <Separator />
