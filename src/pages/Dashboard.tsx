@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Book, Users, Trophy, Calendar, UserCircle, Users2 } from "lucide-react";
 import heroImage from "@/assets/hero-books.jpg";
+import { CommunityProvider } from "@/context/CommunityContext";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups';
 
@@ -130,16 +131,18 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation 
-        currentView={currentView} 
-        setCurrentView={setCurrentView} 
-        navItems={navItems}
-      />
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {renderCurrentView()}
+    <CommunityProvider>
+      <div className="min-h-screen bg-background">
+        <Navigation 
+          currentView={currentView} 
+          setCurrentView={setCurrentView} 
+          navItems={navItems}
+        />
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          {renderCurrentView()}
+        </div>
       </div>
-    </div>
+    </CommunityProvider>
   );
 };
 

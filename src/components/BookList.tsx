@@ -12,6 +12,7 @@ import { detectPotentialQuote } from "@/utils/textAnalysis";
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw, Edit2, Save, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useCommunity } from "@/context/CommunityContext";
 
 interface Book {
   id: string;
@@ -41,6 +42,7 @@ export const BookList = () => {
   const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
+  const { addPost } = useCommunity();
   
   // Edit review state
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
@@ -88,13 +90,31 @@ export const BookList = () => {
       checkForQuotes(newBook.reviewText, newBook.title);
     }
 
-    // Open share dialog if both rating and review are provided
+    // Open share dialog and create community post if rating and review are provided
     if (newBook.rating && newBook.reviewText?.trim()) {
       openShare({
         title: newBook.title,
         author: newBook.author,
         rating: newBook.rating,
         reviewText: newBook.reviewText,
+      });
+      maybeCreateCommunityPost({
+        title: newBook.title,
+        author: newBook.author,
+        rating: newBook.rating,
+        reviewText: newBook.reviewText,
+      });
+    }
+  };
+
+  const maybeCreateCommunityPost = (payload: { title: string; author: string; rating?: number; reviewText?: string }) => {
+    if (payload.reviewText?.trim()) {
+      addPost({
+        content: `Review: "${payload.title}" — ${payload.reviewText.slice(0, 200)}${payload.reviewText.length > 200 ? '…' : ''}`,
+        bookTitle: payload.title,
+        bookAuthor: payload.author,
+        rating: payload.rating,
+        authorName: 'You',
       });
     }
   };
@@ -137,9 +157,15 @@ export const BookList = () => {
       }
     }
 
-    // Open share dialog if both rating and review are provided
+    // Open share dialog and create community post if rating and review are provided
     if (prevBook && updatedRating > 0 && updatedText?.trim()) {
       openShare({
+        title: prevBook.title,
+        author: prevBook.author,
+        rating: updatedRating,
+        reviewText: updatedText,
+      });
+      maybeCreateCommunityPost({
         title: prevBook.title,
         author: prevBook.author,
         rating: updatedRating,

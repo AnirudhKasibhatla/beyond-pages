@@ -7,77 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Heart, MessageCircle, Share2, UserPlus, UserMinus, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useCommunity, type CommunityPost, type Reply } from "@/context/CommunityContext";
 
-interface CommunityPost {
-  id: string;
-  author: {
-    name: string;
-    avatar?: string;
-    level: number;
-    isFollowing: boolean;
-  };
-  content: string;
-  bookTitle?: string;
-  bookAuthor?: string;
-  timestamp: Date;
-  likes: number;
-  isLiked: boolean;
-  replies: Reply[];
-}
-
-interface Reply {
-  id: string;
-  author: {
-    name: string;
-    avatar?: string;
-  };
-  content: string;
-  timestamp: Date;
-}
+// Types imported from context
 
 export const Community = () => {
-  const [posts, setPosts] = useState<CommunityPost[]>([
-    {
-      id: '1',
-      author: { name: 'Sarah Chen', level: 15, isFollowing: false },
-      content: 'Just finished "The Seven Husbands of Evelyn Hugo" and I\'m completely blown away! The storytelling is incredible and the characters feel so real. Anyone else read this?',
-      bookTitle: 'The Seven Husbands of Evelyn Hugo',
-      bookAuthor: 'Taylor Jenkins Reid',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      likes: 23,
-      isLiked: false,
-      replies: [
-        {
-          id: 'r1',
-          author: { name: 'Alex Johnson' },
-          content: 'Yes! That book changed my perspective on storytelling. The plot twists were amazing!',
-          timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000)
-        }
-      ]
-    },
-    {
-      id: '2',
-      author: { name: 'Marcus Rodriguez', level: 8, isFollowing: true },
-      content: 'Starting my journey with "Dune" today. I\'ve heard so much about this series. Any tips for a first-time reader?',
-      bookTitle: 'Dune',
-      bookAuthor: 'Frank Herbert',
-      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-      likes: 15,
-      isLiked: true,
-      replies: []
-    },
-    {
-      id: '3',
-      author: { name: 'Emily Watson', level: 22, isFollowing: false },
-      content: 'Book club meeting tonight! We\'re discussing "Atomic Habits" and I can\'t wait to share my insights. The concepts in this book are life-changing.',
-      bookTitle: 'Atomic Habits',
-      bookAuthor: 'James Clear',
-      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-      likes: 31,
-      isLiked: false,
-      replies: []
-    }
-  ]);
+  const { posts, setPosts } = useCommunity();
 
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const [showReplyForm, setShowReplyForm] = useState<{ [key: string]: boolean }>({});
