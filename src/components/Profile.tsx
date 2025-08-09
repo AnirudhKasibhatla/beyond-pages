@@ -299,7 +299,7 @@ export const Profile = () => {
 
           {/* Reading Goals */}
           <Card className="p-6 bg-gradient-primary text-primary-foreground shadow-strong">
-            <h4 className="text-lg font-semibold mb-4"> Reading Goal</h4>
+            <h4 className="text-lg font-semibold mb-4">getFullYear() Reading Goal</h4>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span>Progress</span>
