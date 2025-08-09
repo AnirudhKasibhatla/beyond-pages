@@ -224,14 +224,13 @@ export const BookList = () => {
   };
 
   const renderStars = (rating?: number) => {
-    if (!rating) return null;
     return (
       <div className="flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
             className={`h-4 w-4 ${
-              star <= rating ? 'text-accent fill-current' : 'text-muted-foreground'
+              rating && star <= rating ? 'text-accent fill-current' : 'text-muted-foreground'
             }`}
           />
         ))}
@@ -448,8 +447,8 @@ export const BookList = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentBooks.map((book) => (
-            <Card key={book.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card">
-              <div className="space-y-4">
+            <Card key={book.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card flex flex-col">
+              <div className="space-y-4 flex-1">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-card-foreground line-clamp-2">
@@ -546,14 +545,14 @@ export const BookList = () => {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {book.rating && (
-                      <div className="flex items-center gap-2">
-                        {renderStars(book.rating)}
+                    <div className="flex items-center gap-2">
+                      {renderStars(book.rating)}
+                      {book.rating && (
                         <span className="text-sm text-muted-foreground">
                           {book.rating}/5
                         </span>
-                      </div>
-                    )}
+                      )}
+                    </div>
 
                     {book.reviewText && (
                       <p className="text-sm text-muted-foreground line-clamp-3">
@@ -574,33 +573,39 @@ export const BookList = () => {
                     )}
                   </div>
                 )}
+              </div>
 
+              <div className="space-y-2 mt-4">
                 <Separator />
 
-                <div className="flex gap-2">
-                  {book.status !== 'reading' && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => updateBookStatus(book.id, 'reading')}
-                    >
-                      Start Reading
-                    </Button>
-                  )}
-                  {book.status !== 'finished' && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => updateBookStatus(book.id, 'finished')}
-                    >
-                      Mark Finished
-                    </Button>
-                  )}
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    {book.status !== 'reading' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => updateBookStatus(book.id, 'reading')}
+                        className="flex-1"
+                      >
+                        Start Reading
+                      </Button>
+                    )}
+                    {book.status !== 'finished' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => updateBookStatus(book.id, 'finished')}
+                        className="flex-1"
+                      >
+                        Mark Finished
+                      </Button>
+                    )}
+                  </div>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => deleteBook(book.id)}
-                    className="text-destructive hover:text-destructive"
+                    className="text-destructive hover:text-destructive w-full"
                   >
                     Remove
                   </Button>

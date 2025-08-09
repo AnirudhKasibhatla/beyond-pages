@@ -29,15 +29,13 @@ export const GoodreadsImport = ({ onBooksImport }: GoodreadsImportProps) => {
   const [previewBooks, setPreviewBooks] = useState<Book[]>([]);
 
   const mapGoodreadsStatus = (goodreadsShelf: string): Book['status'] => {
-    switch (goodreadsShelf.toLowerCase()) {
+    const shelf = goodreadsShelf.toLowerCase().trim();
+    switch (shelf) {
       case 'read':
-      case 'finished':
         return 'finished';
       case 'currently-reading':
-      case 'reading':
         return 'reading';
       case 'to-read':
-      case 'want-to-read':
       default:
         return 'to-read';
     }
@@ -60,10 +58,19 @@ export const GoodreadsImport = ({ onBooksImport }: GoodreadsImportProps) => {
       const authorIndex = headers.findIndex(h => h.includes('author'));
       const isbnIndex = headers.findIndex(h => h.includes('isbn'));
       const shelfIndex = headers.findIndex(h => h.includes('shelf') || h.includes('exclusive'));
-      const ratingIndex = headers.findIndex(h => h.includes('rating'));
+      const ratingIndex = headers.findIndex(h => h.includes('rating') && h.includes('my'));
       const reviewIndex = headers.findIndex(h => h.includes('review'));
       
       if (titleIndex >= 0 && authorIndex >= 0 && values[titleIndex] && values[authorIndex]) {
+        // Parse rating - ensure it's a valid number between 0-5
+        let parsedRating: number | undefined;
+        if (ratingIndex >= 0 && values[ratingIndex]) {
+          const ratingValue = parseInt(values[ratingIndex]);
+          if (!isNaN(ratingValue) && ratingValue >= 1 && ratingValue <= 5) {
+            parsedRating = ratingValue;
+          }
+        }
+
         const book: Book = {
           id: Date.now().toString() + Math.random().toString(),
           title: values[titleIndex] || 'Unknown Title',
@@ -71,7 +78,7 @@ export const GoodreadsImport = ({ onBooksImport }: GoodreadsImportProps) => {
           isbn: isbnIndex >= 0 ? values[isbnIndex] : undefined,
           status: shelfIndex >= 0 ? mapGoodreadsStatus(values[shelfIndex]) : 'to-read',
           genres: [], // We'll infer genres or leave empty for now
-          rating: ratingIndex >= 0 && values[ratingIndex] ? parseInt(values[ratingIndex]) : undefined,
+          rating: parsedRating,
           reviewText: reviewIndex >= 0 ? values[reviewIndex] : undefined,
           createdAt: new Date(),
         };
