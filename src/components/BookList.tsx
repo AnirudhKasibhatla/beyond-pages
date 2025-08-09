@@ -7,6 +7,7 @@ import { AddBookForm } from "@/components/AddBookForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { HighlightConfirmation } from "@/components/HighlightConfirmation";
 // Removed useHighlights hook dependency
+import { ShareReviewDialog } from "@/components/ShareReviewDialog";
 import { detectPotentialQuote } from "@/utils/textAnalysis";
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw, Edit2, Save, X } from "lucide-react";
@@ -50,6 +51,14 @@ export const BookList = () => {
   const [showHighlightConfirmation, setShowHighlightConfirmation] = useState(false);
   const [detectedQuote, setDetectedQuote] = useState('');
   
+  // Share dialog state
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareData, setShareData] = useState<{ title: string; author: string; rating: number; reviewText?: string } | null>(null);
+  const openShare = (payload: { title: string; author: string; rating: number; reviewText?: string }) => {
+    setShareData(payload);
+    setShowShareDialog(true);
+  };
+  
   // Local highlight function
   const addHighlight = (highlight: any) => {
     // Local storage implementation for highlights
@@ -78,6 +87,16 @@ export const BookList = () => {
     if (newBook.reviewText) {
       checkForQuotes(newBook.reviewText, newBook.title);
     }
+
+    // Open share dialog if both rating and review are provided
+    if (newBook.rating && newBook.reviewText?.trim()) {
+      openShare({
+        title: newBook.title,
+        author: newBook.author,
+        rating: newBook.rating,
+        reviewText: newBook.reviewText,
+      });
+    }
   };
 
   const updateBookStatus = (bookId: string, newStatus: Book['status']) => {
@@ -97,9 +116,13 @@ export const BookList = () => {
   };
 
   const saveReviewEdit = (bookId: string) => {
+    const prevBook = books.find(b => b.id === bookId);
+    const updatedText = editReviewText;
+    const updatedRating = editRating;
+
     setBooks(prev => prev.map(book => 
       book.id === bookId 
-        ? { ...book, reviewText: editReviewText, rating: editRating || undefined }
+        ? { ...book, reviewText: updatedText, rating: updatedRating || undefined }
         : book
     ));
     setEditingBookId(null);
@@ -107,11 +130,21 @@ export const BookList = () => {
     setEditRating(0);
     
     // Check for quotes in the updated review
-    if (editReviewText) {
-      const book = books.find(b => b.id === bookId);
+    if (updatedText) {
+      const book = prevBook;
       if (book) {
-        checkForQuotes(editReviewText, book.title);
+        checkForQuotes(updatedText, book.title);
       }
+    }
+
+    // Open share dialog if both rating and review are provided
+    if (prevBook && updatedRating > 0 && updatedText?.trim()) {
+      openShare({
+        title: prevBook.title,
+        author: prevBook.author,
+        rating: updatedRating,
+        reviewText: updatedText,
+      });
     }
   };
 
@@ -539,6 +572,13 @@ export const BookList = () => {
         onClose={() => setShowHighlightConfirmation(false)}
         selectedText={detectedQuote}
         onConfirm={addHighlight}
+      />
+
+      {/* Share Review Dialog */}
+      <ShareReviewDialog
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        data={shareData}
       />
     </div>
   );
