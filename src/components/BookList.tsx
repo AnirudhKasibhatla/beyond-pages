@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { HighlightConfirmation } from "@/components/HighlightConfirmation";
 // Removed useHighlights hook dependency
 import { ShareReviewDialog } from "@/components/ShareReviewDialog";
+import { GoodreadsImport } from "@/components/GoodreadsImport";
 import { detectPotentialQuote } from "@/utils/textAnalysis";
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw, Edit2, Save, X } from "lucide-react";
@@ -105,6 +106,22 @@ export const BookList = () => {
         reviewText: newBook.reviewText,
       });
     }
+  };
+
+  const handleGoodreadsImport = (importedBooks: Book[]) => {
+    setBooks(prev => [...prev, ...importedBooks]);
+    
+    // Create community posts for books with reviews
+    importedBooks.forEach(book => {
+      if (book.reviewText?.trim() && book.rating) {
+        maybeCreateCommunityPost({
+          title: book.title,
+          author: book.author,
+          rating: book.rating,
+          reviewText: book.reviewText,
+        });
+      }
+    });
   };
 
   const maybeCreateCommunityPost = (payload: { title: string; author: string; rating?: number; reviewText?: string }) => {
@@ -266,6 +283,8 @@ export const BookList = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-foreground">My Library</h2>
         <div className="flex gap-3">
+          <GoodreadsImport onBooksImport={handleGoodreadsImport} />
+          
           <Dialog open={showRecommendationsModal} onOpenChange={setShowRecommendationsModal}>
             <DialogTrigger asChild>
               <Button 

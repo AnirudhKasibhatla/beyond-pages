@@ -91,6 +91,11 @@ const generateIntelligentMockRecommendations = (
       { title: "The Thursday Murder Club", author: "Richard Osman", genre: "Cozy Mystery", reason: "Charming mystery featuring elderly sleuths with wit, humor, and surprising depth.", rating: 4.3 },
       { title: "Gone Girl", author: "Gillian Flynn", genre: "Psychological Thriller", reason: "A twisted psychological thriller that will make you question everything you think you know.", rating: 4.2 },
     ],
+    'Thriller': [
+      { title: "The Girl with the Dragon Tattoo", author: "Stieg Larsson", genre: "Crime Thriller", reason: "Based on your thriller preferences, this dark Swedish crime novel with complex characters will grip you.", rating: 4.4 },
+      { title: "In the Woods", author: "Tana French", genre: "Psychological Thriller", reason: "Atmospheric psychological thriller with beautiful prose and haunting mystery elements.", rating: 4.2 },
+      { title: "The Silent Companion", author: "Laura Purcell", genre: "Gothic Thriller", reason: "Given your thriller interests, this Victorian gothic tale combines psychological suspense with supernatural elements.", rating: 4.1 },
+    ],
     'Romance': [
       { title: "Beach Read", author: "Emily Henry", genre: "Contemporary Romance", reason: "Perfect blend of humor, heart, and emotional depth with enemies-to-lovers charm.", rating: 4.5 },
       { title: "The Hating Game", author: "Sally Thorne", genre: "Workplace Romance", reason: "Witty banter and electric chemistry in this addictive office romance.", rating: 4.3 },
