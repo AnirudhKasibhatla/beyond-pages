@@ -215,7 +215,7 @@ export default function Auth() {
 
   if (showDetails) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-gradient-card shadow-strong">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
@@ -306,7 +306,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-gradient-card shadow-strong">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome to BookClub</CardTitle>
