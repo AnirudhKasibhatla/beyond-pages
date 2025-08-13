@@ -39,7 +39,7 @@ interface BookRecommendation {
 export const BookList = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'Reading' | 'To-Read' | 'Finished'>('reading');
+  const [activeTab, setActiveTab] = useState<'reading' | 'to-read' | 'finished'>('reading');
   const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
