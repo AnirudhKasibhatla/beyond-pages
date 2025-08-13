@@ -97,9 +97,9 @@ export const Community = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0">
         <h2 className="text-3xl font-bold text-foreground">Community</h2>
-        <Badge variant="default" className="text-sm px-4 py-2">
+        <Badge variant="default" className="text-sm px-4 py-2 w-fit">
           {posts.filter(p => p.author.isFollowing).length} Following
         </Badge>
       </div>
@@ -109,18 +109,18 @@ export const Community = () => {
           <Card key={post.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card">
             <div className="space-y-4">
               {/* Post Header */}
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
+              <div className="flex flex-col space-y-3 md:flex-row md:items-start md:justify-between md:space-y-0">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <Avatar className="h-10 w-10 flex-shrink-0">
                     <AvatarImage src={post.author.avatar} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
                       {getAuthorInitials(post.author.name)}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-card-foreground">{post.author.name}</h4>
-                      <Badge variant="outline" className="text-xs">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-col space-y-1 md:flex-row md:items-center md:gap-2 md:space-y-0">
+                      <h4 className="font-semibold text-card-foreground truncate">{post.author.name}</h4>
+                      <Badge variant="outline" className="text-xs w-fit">
                         Level {post.author.level}
                       </Badge>
                     </div>
@@ -133,17 +133,19 @@ export const Community = () => {
                   variant={post.author.isFollowing ? "outline" : "default"}
                   size="sm"
                   onClick={() => toggleFollow(post.id)}
-                  className="gap-2"
+                  className="gap-2 w-full md:w-auto flex-shrink-0"
                 >
                   {post.author.isFollowing ? (
                     <>
                       <UserMinus className="h-4 w-4" />
-                      Unfollow
+                      <span className="hidden sm:inline">Unfollow</span>
+                      <span className="sm:hidden">Unfollow</span>
                     </>
                   ) : (
                     <>
                       <UserPlus className="h-4 w-4" />
-                      Follow
+                      <span className="hidden sm:inline">Follow</span>
+                      <span className="sm:hidden">Follow</span>
                     </>
                   )}
                 </Button>
@@ -164,36 +166,41 @@ export const Community = () => {
               <p className="text-card-foreground leading-relaxed">{post.content}</p>
 
               {/* Post Actions */}
-              <div className="flex items-center gap-6 pt-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleLike(post.id)}
-                  className={`gap-2 ${post.isLiked ? 'text-red-500' : ''}`}
-                >
-                  <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
-                  {post.likes}
-                </Button>
+              <div className="flex flex-col space-y-2 md:flex-row md:items-center md:gap-6 md:space-y-0 pt-2">
+                <div className="flex items-center justify-center gap-4 md:gap-6">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleLike(post.id)}
+                    className={`gap-2 flex-1 md:flex-none ${post.isLiked ? 'text-red-500' : ''}`}
+                  >
+                    <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
+                    <span className="hidden xs:inline">{post.likes}</span>
+                    <span className="xs:hidden">{post.likes}</span>
+                  </Button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowReplyForm(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
-                  className="gap-2"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  {post.replies.length} Replies
-                </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowReplyForm(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
+                    className="gap-2 flex-1 md:flex-none"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    <span className="hidden xs:inline">{post.replies.length} Replies</span>
+                    <span className="xs:hidden">{post.replies.length}</span>
+                  </Button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => sharePost(post)}
-                  className="gap-2"
-                >
-                  <Share2 className="h-4 w-4" />
-                  Share
-                </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => sharePost(post)}
+                    className="gap-2 flex-1 md:flex-none"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    <span className="hidden xs:inline">Share</span>
+                    <span className="xs:hidden">Share</span>
+                  </Button>
+                </div>
               </div>
 
               {/* Replies */}

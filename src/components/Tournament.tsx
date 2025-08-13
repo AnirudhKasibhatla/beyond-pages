@@ -108,20 +108,21 @@ export const Tournament = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0">
         <h2 className="text-3xl font-bold text-foreground">Weekly Tournament</h2>
-        <div className="flex items-center gap-4">
-          <Badge variant="default" className="text-sm px-4 py-2">
+        <div className="flex flex-col space-y-2 md:flex-row md:items-center md:gap-4 md:space-y-0">
+          <Badge variant="default" className="text-sm px-4 py-2 w-fit">
             Season {currentSeason}
           </Badge>
           <Button 
             variant="outline" 
             size="sm" 
             onClick={simulateWeeklyReset}
-            className="gap-2"
+            className="gap-2 w-full md:w-auto"
           >
             <RotateCcw className="h-4 w-4" />
-            Simulate Reset
+            <span className="hidden sm:inline">Simulate Reset</span>
+            <span className="sm:hidden">Reset</span>
           </Button>
         </div>
       </div>
@@ -167,42 +168,42 @@ export const Tournament = () => {
           {participants.map((participant) => (
             <div 
               key={participant.id} 
-              className={`flex items-center justify-between p-4 rounded-lg transition-all duration-300 ${
+              className={`flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0 p-4 rounded-lg transition-all duration-300 ${
                 participant.name === 'You' 
                   ? 'bg-primary/10 border-2 border-primary shadow-medium' 
                   : 'bg-secondary/30 hover:bg-secondary/50'
               }`}
             >
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 min-w-[60px]">
+              <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                <div className="flex items-center gap-2 min-w-[50px] md:min-w-[60px] flex-shrink-0">
                   {getRankIcon(participant.rank)}
-                  <span className="font-bold text-lg">#{participant.rank}</span>
+                  <span className="font-bold text-base md:text-lg">#{participant.rank}</span>
                 </div>
                 
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-primary text-primary-foreground">
+                <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                     {participant.name.split(' ').map(n => n[0]).join('')}
                   </AvatarFallback>
                 </Avatar>
                 
-                <div>
-                  <h4 className={`font-semibold ${participant.name === 'You' ? 'text-primary' : 'text-card-foreground'}`}>
+                <div className="min-w-0 flex-1">
+                  <h4 className={`font-semibold text-sm md:text-base truncate ${participant.name === 'You' ? 'text-primary' : 'text-card-foreground'}`}>
                     {participant.name}
                   </h4>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                  <div className="flex flex-col space-y-1 md:flex-row md:items-center md:gap-2 md:space-y-0">
+                    <Badge variant="outline" className="text-xs w-fit">
                       Level {participant.level}
                     </Badge>
-                    <Badge className={`text-xs ${getLeagueColor(participant.league)}`}>
+                    <Badge className={`text-xs w-fit ${getLeagueColor(participant.league)}`}>
                       {participant.league}
                     </Badge>
                   </div>
                 </div>
               </div>
               
-              <div className="text-right">
-                <p className="font-bold text-lg text-card-foreground">{participant.xp} XP</p>
-                <div className="w-24">
+              <div className="flex items-center justify-between md:text-right md:block">
+                <p className="font-bold text-base md:text-lg text-card-foreground">{participant.xp} XP</p>
+                <div className="w-20 md:w-24">
                   <Progress value={(participant.xp / 350) * 100} className="h-2" />
                 </div>
               </div>
