@@ -279,9 +279,11 @@ export const BookList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0">
         <h2 className="text-3xl font-bold text-foreground">My Library</h2>
-        <div className="flex gap-3">
+        
+        {/* Mobile: Stack buttons vertically, Desktop: Horizontal layout */}
+        <div className="flex flex-col space-y-2 md:flex-row md:gap-3 md:space-y-0">
           <GoodreadsImport onBooksImport={handleGoodreadsImport} />
           
           <Dialog open={showRecommendationsModal} onOpenChange={setShowRecommendationsModal}>
@@ -289,7 +291,7 @@ export const BookList = () => {
               <Button 
                 variant="accent" 
                 onClick={handleGetRecommendations}
-                className="gap-2"
+                className="gap-2 w-full md:w-auto"
               >
                 <Sparkles className="h-4 w-4" />
                 Suggest me
@@ -386,7 +388,7 @@ export const BookList = () => {
           <Button 
             variant="hero" 
             onClick={() => setShowAddForm(true)}
-            className="gap-2"
+            className="gap-2 w-full md:w-auto"
           >
             <Plus className="h-4 w-4" />
             Add Book
@@ -400,27 +402,53 @@ export const BookList = () => {
         </Card>
       )}
 
-      {/* Tabs */}
-      <div className="flex gap-2 p-1 bg-secondary rounded-lg">
-        {[
-          { key: 'reading' as const, label: 'Currently Reading', count: tabCounts.reading },
-          { key: 'to-read' as const, label: 'Want to Read', count: tabCounts['to-read'] },
-          { key: 'finished' as const, label: 'Finished', count: tabCounts.finished },
-        ].map((tab) => (
-          <Button
-            key={tab.key}
-            variant={activeTab === tab.key ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setActiveTab(tab.key)}
-            className="flex-1 justify-center gap-2"
-          >
-            {getStatusIcon(tab.key)}
-            <span>{tab.label}</span>
-            <Badge variant="outline" className="ml-1">
-              {tab.count}
-            </Badge>
-          </Button>
-        ))}
+      {/* Tabs - Responsive Layout */}
+      <div className="w-full">
+        {/* Mobile/Tablet: Vertical list layout */}
+        <div className="flex flex-col space-y-2 md:hidden">
+          {[
+            { key: 'reading' as const, label: 'Currently Reading', count: tabCounts.reading },
+            { key: 'to-read' as const, label: 'Want to Read', count: tabCounts['to-read'] },
+            { key: 'finished' as const, label: 'Finished', count: tabCounts.finished },
+          ].map((tab) => (
+            <Button
+              key={tab.key}
+              variant={activeTab === tab.key ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setActiveTab(tab.key)}
+              className="w-full justify-start gap-2"
+            >
+              {getStatusIcon(tab.key)}
+              <span>{tab.label}</span>
+              <Badge variant="outline" className="ml-auto">
+                {tab.count}
+              </Badge>
+            </Button>
+          ))}
+        </div>
+        
+        {/* Desktop: Horizontal layout */}
+        <div className="hidden md:flex gap-2 p-1 bg-secondary rounded-lg">
+          {[
+            { key: 'reading' as const, label: 'Currently Reading', count: tabCounts.reading },
+            { key: 'to-read' as const, label: 'Want to Read', count: tabCounts['to-read'] },
+            { key: 'finished' as const, label: 'Finished', count: tabCounts.finished },
+          ].map((tab) => (
+            <Button
+              key={tab.key}
+              variant={activeTab === tab.key ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setActiveTab(tab.key)}
+              className="flex-1 justify-center gap-2"
+            >
+              {getStatusIcon(tab.key)}
+              <span>{tab.label}</span>
+              <Badge variant="outline" className="ml-1">
+                {tab.count}
+              </Badge>
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Books Grid */}
