@@ -70,7 +70,7 @@ const Index = () => {
                 variant="hero" 
                 size="xl"
                 onClick={() => navigate('/dashboard')}
-                className="animate-glow gap-3"
+                className="hover-scale gap-3 transition-all duration-300 hover:shadow-glow"
               >
                 Start Your Journey
                 <ArrowRight className="h-5 w-5" />
