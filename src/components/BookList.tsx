@@ -36,7 +36,11 @@ interface BookRecommendation {
   rating: number;
 }
 
-export const BookList = () => {
+interface BookListProps {
+  highlightButtons?: boolean;
+}
+
+export const BookList = ({ highlightButtons = false }: BookListProps) => {
   const [books, setBooks] = useState<Book[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [activeTab, setActiveTab] = useState<'reading' | 'to-read' | 'finished'>('reading');
@@ -291,7 +295,11 @@ export const BookList = () => {
               <Button 
                 variant="accent" 
                 onClick={handleGetRecommendations}
-                className="gap-2 w-full md:w-auto"
+                className={`gap-2 w-full md:w-auto transition-all duration-300 ${
+                  highlightButtons 
+                    ? 'ring-4 ring-accent/50 shadow-glow animate-pulse' 
+                    : ''
+                }`}
               >
                 <Sparkles className="h-4 w-4" />
                 Suggest me
@@ -388,7 +396,11 @@ export const BookList = () => {
           <Button 
             variant="hero" 
             onClick={() => setShowAddForm(true)}
-            className="gap-2 w-full md:w-auto"
+            className={`gap-2 w-full md:w-auto transition-all duration-300 ${
+              highlightButtons 
+                ? 'ring-4 ring-primary/50 shadow-glow animate-pulse' 
+                : ''
+            }`}
           >
             <Plus className="h-4 w-4" />
             Add Book

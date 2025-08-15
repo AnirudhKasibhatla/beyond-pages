@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { BookList } from "@/components/BookList";
 import { Community } from "@/components/Community";
 import { Profile } from "@/components/Profile";
@@ -19,11 +19,22 @@ const Dashboard = () => {
   const [currentView, setCurrentView] = useState<ViewType>('books');
   const [userLevel, setUserLevel] = useState(1);
   const [userXP, setUserXP] = useState(0);
+  const [highlightButtons, setHighlightButtons] = useState(false);
+  const libraryRef = useRef<HTMLDivElement>(null);
+
+  const handleStartReading = () => {
+    setCurrentView('books');
+    setTimeout(() => {
+      libraryRef.current?.scrollIntoView({ behavior: 'smooth' });
+      setHighlightButtons(true);
+      setTimeout(() => setHighlightButtons(false), 3000);
+    }, 100);
+  };
 
   const renderCurrentView = () => {
     switch (currentView) {
       case 'books':
-        return <BookList />;
+        return <BookList highlightButtons={highlightButtons} />;
       case 'community':
         return <Community />;
       case 'profile':
@@ -35,7 +46,7 @@ const Dashboard = () => {
       case 'groups':
         return <BookGroups />;
       default:
-        return <BookList />;
+        return <BookList highlightButtons={highlightButtons} />;
     }
   };
 
@@ -80,7 +91,7 @@ const Dashboard = () => {
                 <Button 
                   variant="hero" 
                   size="xl"
-                  onClick={() => setCurrentView('books')}
+                  onClick={handleStartReading}
                   className="hover-scale transition-all duration-300 hover:shadow-glow"
                 >
                   Start Reading Journey
@@ -124,7 +135,7 @@ const Dashboard = () => {
           />
 
           {/* Main Content */}
-          <div className="max-w-6xl mx-auto px-6 py-8">
+          <div ref={libraryRef} className="max-w-6xl mx-auto px-6 py-8">
             {renderCurrentView()}
           </div>
         </div>
