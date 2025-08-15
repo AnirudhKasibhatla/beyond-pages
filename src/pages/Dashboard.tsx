@@ -81,7 +81,7 @@ const Dashboard = () => {
                   variant="hero" 
                   size="xl"
                   onClick={() => setCurrentView('books')}
-                  className="animate-glow"
+                  className="hover-scale transition-all duration-300 hover:shadow-glow"
                 >
                   Start Reading Journey
                 </Button>
