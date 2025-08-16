@@ -298,19 +298,52 @@ export const Profile = () => {
           </Card>
 
           {/* Reading Goals */}
-          <Card className="p-6 bg-gradient-primary text-primary-foreground shadow-strong">
-            <h4 className="text-lg font-semibold mb-4">getFullYear() Reading Goal</h4>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>Progress</span>
-                <span>{profile.booksRead}/25 books</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Last Year's Challenge */}
+            <Card className="p-6 bg-gradient-card shadow-medium">
+              <h4 className="text-lg font-semibold mb-4 text-card-foreground">{new Date().getFullYear() - 1} Reading Challenge</h4>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Final Result</span>
+                  <span className="font-semibold">18/20 books</span>
+                </div>
+                <Progress value={90} className="h-3" />
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Achievement Rate</span>
+                    <span className="text-success font-medium">90%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Best Month</span>
+                    <span>June (4 books)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Favorite Genre</span>
+                    <span>Mystery</span>
+                  </div>
+                </div>
+                <Badge variant="outline" className="w-full justify-center">
+                  <Trophy className="h-3 w-3 mr-1" />
+                  Challenge Completed
+                </Badge>
               </div>
-              <Progress value={(profile.booksRead / 25) * 100} className="h-3" />
-              <p className="text-sm opacity-90">
-                You're {profile.booksRead >= 25 ? 'ahead of' : 'on track with'} your reading goal! Keep it up!
-              </p>
-            </div>
-          </Card>
+            </Card>
+
+            {/* Current Year's Goal */}
+            <Card className="p-6 bg-gradient-primary text-primary-foreground shadow-strong">
+              <h4 className="text-lg font-semibold mb-4">{new Date().getFullYear()} Reading Goal</h4>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span>Progress</span>
+                  <span>{profile.booksRead}/25 books</span>
+                </div>
+                <Progress value={(profile.booksRead / 25) * 100} className="h-3" />
+                <p className="text-sm opacity-90">
+                  You're {profile.booksRead >= 25 ? 'ahead of' : 'on track with'} your reading goal! Keep it up!
+                </p>
+              </div>
+            </Card>
+          </div>
 
           {/* Highlights Section */}
           <HighlightsList />
