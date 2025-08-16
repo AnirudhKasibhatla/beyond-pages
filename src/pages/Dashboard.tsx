@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Book, Users, Trophy, Calendar, UserCircle, Users2 } from "lucide-react";
-import heroImage from "@/assets/hero-books.jpg";
+import heroImage from "@/assets/hero-bookshelf.jpg";
 import { CommunityProvider } from "@/context/CommunityContext";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups';
