@@ -87,17 +87,29 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
       } else {
         // Search by title/author using Open Library search API
         const query = encodeURIComponent(searchTerm);
-        const response = await fetch(`https://openlibrary.org/search.json?q=${query}&limit=5`);
+        const response = await fetch(`https://openlibrary.org/search.json?q=${query}&limit=1`);
         const data = await response.json();
         
-        results = data.docs?.slice(0, 5).map(book => ({
-          title: book.title || 'Unknown Title',
-          author: book.author_name?.[0] || 'Unknown Author',
-          isbn: book.isbn?.[0] || book.isbn_13?.[0] || book.isbn_10?.[0] || '',
-          subjects: book.subject?.slice(0, 3) || [],
-          cover: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : null,
-          publishYear: book.first_publish_year
-        })) || [];
+        results = data.docs?.slice(0, 1).map(book => {
+          // Extract ISBN from multiple possible fields
+          let isbn = '';
+          if (book.isbn && book.isbn.length > 0) {
+            isbn = book.isbn[0];
+          } else if (book.isbn_13 && book.isbn_13.length > 0) {
+            isbn = book.isbn_13[0];
+          } else if (book.isbn_10 && book.isbn_10.length > 0) {
+            isbn = book.isbn_10[0];
+          }
+          
+          return {
+            title: book.title || 'Unknown Title',
+            author: book.author_name?.[0] || 'Unknown Author',
+            isbn: isbn,
+            subjects: book.subject?.slice(0, 3) || [],
+            cover: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : null,
+            publishYear: book.first_publish_year
+          };
+        }) || [];
       }
       
       setSearchResults(results);
