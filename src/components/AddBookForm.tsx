@@ -106,15 +106,32 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
         const data = await response.json();
         
         results = data.docs?.slice(0, limit).map(book => {
-          // Extract ISBN from multiple possible fields
+          // Extract ISBN from multiple possible fields with better handling
           let isbn = '';
-          if (book.isbn && book.isbn.length > 0) {
+          
+          // Try different ISBN field formats
+          if (book.isbn && Array.isArray(book.isbn) && book.isbn.length > 0) {
             isbn = book.isbn[0];
-          } else if (book.isbn_13 && book.isbn_13.length > 0) {
+          } else if (book.isbn_13 && Array.isArray(book.isbn_13) && book.isbn_13.length > 0) {
             isbn = book.isbn_13[0];
-          } else if (book.isbn_10 && book.isbn_10.length > 0) {
+          } else if (book.isbn_10 && Array.isArray(book.isbn_10) && book.isbn_10.length > 0) {
             isbn = book.isbn_10[0];
+          } else if (book.isbn && typeof book.isbn === 'string') {
+            isbn = book.isbn;
+          } else if (book.isbn_13 && typeof book.isbn_13 === 'string') {
+            isbn = book.isbn_13;
+          } else if (book.isbn_10 && typeof book.isbn_10 === 'string') {
+            isbn = book.isbn_10;
           }
+          
+          // Clean up ISBN (remove spaces and hyphens for consistency)
+          isbn = isbn.replace(/[\s\-]/g, '');
+          
+          console.log(`Book: ${book.title}, ISBN found: ${isbn}, Raw data:`, {
+            isbn: book.isbn,
+            isbn_13: book.isbn_13,
+            isbn_10: book.isbn_10
+          });
           
           return {
             title: book.title || 'Unknown Title',
@@ -295,7 +312,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
               disabled={isScanning}
             >
               <Camera className="h-4 w-4" />
-              {isScanning ? 'Scanning...' : 'Scan'}
+              {isScanning ? 'Scanning...' : 'Scan ISBN'}
             </Button>
           </div>
 
