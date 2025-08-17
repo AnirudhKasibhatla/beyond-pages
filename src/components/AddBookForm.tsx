@@ -116,6 +116,15 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
             isbn = book.isbn_10[0];
           }
           
+          console.log('Book data from API:', {
+            title: book.title,
+            author: book.author_name?.[0],
+            isbn: isbn,
+            rawISBN: book.isbn,
+            rawISBN13: book.isbn_13,
+            rawISBN10: book.isbn_10
+          });
+          
           return {
             title: book.title || 'Unknown Title',
             author: book.author_name?.[0] || 'Unknown Author',
@@ -221,13 +230,19 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
   }, []);
 
   const selectBook = (book: any) => {
-    setFormData({
+    console.log('selectBook called with:', book);
+    console.log('Current formData before update:', formData);
+    
+    const newFormData = {
       ...formData,
       title: book.title,
       author: book.author,
       isbn: book.isbn || '',
       genres: book.subjects || []
-    });
+    };
+    
+    console.log('New formData to set:', newFormData);
+    setFormData(newFormData);
     setSearchResults([]);
     setShowManualForm(true);
   };
