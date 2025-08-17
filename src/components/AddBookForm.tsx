@@ -87,59 +87,40 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
           }];
         }
       } else {
-        // Search by title/author using Open Library search API
+        // Search using Google Books API for better ISBN data
         const query = encodeURIComponent(searchTerm);
         let searchUrl = '';
         let limit = 1;
         
         if (searchType === 'author') {
-          // Search specifically by author and return all books by that author
-          searchUrl = `https://openlibrary.org/search.json?author=${query}&limit=10`;
+          searchUrl = `https://www.googleapis.com/books/v1/volumes?q=inauthor:${query}&maxResults=10`;
           limit = 10;
         } else {
-          // Search by book title and return only one result
-          searchUrl = `https://openlibrary.org/search.json?q=${query}&limit=1`;
+          searchUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=1`;
           limit = 1;
         }
         
         const response = await fetch(searchUrl);
         const data = await response.json();
         
-        results = data.docs?.slice(0, limit).map(book => {
-          // Extract ISBN from multiple possible fields with better handling
+        results = data.items?.slice(0, limit).map(item => {
+          const book = item.volumeInfo;
+          
+          // Extract ISBN from industryIdentifiers
           let isbn = '';
-          
-          // Try different ISBN field formats
-          if (book.isbn && Array.isArray(book.isbn) && book.isbn.length > 0) {
-            isbn = book.isbn[0];
-          } else if (book.isbn_13 && Array.isArray(book.isbn_13) && book.isbn_13.length > 0) {
-            isbn = book.isbn_13[0];
-          } else if (book.isbn_10 && Array.isArray(book.isbn_10) && book.isbn_10.length > 0) {
-            isbn = book.isbn_10[0];
-          } else if (book.isbn && typeof book.isbn === 'string') {
-            isbn = book.isbn;
-          } else if (book.isbn_13 && typeof book.isbn_13 === 'string') {
-            isbn = book.isbn_13;
-          } else if (book.isbn_10 && typeof book.isbn_10 === 'string') {
-            isbn = book.isbn_10;
+          if (book.industryIdentifiers) {
+            const isbn13 = book.industryIdentifiers.find(id => id.type === 'ISBN_13');
+            const isbn10 = book.industryIdentifiers.find(id => id.type === 'ISBN_10');
+            isbn = isbn13?.identifier || isbn10?.identifier || '';
           }
-          
-          // Clean up ISBN (remove spaces and hyphens for consistency)
-          isbn = isbn.replace(/[\s\-]/g, '');
-          
-          console.log(`Book: ${book.title}, ISBN found: ${isbn}, Raw data:`, {
-            isbn: book.isbn,
-            isbn_13: book.isbn_13,
-            isbn_10: book.isbn_10
-          });
           
           return {
             title: book.title || 'Unknown Title',
-            author: book.author_name?.[0] || 'Unknown Author',
+            author: book.authors?.[0] || 'Unknown Author',
             isbn: isbn,
-            subjects: book.subject?.slice(0, 3) || [],
-            cover: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : null,
-            publishYear: book.first_publish_year
+            subjects: book.categories?.slice(0, 3) || [],
+            cover: book.imageLinks?.thumbnail || null,
+            publishYear: book.publishedDate ? new Date(book.publishedDate).getFullYear() : null
           };
         }) || [];
       }
