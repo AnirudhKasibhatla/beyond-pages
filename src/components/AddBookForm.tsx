@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Camera, X, StopCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BrowserMultiFormatReader } from "@zxing/library";
@@ -46,6 +47,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
     reviewText: ''
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchType, setSearchType] = useState<'book' | 'author'>('book');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showManualForm, setShowManualForm] = useState(false);
@@ -87,10 +89,23 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
       } else {
         // Search by title/author using Open Library search API
         const query = encodeURIComponent(searchTerm);
-        const response = await fetch(`https://openlibrary.org/search.json?q=${query}&limit=1`);
+        let searchUrl = '';
+        let limit = 1;
+        
+        if (searchType === 'author') {
+          // Search specifically by author and return all books by that author
+          searchUrl = `https://openlibrary.org/search.json?author=${query}&limit=10`;
+          limit = 10;
+        } else {
+          // Search by book title and return only one result
+          searchUrl = `https://openlibrary.org/search.json?q=${query}&limit=1`;
+          limit = 1;
+        }
+        
+        const response = await fetch(searchUrl);
         const data = await response.json();
         
-        results = data.docs?.slice(0, 1).map(book => {
+        results = data.docs?.slice(0, limit).map(book => {
           // Extract ISBN from multiple possible fields
           let isbn = '';
           if (book.isbn && book.isbn.length > 0) {
@@ -258,7 +273,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Input
-                placeholder="Search by title, author, or ISBN..."
+                placeholder={searchType === 'author' ? "Search by author name..." : "Search by book title or ISBN..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -282,6 +297,26 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
               <Camera className="h-4 w-4" />
               {isScanning ? 'Scanning...' : 'Scan'}
             </Button>
+          </div>
+
+          {/* Search Type Checkboxes */}
+          <div className="flex gap-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="book-search" 
+                checked={searchType === 'book'} 
+                onCheckedChange={(checked) => checked && setSearchType('book')}
+              />
+              <Label htmlFor="book-search" className="text-sm">Search by Book Name (single result)</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="author-search" 
+                checked={searchType === 'author'} 
+                onCheckedChange={(checked) => checked && setSearchType('author')}
+              />
+              <Label htmlFor="author-search" className="text-sm">Search by Author Name (all books)</Label>
+            </div>
           </div>
 
           {searchResults.length > 0 && (
