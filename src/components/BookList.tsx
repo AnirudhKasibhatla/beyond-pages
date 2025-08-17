@@ -393,26 +393,30 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
             </DialogContent>
           </Dialog>
           
-          <Button 
-            variant="hero" 
-            onClick={() => setShowAddForm(true)}
-            className={`gap-2 w-full md:w-auto transition-all duration-300 ${
-              highlightButtons 
-                ? 'ring-4 ring-primary/50 shadow-glow animate-pulse' 
-                : ''
-            }`}
-          >
-            <Plus className="h-4 w-4" />
-            Add Book
-          </Button>
+          <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="hero" 
+                className={`gap-2 w-full md:w-auto transition-all duration-300 ${
+                  highlightButtons 
+                    ? 'ring-4 ring-primary/50 shadow-glow animate-pulse' 
+                    : ''
+                }`}
+              >
+                <Plus className="h-4 w-4" />
+                Add Book
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add New Book</DialogTitle>
+              </DialogHeader>
+              <AddBookForm onAddBook={addBook} onCancel={() => setShowAddForm(false)} />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
-      {showAddForm && (
-        <Card className="p-6 shadow-medium bg-gradient-card">
-          <AddBookForm onAddBook={addBook} onCancel={() => setShowAddForm(false)} />
-        </Card>
-      )}
 
       {/* Tabs - Responsive Layout */}
       <div className="w-full">

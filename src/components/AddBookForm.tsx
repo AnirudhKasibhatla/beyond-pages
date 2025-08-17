@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,8 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Search, Camera, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Search, Camera, X, StopCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { BrowserMultiFormatReader } from "@zxing/library";
 
 interface Book {
   title: string;
@@ -47,21 +49,26 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showManualForm, setShowManualForm] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const { toast } = useToast();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const codeReader = useRef<BrowserMultiFormatReader | null>(null);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+  const handleSearch = async (query?: string) => {
+    const searchTerm = query || searchQuery;
+    if (!searchTerm.trim()) return;
     
     setIsSearching(true);
     try {
       let results = [];
       
       // Check if search query is an ISBN (10 or 13 digits with possible hyphens)
-      const isISBN = /^[\d\-]{10,17}$/.test(searchQuery.replace(/\s/g, ''));
+      const isISBN = /^[\d\-]{10,17}$/.test(searchTerm.replace(/\s/g, ''));
       
       if (isISBN) {
         // Search by ISBN using Open Library
-        const isbn = searchQuery.replace(/[\s\-]/g, '');
+        const isbn = searchTerm.replace(/[\s\-]/g, '');
         const response = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
         const data = await response.json();
         
@@ -79,7 +86,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
         }
       } else {
         // Search by title/author using Open Library search API
-        const query = encodeURIComponent(searchQuery);
+        const query = encodeURIComponent(searchTerm);
         const response = await fetch(`https://openlibrary.org/search.json?q=${query}&limit=5`);
         const data = await response.json();
         
@@ -110,14 +117,81 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
     }
   };
 
-  const simulateBarcodeScan = () => {
-    const mockISBN = "9780" + Math.floor(Math.random() * 1000000000);
-    setSearchQuery(mockISBN);
-    toast({
-      title: "Barcode scanned!",
-      description: `ISBN: ${mockISBN}`,
-    });
+  const startBarcodeScanning = async () => {
+    try {
+      // Request camera permission
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'environment' // Use back camera on mobile
+        } 
+      });
+      
+      setShowScanner(true);
+      setIsScanning(true);
+      
+      // Initialize the barcode reader
+      codeReader.current = new BrowserMultiFormatReader();
+      
+      // Start scanning
+      setTimeout(async () => {
+        if (videoRef.current && codeReader.current) {
+          try {
+            const result = await codeReader.current.decodeFromVideoDevice(
+              undefined, // Use default video device
+              videoRef.current,
+              (result, error) => {
+                if (result) {
+                  const isbn = result.getText();
+                  setSearchQuery(isbn);
+                  stopBarcodeScanning();
+                  toast({
+                    title: "Barcode scanned!",
+                    description: `ISBN: ${isbn}`,
+                  });
+                  // Automatically search for the book
+                  handleSearch(isbn);
+                }
+              }
+            );
+          } catch (err) {
+            console.error('Error starting barcode scanning:', err);
+            toast({
+              title: "Scanner error",
+              description: "Failed to start camera scanner.",
+              variant: "destructive",
+            });
+            stopBarcodeScanning();
+          }
+        }
+      }, 100);
+      
+    } catch (error) {
+      console.error('Camera permission denied:', error);
+      toast({
+        title: "Camera access denied",
+        description: "Please allow camera access to scan barcodes.",
+        variant: "destructive",
+      });
+    }
   };
+
+  const stopBarcodeScanning = () => {
+    if (codeReader.current) {
+      codeReader.current.reset();
+      codeReader.current = null;
+    }
+    setShowScanner(false);
+    setIsScanning(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      // Cleanup on unmount
+      if (codeReader.current) {
+        codeReader.current.reset();
+      }
+    };
+  }, []);
 
   const selectBook = (book: any) => {
     setFormData({
@@ -167,13 +241,6 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-2xl font-bold text-foreground">Add New Book</h3>
-        <Button variant="ghost" size="sm" onClick={onCancel}>
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-
       {!showManualForm && (
         <div className="space-y-4">
           <div className="flex gap-2">
@@ -188,19 +255,20 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             </div>
             <Button 
-              onClick={handleSearch} 
+              onClick={() => handleSearch()} 
               disabled={isSearching}
               variant="default"
             >
               {isSearching ? 'Searching...' : 'Search'}
             </Button>
             <Button 
-              onClick={simulateBarcodeScan}
+              onClick={startBarcodeScanning}
               variant="outline"
               className="gap-2"
+              disabled={isScanning}
             >
               <Camera className="h-4 w-4" />
-              Scan
+              {isScanning ? 'Scanning...' : 'Scan'}
             </Button>
           </div>
 
@@ -233,6 +301,37 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
           </div>
         </div>
       )}
+      
+      {/* Barcode Scanner Dialog */}
+      <Dialog open={showScanner} onOpenChange={stopBarcodeScanning}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Scan Barcode</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="relative bg-black rounded-lg overflow-hidden">
+              <video
+                ref={videoRef}
+                className="w-full h-64 object-cover"
+                autoPlay
+                playsInline
+              />
+              <div className="absolute inset-0 border-2 border-white/50 m-8 rounded-lg"></div>
+            </div>
+            <p className="text-sm text-muted-foreground text-center">
+              Position the barcode within the frame to scan
+            </p>
+            <Button 
+              onClick={stopBarcodeScanning}
+              variant="outline"
+              className="w-full gap-2"
+            >
+              <StopCircle className="h-4 w-4" />
+              Stop Scanning
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {showManualForm && (
         <form onSubmit={handleSubmit} className="space-y-4">
