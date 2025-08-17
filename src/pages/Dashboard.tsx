@@ -6,15 +6,16 @@ import { Tournament } from "@/components/Tournament";
 import { Events } from "@/components/Events";
 import { BookGroups } from "@/components/BookGroups";
 import { Settings } from "@/components/Settings";
+import { ReadingChallenges } from "@/components/ReadingChallenges";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Book, Users, Trophy, Calendar, UserCircle, Users2 } from "lucide-react";
+import { Book, Users, Trophy, Calendar, UserCircle, Users2, Target } from "lucide-react";
 import heroImage from "@/assets/hero-bookshelf.jpg";
 import { CommunityProvider } from "@/context/CommunityContext";
 
-type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings';
+type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges';
 
 const Dashboard = () => {
   const [currentView, setCurrentView] = useState<ViewType>('books');
@@ -48,6 +49,8 @@ const Dashboard = () => {
         return <BookGroups />;
       case 'settings':
         return <Settings />;
+      case 'challenges':
+        return <ReadingChallenges />;
       default:
         return <BookList highlightButtons={highlightButtons} />;
     }
@@ -58,6 +61,7 @@ const Dashboard = () => {
     { id: 'tournament' as ViewType, label: 'Tournament', icon: Trophy },
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
+    { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
   ];
 
   if (currentView === 'books') {
