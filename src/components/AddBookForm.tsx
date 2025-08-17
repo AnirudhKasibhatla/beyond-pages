@@ -225,7 +225,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
       ...formData,
       title: book.title,
       author: book.author,
-      isbn: book.isbn,
+      isbn: book.isbn || '',
       genres: book.subjects || []
     });
     setSearchResults([]);
