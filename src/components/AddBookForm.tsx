@@ -93,7 +93,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
         results = data.docs?.slice(0, 5).map(book => ({
           title: book.title || 'Unknown Title',
           author: book.author_name?.[0] || 'Unknown Author',
-          isbn: book.isbn?.[0] || '',
+          isbn: book.isbn?.[0] || book.isbn_13?.[0] || book.isbn_10?.[0] || '',
           subjects: book.subject?.slice(0, 3) || [],
           cover: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : null,
           publishYear: book.first_publish_year
