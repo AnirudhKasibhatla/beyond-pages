@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
+import { HamburgerMenu } from "@/components/HamburgerMenu";
 
 interface NavItem {
   id: string;
@@ -39,6 +40,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems }: Navigation
                 </Button>
               );
             })}
+            <HamburgerMenu currentView={currentView} setCurrentView={setCurrentView} />
           </div>
         </Card>
       </div>
