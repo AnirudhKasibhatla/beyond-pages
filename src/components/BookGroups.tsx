@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CreateGroupDialog } from "@/components/CreateGroupDialog";
 
 interface BookGroup {
   id: string;
@@ -26,6 +27,8 @@ interface BookGroup {
 }
 
 export const BookGroups = () => {
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const createSectionRef = useRef<HTMLDivElement>(null);
   const [groups, setGroups] = useState<BookGroup[]>([
     {
       id: '1',
@@ -133,6 +136,13 @@ export const BookGroups = () => {
 
   const { toast } = useToast();
 
+  const scrollToCreateSection = () => {
+    createSectionRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'center'
+    });
+  };
+
   const toggleJoinGroup = (groupId: string) => {
     setGroups(prev => prev.map(group => 
       group.id === groupId 
@@ -200,7 +210,7 @@ export const BookGroups = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-foreground">Book Groups</h2>
-        <Button variant="hero" className="gap-2">
+        <Button variant="hero" className="gap-2" onClick={scrollToCreateSection}>
           <Plus className="h-4 w-4" />
           Create Group
         </Button>
@@ -418,7 +428,7 @@ export const BookGroups = () => {
       </div>
 
       {/* Create Group CTA */}
-      <Card className="p-8 text-center bg-gradient-accent shadow-medium">
+      <Card ref={createSectionRef} className="p-8 text-center bg-gradient-accent shadow-medium">
         <h3 className="text-xl font-semibold text-accent-foreground mb-3">
           Start Your Own Book Group
         </h3>
@@ -426,11 +436,16 @@ export const BookGroups = () => {
           Can't find the perfect group for your interests? Create your own! 
           Bring together readers who share your passion and build a thriving literary community.
         </p>
-        <Button variant="hero" size="lg" className="gap-2">
+        <Button variant="hero" size="lg" className="gap-2" onClick={() => setIsCreateDialogOpen(true)}>
           <Plus className="h-5 w-5" />
           Create New Group
         </Button>
       </Card>
+
+      <CreateGroupDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      />
     </div>
   );
 };
