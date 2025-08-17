@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, Book, UserCircle, Settings } from "lucide-react";
+import { Menu, Book, UserCircle, Settings, Target } from "lucide-react";
 
 interface HamburgerMenuProps {
   currentView: string;
@@ -19,6 +19,7 @@ export const HamburgerMenu = ({ currentView, setCurrentView }: HamburgerMenuProp
 
   const menuItems = [
     { id: 'books', label: 'My Books', icon: Book },
+    { id: 'challenges', label: 'Reading Challenges', icon: Target },
     { id: 'profile', label: 'Profile', icon: UserCircle },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];

@@ -61,7 +61,6 @@ const Dashboard = () => {
     { id: 'tournament' as ViewType, label: 'Tournament', icon: Trophy },
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
-    { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
   ];
 
   if (currentView === 'books') {
