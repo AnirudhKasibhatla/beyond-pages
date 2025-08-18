@@ -293,7 +293,12 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
               disabled={isScanning}
             >
               <Camera className="h-4 w-4" />
-              {isScanning ? 'Scanning...' : 'Scan ISBN'}
+              <span className="hidden sm:inline">
+                {isScanning ? 'Scanning...' : 'Scan ISBN'}
+              </span>
+              <span className="sm:hidden">
+                {isScanning ? 'Scanning...' : 'ISBN'}
+              </span>
             </Button>
           </div>
 
@@ -349,7 +354,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
       
       {/* Barcode Scanner Dialog */}
       <Dialog open={showScanner} onOpenChange={stopBarcodeScanning}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md sm:rounded-lg rounded-xl mx-4 sm:mx-0">
           <DialogHeader>
             <DialogTitle>Scan Barcode</DialogTitle>
           </DialogHeader>

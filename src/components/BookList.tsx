@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { AddBookForm } from "@/components/AddBookForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { HighlightConfirmation } from "@/components/HighlightConfirmation";
-// Removed useHighlights hook dependency
+import { useHighlights } from "@/hooks/useHighlights";
 import { ShareReviewDialog } from "@/components/ShareReviewDialog";
 import { GoodreadsImport } from "@/components/GoodreadsImport";
 import { detectPotentialQuote } from "@/utils/textAnalysis";
@@ -48,6 +48,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
   const { addPost } = useCommunity();
+  const { addHighlight } = useHighlights();
   
   // Edit review state
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
@@ -64,12 +65,6 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
   const openShare = (payload: { title: string; author: string; rating: number; reviewText?: string }) => {
     setShareData(payload);
     setShowShareDialog(true);
-  };
-  
-  // Local highlight function
-  const addHighlight = (highlight: any) => {
-    // Local storage implementation for highlights
-    console.log('Highlight saved locally:', highlight);
   };
 
   // Quote detection function
@@ -407,7 +402,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                 Add Book
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto sm:rounded-lg rounded-xl mx-4 sm:mx-0">
               <DialogHeader>
                 <DialogTitle>Add New Book</DialogTitle>
               </DialogHeader>
@@ -604,7 +599,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                       </p>
                     )}
 
-                    {(book.reviewText || book.rating) && (
+                    {book.status === 'finished' && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -612,7 +607,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                         className="gap-2 text-muted-foreground hover:text-foreground"
                       >
                         <Edit2 className="h-3 w-3" />
-                        Edit Review
+                        {book.reviewText || book.rating ? 'Edit Review' : 'Add Review'}
                       </Button>
                     )}
                   </div>

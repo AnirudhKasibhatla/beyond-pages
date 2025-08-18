@@ -55,7 +55,7 @@ export const AddHighlightDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md sm:rounded-lg rounded-xl mx-4 sm:mx-0">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Quote className="h-5 w-5 text-primary" />
