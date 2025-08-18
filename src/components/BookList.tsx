@@ -402,7 +402,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                 Add Book
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto sm:rounded-lg rounded-xl mx-4 sm:mx-0">
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto sm:rounded-lg rounded-xl mx-1 sm:mx-0">
               <DialogHeader>
                 <DialogTitle>Add New Book</DialogTitle>
               </DialogHeader>

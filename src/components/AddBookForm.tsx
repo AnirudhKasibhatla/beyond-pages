@@ -303,7 +303,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
           </div>
 
           {/* Search Type Checkboxes */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center space-x-2">
               <Checkbox 
                 id="book-search" 
@@ -354,7 +354,7 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
       
       {/* Barcode Scanner Dialog */}
       <Dialog open={showScanner} onOpenChange={stopBarcodeScanning}>
-        <DialogContent className="max-w-md sm:rounded-lg rounded-xl mx-4 sm:mx-0">
+        <DialogContent className="max-w-md sm:rounded-lg rounded-xl mx-1 sm:mx-0">
           <DialogHeader>
             <DialogTitle>Scan Barcode</DialogTitle>
           </DialogHeader>
