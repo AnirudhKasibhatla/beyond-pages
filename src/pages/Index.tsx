@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,16 @@ import heroImage from "@/assets/hero-books.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const [highlightedFeature, setHighlightedFeature] = useState<number | null>(null);
+
+  const handleLearnMore = () => {
+    featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      setHighlightedFeature(0);
+      setTimeout(() => setHighlightedFeature(null), 3000);
+    }, 500);
+  };
 
   const features = [
     {
@@ -78,6 +88,7 @@ const Index = () => {
               <Button 
                 variant="outline" 
                 size="xl"
+                onClick={handleLearnMore}
                 className="bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/20"
               >
                 Learn More
@@ -88,7 +99,7 @@ const Index = () => {
       </div>
 
       {/* Features Section */}
-      <div className="max-w-6xl mx-auto px-6 py-20">
+      <div ref={featuresRef} className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <Badge variant="default" className="mb-4 text-lg px-6 py-2">
             ✨ Features
@@ -106,7 +117,9 @@ const Index = () => {
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <Card key={index} className="p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group">
+              <Card key={index} className={`p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group ${
+                highlightedFeature === index ? 'ring-2 ring-primary shadow-glow animate-pulse' : ''
+              }`}>
                 <div className="inline-flex p-4 rounded-full bg-primary/10 mb-6 group-hover:bg-primary/20 transition-colors duration-300">
                   <Icon className="h-8 w-8 text-primary" />
                 </div>

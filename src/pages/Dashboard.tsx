@@ -22,7 +22,13 @@ const Dashboard = () => {
   const [userLevel, setUserLevel] = useState(1);
   const [userXP, setUserXP] = useState(0);
   const [highlightButtons, setHighlightButtons] = useState(false);
+  const [pinnedView, setPinnedView] = useState<ViewType | null>(null);
   const libraryRef = useRef<HTMLDivElement>(null);
+
+  const handleViewChange = (view: ViewType) => {
+    setCurrentView(view);
+    setPinnedView(view);
+  };
 
   const handleStartReading = () => {
     setCurrentView('books');
@@ -56,12 +62,24 @@ const Dashboard = () => {
     }
   };
 
-  const navItems = [
+  const baseNavItems = [
     { id: 'community' as ViewType, label: 'Community', icon: Users },
     { id: 'tournament' as ViewType, label: 'Tournament', icon: Trophy },
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
   ];
+
+  const hamburgerItems = [
+    { id: 'books' as ViewType, label: 'My Books', icon: Book },
+    { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
+    { id: 'profile' as ViewType, label: 'Profile', icon: UserCircle },
+    { id: 'settings' as ViewType, label: 'Settings', icon: UserCircle },
+  ];
+
+  // Create dynamic nav items: show pinned view in nav if it's from hamburger menu
+  const navItems = pinnedView && hamburgerItems.some(item => item.id === pinnedView)
+    ? [...baseNavItems, hamburgerItems.find(item => item.id === pinnedView)!]
+    : baseNavItems;
 
   if (currentView === 'books') {
     return (
@@ -134,8 +152,10 @@ const Dashboard = () => {
           {/* Navigation */}
           <Navigation 
             currentView={currentView} 
-            setCurrentView={setCurrentView} 
+            setCurrentView={handleViewChange} 
             navItems={navItems}
+            pinnedView={pinnedView}
+            hamburgerItems={hamburgerItems}
           />
 
           {/* Main Content */}
@@ -152,8 +172,10 @@ const Dashboard = () => {
       <div className="min-h-screen bg-background">
         <Navigation 
           currentView={currentView} 
-          setCurrentView={setCurrentView} 
+          setCurrentView={handleViewChange} 
           navItems={navItems}
+          pinnedView={pinnedView}
+          hamburgerItems={hamburgerItems}
         />
         <div className="max-w-6xl mx-auto px-6 py-8">
           {renderCurrentView()}

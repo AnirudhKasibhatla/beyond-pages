@@ -13,9 +13,13 @@ interface NavigationProps {
   currentView: string;
   setCurrentView: (view: any) => void;
   navItems: NavItem[];
+  pinnedView?: string | null;
+  hamburgerItems?: NavItem[];
 }
 
-export const Navigation = ({ currentView, setCurrentView, navItems }: NavigationProps) => {
+export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, hamburgerItems = [] }: NavigationProps) => {
+  // Filter hamburger items to exclude the pinned view
+  const filteredHamburgerItems = hamburgerItems.filter(item => item.id !== pinnedView);
   return (
     <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-6xl mx-auto px-6">
@@ -40,7 +44,11 @@ export const Navigation = ({ currentView, setCurrentView, navItems }: Navigation
                 </Button>
               );
             })}
-            <HamburgerMenu currentView={currentView} setCurrentView={setCurrentView} />
+            <HamburgerMenu 
+              currentView={currentView} 
+              setCurrentView={setCurrentView} 
+              menuItems={filteredHamburgerItems}
+            />
           </div>
         </Card>
       </div>

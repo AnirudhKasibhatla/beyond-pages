@@ -12,17 +12,20 @@ import { Menu, Book, UserCircle, Settings, Target } from "lucide-react";
 interface HamburgerMenuProps {
   currentView: string;
   setCurrentView: (view: any) => void;
+  menuItems?: Array<{ id: string; label: string; icon: any }>;
 }
 
-export const HamburgerMenu = ({ currentView, setCurrentView }: HamburgerMenuProps) => {
+export const HamburgerMenu = ({ currentView, setCurrentView, menuItems: customMenuItems }: HamburgerMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const menuItems = [
+  const defaultMenuItems = [
     { id: 'books', label: 'My Books', icon: Book },
     { id: 'challenges', label: 'Reading Challenges', icon: Target },
     { id: 'profile', label: 'Profile', icon: UserCircle },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
+
+  const menuItems = customMenuItems || defaultMenuItems;
 
   const handleItemClick = (itemId: string) => {
     setCurrentView(itemId);
