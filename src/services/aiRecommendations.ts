@@ -14,13 +14,20 @@ interface BookRecommendation {
   rating: number;
 }
 
+// Track rotation state for refresh functionality
+let rotationIndex = 0;
+
 export const getAIBookRecommendations = async (
   userBooks: Book[],
   preferredGenres?: string[]
 ): Promise<BookRecommendation[]> => {
   try {
+    // Increment rotation index for refresh functionality
+    rotationIndex = (rotationIndex + 1) % 3;
+    
     // Analyze user's reading patterns
     const finishedBooks = userBooks.filter(book => book.status === 'finished');
+    const allUserBooks = userBooks; // Include all books for exclusion
     const allGenres = userBooks.flatMap(book => book.genres);
     const genreFrequency = allGenres.reduce((acc, genre) => {
       acc[genre] = (acc[genre] || 0) + 1;
@@ -34,37 +41,9 @@ export const getAIBookRecommendations = async (
 
     const favoriteAuthors = finishedBooks.map(book => book.author).slice(0, 3);
     
-    // Create prompt for AI
-    const prompt = `You are a book recommendation expert. Based on a user's reading history, suggest 5 books they might enjoy.
-
-User's reading patterns:
-- Favorite genres: ${topGenres.join(', ') || 'No specific genres yet'}
-- Recently read books: ${finishedBooks.slice(-3).map(book => `"${book.title}" by ${book.author}`).join(', ') || 'No books finished yet'}
-- Favorite authors: ${favoriteAuthors.join(', ') || 'No favorite authors yet'}
-
-Please suggest 5 diverse book recommendations that match their interests. For each book, provide:
-1. Title
-2. Author  
-3. Primary genre
-4. Brief reason why they'd like it (one sentence)
-5. Estimated rating appeal (1-5 scale)
-
-Format as JSON array:
-[
-  {
-    "title": "Book Title",
-    "author": "Author Name", 
-    "genre": "Genre",
-    "reason": "Why they'd like it",
-    "rating": 4.5
-  }
-]
-
-Make sure all recommendations are real published books. If the user has no reading history, suggest popular books across various genres.`;
-
     // In a real implementation, this would call an actual AI API like OpenAI or Gemini
     // For now, we'll simulate with intelligent mock data based on user's preferences
-    const mockRecommendations = generateIntelligentMockRecommendations(topGenres, favoriteAuthors, finishedBooks);
+    const mockRecommendations = generateIntelligentMockRecommendations(topGenres, favoriteAuthors, allUserBooks);
     
     return mockRecommendations;
   } catch (error) {
@@ -76,8 +55,20 @@ Make sure all recommendations are real published books. If the user has no readi
 const generateIntelligentMockRecommendations = (
   topGenres: string[],
   favoriteAuthors: string[],
-  finishedBooks: Book[]
+  allUserBooks: Book[]
 ): BookRecommendation[] => {
+  
+  // Classics collection as requested by user
+  const classicsCollection: BookRecommendation[] = [
+    { title: "1984", author: "George Orwell", genre: "Dystopian Fiction", reason: "A timeless masterpiece exploring surveillance, truth, and individual freedom in a totalitarian society.", rating: 4.8 },
+    { title: "Animal Farm", author: "George Orwell", genre: "Political Satire", reason: "A brilliant allegorical tale about power, corruption, and revolution that remains deeply relevant.", rating: 4.6 },
+    { title: "Wuthering Heights", author: "Emily Brontë", genre: "Gothic Romance", reason: "A passionate and dark tale of obsessive love and revenge set on the Yorkshire moors.", rating: 4.3 },
+    { title: "Pride and Prejudice", author: "Jane Austen", genre: "Romance", reason: "Witty social commentary and one of literature's greatest love stories with unforgettable characters.", rating: 4.7 },
+    { title: "To Kill a Mockingbird", author: "Harper Lee", genre: "Literary Fiction", reason: "A powerful exploration of justice, morality, and growing up in the American South.", rating: 4.8 },
+    { title: "The Great Gatsby", author: "F. Scott Fitzgerald", genre: "Literary Fiction", reason: "A stunning portrayal of the American Dream and the decadence of the Jazz Age.", rating: 4.5 },
+    { title: "Jane Eyre", author: "Charlotte Brontë", genre: "Gothic Romance", reason: "A compelling story of an independent woman's journey through love, loss, and self-discovery.", rating: 4.4 },
+    { title: "Lord of the Flies", author: "William Golding", genre: "Dystopian Fiction", reason: "A gripping exploration of human nature when civilization breaks down.", rating: 4.2 },
+  ];
   const genreBasedRecommendations: Record<string, BookRecommendation[]> = {
     'Fiction': [
       { title: "The Seven Husbands of Evelyn Hugo", author: "Taylor Jenkins Reid", genre: "Contemporary Fiction", reason: "A captivating story about love, ambition, and the price of fame that will keep you reading until dawn.", rating: 4.6 },
@@ -114,25 +105,63 @@ const generateIntelligentMockRecommendations = (
     { title: "Atomic Habits", author: "James Clear", genre: "Self-Help", reason: "Practical strategies for building good habits and breaking bad ones that actually work.", rating: 4.7 },
   ];
 
+  // Get titles of books the user already has (to exclude from recommendations)
+  const userBookTitles = allUserBooks.map(book => book.title.toLowerCase());
+  
+  // Filter function to exclude books user already has
+  const filterExcludeUserBooks = (recommendations: BookRecommendation[]): BookRecommendation[] => {
+    return recommendations.filter(rec => !userBookTitles.includes(rec.title.toLowerCase()));
+  };
+
   if (topGenres.length === 0) {
-    return defaultRecommendations;
+    // If no genres, mix classics with defaults, rotating based on refresh
+    let combinedRecs = [...filterExcludeUserBooks(classicsCollection), ...filterExcludeUserBooks(defaultRecommendations)];
+    
+    // Rotate the selection based on rotationIndex
+    const startIndex = rotationIndex * 2;
+    combinedRecs = [...combinedRecs.slice(startIndex), ...combinedRecs.slice(0, startIndex)];
+    
+    return combinedRecs.slice(0, 5);
   }
 
   const recommendations: BookRecommendation[] = [];
   
-  // Get recommendations based on user's top genres
-  for (const genre of topGenres.slice(0, 3)) {
-    const genreRecs = genreBasedRecommendations[genre] || [];
-    if (genreRecs.length > 0) {
-      recommendations.push(genreRecs[Math.floor(Math.random() * genreRecs.length)]);
+  // Always include at least 1-2 classics if user hasn't read them
+  const availableClassics = filterExcludeUserBooks(classicsCollection);
+  if (availableClassics.length > 0) {
+    const classicCount = Math.min(2, availableClassics.length);
+    for (let i = 0; i < classicCount; i++) {
+      const index = (rotationIndex + i) % availableClassics.length;
+      recommendations.push(availableClassics[index]);
+    }
+  }
+  
+  // Get recommendations based on user's top genres (excluding user books)
+  for (const genre of topGenres.slice(0, 2)) {
+    const genreRecs = filterExcludeUserBooks(genreBasedRecommendations[genre] || []);
+    if (genreRecs.length > 0 && recommendations.length < 5) {
+      const rotatedIndex = (rotationIndex + recommendations.length) % genreRecs.length;
+      const selectedRec = genreRecs[rotatedIndex];
+      if (!recommendations.find(rec => rec.title === selectedRec.title)) {
+        recommendations.push(selectedRec);
+      }
     }
   }
 
-  // Fill remaining slots with diverse recommendations
-  while (recommendations.length < 5) {
-    const randomRec = defaultRecommendations[Math.floor(Math.random() * defaultRecommendations.length)];
+  // Fill remaining slots with diverse recommendations (excluding user books)
+  const availableDefaults = filterExcludeUserBooks(defaultRecommendations);
+  while (recommendations.length < 5 && availableDefaults.length > 0) {
+    const rotatedIndex = (rotationIndex + recommendations.length) % availableDefaults.length;
+    const randomRec = availableDefaults[rotatedIndex];
     if (!recommendations.find(rec => rec.title === randomRec.title)) {
       recommendations.push(randomRec);
+    } else {
+      // If we hit a duplicate, try next in rotation
+      const nextIndex = (rotatedIndex + 1) % availableDefaults.length;
+      const nextRec = availableDefaults[nextIndex];
+      if (!recommendations.find(rec => rec.title === nextRec.title)) {
+        recommendations.push(nextRec);
+      }
     }
   }
 
