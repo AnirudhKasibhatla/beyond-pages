@@ -79,7 +79,7 @@ const Index = () => {
               <Button 
                 variant="hero" 
                 size="xl"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/auth')}
                 className="hover-scale gap-3 transition-all duration-300 hover:shadow-glow"
               >
                 Start Your Journey
@@ -173,7 +173,7 @@ const Index = () => {
           <Button 
             variant="hero" 
             size="xl"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/auth')}
             className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 gap-3 shadow-glow"
           >
             Get Started Now

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
+import UserMenu from "./UserMenu";
 
 interface NavItem {
   id: string;
@@ -20,6 +21,14 @@ interface NavigationProps {
 export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, hamburgerItems = [] }: NavigationProps) => {
   // Filter hamburger items to exclude the pinned view
   const filteredHamburgerItems = hamburgerItems.filter(item => item.id !== pinnedView);
+  
+  const handleProfileClick = () => {
+    setCurrentView('profile');
+  };
+
+  const handleSettingsClick = () => {
+    setCurrentView('settings');
+  };
   return (
     <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-6xl mx-auto px-6">
@@ -48,6 +57,10 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
               currentView={currentView} 
               setCurrentView={setCurrentView} 
               menuItems={filteredHamburgerItems}
+            />
+            <UserMenu 
+              onProfileClick={handleProfileClick}
+              onSettingsClick={handleSettingsClick}
             />
           </div>
         </Card>
