@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
 import UserMenu from "./UserMenu";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 interface NavItem {
   id: string;
@@ -19,8 +21,19 @@ interface NavigationProps {
 }
 
 export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, hamburgerItems = [] }: NavigationProps) => {
+  const { user } = useAuth();
+  const { profile } = useProfile();
+  
   // Filter hamburger items to exclude the pinned view
   const filteredHamburgerItems = hamburgerItems.filter(item => item.id !== pinnedView);
+  
+  // Get the welcome message
+  const getWelcomeMessage = () => {
+    if (user && profile?.first_name) {
+      return `Hi ${profile.first_name}`;
+    }
+    return "Beyond Pages";
+  };
   
   const handleProfileClick = () => {
     setCurrentView('profile');
@@ -32,8 +45,11 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
   return (
     <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-6xl mx-auto px-6">
-        <Card className="my-4 p-2 shadow-soft">
-          <div className="flex flex-wrap justify-center gap-2">
+        <div className="flex items-center justify-between py-4">
+          <h1 className="text-2xl font-bold text-primary">{getWelcomeMessage()}</h1>
+          
+          <Card className="p-2 shadow-soft">
+            <div className="flex flex-wrap justify-center gap-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentView === item.id;
@@ -62,8 +78,9 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
               onProfileClick={handleProfileClick}
               onSettingsClick={handleSettingsClick}
             />
-          </div>
-        </Card>
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );

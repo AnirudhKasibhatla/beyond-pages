@@ -15,6 +15,8 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -80,10 +82,10 @@ const Auth = () => {
   };
 
   const signUp = async () => {
-    if (!fullName.trim()) {
+    if (!firstName.trim()) {
       toast({
-        title: "Name required",
-        description: "Please enter your full name.",
+        title: "First name required",
+        description: "Please enter your first name.",
         variant: "destructive",
       });
       return;
@@ -99,7 +101,9 @@ const Auth = () => {
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            full_name: fullName,
+            first_name: firstName,
+            last_name: lastName,
+            full_name: `${firstName} ${lastName}`.trim(),
           }
         }
       });
@@ -241,17 +245,25 @@ const Auth = () => {
               </TabsContent>
               
               <TabsContent value="signup" className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-firstname">First Name</Label>
                     <Input
-                      id="signup-name"
+                      id="signup-firstname"
                       type="text"
-                      placeholder="Enter your full name"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="pl-10"
+                      placeholder="First name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-lastname">Last Name</Label>
+                    <Input
+                      id="signup-lastname"
+                      type="text"
+                      placeholder="Last name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                     />
                   </div>
                 </div>
@@ -285,7 +297,7 @@ const Auth = () => {
                 </div>
                 <Button 
                   onClick={signUp} 
-                  disabled={loading || !email || !password || !fullName}
+                  disabled={loading || !email || !password || !firstName}
                   className="w-full gap-2"
                 >
                   {loading ? "Creating account..." : "Create Account"}

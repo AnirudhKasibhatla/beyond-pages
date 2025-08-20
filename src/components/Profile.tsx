@@ -12,6 +12,8 @@ import { Progress } from "@/components/ui/progress";
 import { User, Trophy, Star, Book, Edit, Save, X, Quote } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { HighlightsList } from "@/components/HighlightsList";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import badgeImage from "@/assets/badge-reading.png";
 
 interface UserProfile {
@@ -33,6 +35,10 @@ interface UserProfile {
 }
 
 export const Profile = () => {
+  const { user } = useAuth();
+  const { profile: dbProfile, updateProfile } = useProfile();
+  const { toast } = useToast();
+  
   const [profile, setProfile] = useState<UserProfile>({
     name: 'Guest Reader',
     bio: 'Welcome to your reading journey! Edit your profile to get started.',
@@ -53,17 +59,27 @@ export const Profile = () => {
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState(profile);
-  const { toast } = useToast();
 
-  // Load profile from localStorage on mount
+  // Update profile when database profile changes
   useEffect(() => {
-    const savedProfile = localStorage.getItem('userProfile');
-    if (savedProfile) {
-      const parsed = JSON.parse(savedProfile);
-      setProfile(parsed);
-      setEditForm(parsed);
+    if (dbProfile) {
+      const updatedProfile: UserProfile = {
+        ...profile,
+        name: dbProfile.name || dbProfile.first_name || 'Guest Reader',
+        bio: dbProfile.bio || 'Welcome to your reading journey! Edit your profile to get started.',
+      };
+      setProfile(updatedProfile);
+      setEditForm(updatedProfile);
+    } else {
+      // Load profile from localStorage for non-authenticated users
+      const savedProfile = localStorage.getItem('userProfile');
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile);
+        setProfile(parsed);
+        setEditForm(parsed);
+      }
     }
-  }, []);
+  }, [dbProfile]);
 
   // Calculate XP progress to next level
   const xpForCurrentLevel = (profile.level - 1) * 50 + 50; // 50 XP for level 1, then +50 per level
@@ -81,15 +97,40 @@ export const Profile = () => {
 
   const currentLeague = getLeague(profile.level);
 
-  const handleSave = () => {
-    // Save to localStorage for persistence without auth
-    localStorage.setItem('userProfile', JSON.stringify(editForm));
+  const handleSave = async () => {
+    if (user && dbProfile) {
+      // Save to database for authenticated users
+      const { error } = await updateProfile({
+        name: editForm.name,
+        bio: editForm.bio,
+        first_name: editForm.name.split(' ')[0] || '',
+        last_name: editForm.name.split(' ').slice(1).join(' ') || '',
+      });
+
+      if (error) {
+        toast({
+          title: "Error updating profile",
+          description: "Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Profile updated!",
+        description: "Your changes have been saved.",
+      });
+    } else {
+      // Save to localStorage for non-authenticated users
+      localStorage.setItem('userProfile', JSON.stringify(editForm));
+      toast({
+        title: "Profile updated!",
+        description: "Your changes have been saved locally.",
+      });
+    }
+    
     setProfile(editForm);
     setIsEditing(false);
-    toast({
-      title: "Profile updated!",
-      description: "Your changes have been saved locally.",
-    });
   };
 
   const handleCancel = () => {
