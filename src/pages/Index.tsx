@@ -185,7 +185,6 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-12">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h3 className="text-2xl font-bold mb-4">Beyond Pages</h3>
           <p className="opacity-80 mb-6">
             Connecting readers, one page at a time.
           </p>
