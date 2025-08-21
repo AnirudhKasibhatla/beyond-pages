@@ -97,7 +97,7 @@ const Dashboard = () => {
             <div className="relative max-w-6xl mx-auto px-6 py-24">
               <div className="text-center">
                 <h1 className="text-5xl md:text-6xl font-bold text-primary-foreground mb-6 animate-float">
-                  Reading Community
+                  `Hi ${profile.first_name}`
                 </h1>
                 <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
                   Track your reading journey, connect with fellow readers, and discover your next favorite book
