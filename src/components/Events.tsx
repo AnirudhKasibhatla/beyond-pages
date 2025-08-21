@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, Clock, Plus, Check, Star } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface BookEvent {
@@ -23,6 +24,9 @@ interface BookEvent {
 }
 
 export const Events = () => {
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [timeFilter, setTimeFilter] = useState<string>("all");
   const [events, setEvents] = useState<BookEvent[]>([
     {
       id: '1',
@@ -180,6 +184,22 @@ export const Events = () => {
     return host === 'You' || host.includes('You');
   };
 
+  const filteredEvents = events.filter(event => {
+    if (categoryFilter !== "all" && event.category !== categoryFilter) return false;
+    if (typeFilter !== "all" && event.type !== typeFilter) return false;
+    if (timeFilter === "thisWeek") {
+      const now = new Date();
+      const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      if (event.date > weekFromNow) return false;
+    }
+    if (timeFilter === "thisMonth") {
+      const now = new Date();
+      const monthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      if (event.date > monthFromNow) return false;
+    }
+    return true;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -189,6 +209,58 @@ export const Events = () => {
           Host Event
         </Button>
       </div>
+
+      {/* Filter Options */}
+      <Card className="p-4 bg-gradient-card">
+        <div className="flex items-center gap-2 mb-3">
+          <Filter className="h-4 w-4" />
+          <h3 className="font-medium">Filter Events</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label className="text-sm font-medium mb-1 block">Category</label>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="book-club">Book Club</SelectItem>
+                <SelectItem value="author-talk">Author Talk</SelectItem>
+                <SelectItem value="workshop">Workshop</SelectItem>
+                <SelectItem value="social">Social</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1 block">Type</label>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="virtual">Virtual</SelectItem>
+                <SelectItem value="in-person">In Person</SelectItem>
+                <SelectItem value="hybrid">Hybrid</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1 block">Time</label>
+            <Select value={timeFilter} onValueChange={setTimeFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Time" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="thisWeek">This Week</SelectItem>
+                <SelectItem value="thisMonth">This Month</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </Card>
 
       {/* Event Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -224,7 +296,7 @@ export const Events = () => {
       </div>
 
       {/* Featured Event */}
-      {events.filter(e => e.featured).map(event => (
+      {filteredEvents.filter(e => e.featured).map(event => (
         <Card key={event.id} className="p-6 bg-gradient-hero text-primary-foreground shadow-strong">
           <div className="flex items-start justify-between mb-4">
             <Badge variant="secondary" className="text-primary bg-primary-foreground">
@@ -285,7 +357,7 @@ export const Events = () => {
 
       {/* Events Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {events.filter(e => !e.featured).map((event) => (
+        {filteredEvents.filter(e => !e.featured).map((event) => (
           <Card key={event.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card">
             <div className="space-y-4">
               <div className="flex items-start justify-between">

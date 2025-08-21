@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Heart, MessageCircle, Share2, UserPlus, UserMinus, Send } from "lucide-react";
+import { Heart, MessageCircle, Share2, UserPlus, UserMinus, Send, Plus } from "lucide-react";
+import { CreatePostDialog } from "@/components/CreatePostDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunity, type CommunityPost, type Reply } from "@/context/CommunityContext";
 
@@ -16,6 +17,7 @@ export const Community = () => {
 
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const [showReplyForm, setShowReplyForm] = useState<{ [key: string]: boolean }>({});
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const { toast } = useToast();
 
   const toggleLike = (postId: string) => {
@@ -99,9 +101,15 @@ export const Community = () => {
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0">
         <h2 className="text-3xl font-bold text-foreground">Community</h2>
-        <Badge variant="default" className="text-sm px-4 py-2 w-fit">
-          {posts.filter(p => p.author.isFollowing).length} Following
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge variant="default" className="text-sm px-4 py-2 w-fit">
+            {posts.filter(p => p.author.isFollowing).length} Following
+          </Badge>
+          <Button onClick={() => setIsCreatePostOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Create Post
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -261,9 +269,14 @@ export const Community = () => {
           Community Engagement
         </h3>
         <p className="text-accent-foreground/80">
-          Join the conversation and earn XP! Reply to posts (+5 XP), share reading updates (+10 XP)
+          Join the conversation and earn XP! Create posts (+10 XP), reply to posts (+5 XP), post threads (+15 XP)
         </p>
       </Card>
+
+      <CreatePostDialog
+        open={isCreatePostOpen}
+        onOpenChange={setIsCreatePostOpen}
+      />
     </div>
   );
 };

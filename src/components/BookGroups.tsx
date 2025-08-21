@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CreateGroupDialog } from "@/components/CreateGroupDialog";
 
@@ -29,6 +30,9 @@ interface BookGroup {
 export const BookGroups = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const createSectionRef = useRef<HTMLDivElement>(null);
+  const [genreFilter, setGenreFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [activityFilter, setActivityFilter] = useState<string>("all");
   const [groups, setGroups] = useState<BookGroup[]>([
     {
       id: '1',
@@ -203,8 +207,15 @@ export const BookGroups = () => {
     return `Last active: ${activity}`;
   };
 
-  const cityGroups = groups.filter(g => g.type === 'local' || g.type === 'hybrid');
-  const onlineGroups = groups.filter(g => g.type === 'online' || g.type === 'hybrid');
+  const filteredGroups = groups.filter(group => {
+    if (genreFilter !== "all" && group.genre !== genreFilter) return false;
+    if (typeFilter !== "all" && group.type !== typeFilter) return false;
+    if (activityFilter !== "all" && group.activityLevel !== activityFilter) return false;
+    return true;
+  });
+
+  const cityGroups = filteredGroups.filter(g => g.type === 'local' || g.type === 'hybrid');
+  const onlineGroups = filteredGroups.filter(g => g.type === 'online' || g.type === 'hybrid');
 
   return (
     <div className="space-y-6">
@@ -215,6 +226,61 @@ export const BookGroups = () => {
           Create Group
         </Button>
       </div>
+
+      {/* Filter Options */}
+      <Card className="p-4 bg-gradient-card">
+        <div className="flex items-center gap-2 mb-3">
+          <Filter className="h-4 w-4" />
+          <h3 className="font-medium">Filter Groups</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label className="text-sm font-medium mb-1 block">Genre</label>
+            <Select value={genreFilter} onValueChange={setGenreFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Genres" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Genres</SelectItem>
+                <SelectItem value="Mystery">Mystery</SelectItem>
+                <SelectItem value="Science Fiction">Science Fiction</SelectItem>
+                <SelectItem value="Literary Fiction">Literary Fiction</SelectItem>
+                <SelectItem value="Young Adult">Young Adult</SelectItem>
+                <SelectItem value="Non-Fiction">Non-Fiction</SelectItem>
+                <SelectItem value="Romance">Romance</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1 block">Type</label>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="local">Local</SelectItem>
+                <SelectItem value="online">Online</SelectItem>
+                <SelectItem value="hybrid">Hybrid</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1 block">Activity</label>
+            <Select value={activityFilter} onValueChange={setActivityFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Activities" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Activities</SelectItem>
+                <SelectItem value="high">High Activity</SelectItem>
+                <SelectItem value="medium">Medium Activity</SelectItem>
+                <SelectItem value="low">Low Activity</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </Card>
 
       {/* My Groups Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
