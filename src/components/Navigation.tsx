@@ -32,7 +32,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
     if (user && profile?.first_name) {
       return `Hi ${profile.first_name}`;
     }
-    return "Beyond Pages";
+   // return "Beyond Pages";
   };
   
   const handleProfileClick = () => {
