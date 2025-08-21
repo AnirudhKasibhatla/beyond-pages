@@ -85,6 +85,8 @@ const Index = () => {
             src={heroImage}
             alt="Books and reading"
             className="w-full h-full object-cover opacity-20"
+            loading="eager"
+            fetchPriority="high"
           />
         </div>
         <div className="relative max-w-6xl mx-auto px-6 py-24">
