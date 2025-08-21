@@ -122,32 +122,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="max-w-6xl mx-auto px-6 -mt-12 relative z-10">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="p-6 bg-gradient-card shadow-medium hover:shadow-strong transition-all duration-300">
-                <div className="text-center">
-                  <Book className="h-8 w-8 text-primary mx-auto mb-3" />
-                  <h3 className="text-lg font-semibold text-card-foreground mb-2">Books Read</h3>
-                  <p className="text-3xl font-bold text-primary">0</p>
-                </div>
-              </Card>
-              <Card className="p-6 bg-gradient-card shadow-medium hover:shadow-strong transition-all duration-300">
-                <div className="text-center">
-                  <Trophy className="h-8 w-8 text-accent mx-auto mb-3" />
-                  <h3 className="text-lg font-semibold text-card-foreground mb-2">Current League</h3>
-                  <p className="text-3xl font-bold text-accent">Copper</p>
-                </div>
-              </Card>
-              <Card className="p-6 bg-gradient-card shadow-medium hover:shadow-strong transition-all duration-300">
-                <div className="text-center">
-                  <Users className="h-8 w-8 text-success mx-auto mb-3" />
-                  <h3 className="text-lg font-semibold text-card-foreground mb-2">Following</h3>
-                  <p className="text-3xl font-bold text-success">0</p>
-                </div>
-              </Card>
-            </div>
-          </div>
 
           {/* Navigation */}
           <Navigation 
