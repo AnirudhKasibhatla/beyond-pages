@@ -28,12 +28,12 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
   const filteredHamburgerItems = hamburgerItems.filter(item => item.id !== pinnedView);
   
   // Get the welcome message
-  const getWelcomeMessage = () => {
+ /* const getWelcomeMessage = () => {
     if (user && profile?.first_name) {
       return `Hi ${profile.first_name}`;
     }
-   // return "Beyond Pages";
-  };
+   return "Beyond Pages";
+  }; */
   
   const handleProfileClick = () => {
     setCurrentView('profile');
