@@ -130,7 +130,6 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
         bookTitle: payload.title,
         bookAuthor: payload.author,
         rating: payload.rating,
-        authorName: 'You',
       });
     }
   };

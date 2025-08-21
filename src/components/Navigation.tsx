@@ -48,8 +48,9 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
         <div className="flex items-center justify-between py-4">
           {/* <h1 className="text-2xl font-bold text-primary">{getWelcomeMessage()}</h1> */}
           
-          <Card className="p-2 shadow-soft">
-            <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex justify-center">
+            <Card className="p-2 shadow-soft">
+              <div className="flex flex-wrap justify-center gap-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentView === item.id;
@@ -78,8 +79,9 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
               onProfileClick={handleProfileClick}
               onSettingsClick={handleSettingsClick}
             />
-            </div>
-          </Card>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

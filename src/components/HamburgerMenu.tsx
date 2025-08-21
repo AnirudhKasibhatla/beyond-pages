@@ -41,10 +41,9 @@ export const HamburgerMenu = ({ currentView, setCurrentView, menuItems: customMe
           className="flex items-center gap-2 hover:shadow-soft"
         >
           <Menu className="h-4 w-4" />
-          <span className="hidden sm:inline">Menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="start" className="w-48">
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;

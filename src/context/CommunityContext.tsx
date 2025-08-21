@@ -26,20 +26,18 @@ export interface CommunityPost {
   likes: number;
   isLiked: boolean;
   replies: Reply[];
+  isRepost?: boolean;
+  originalAuthor?: {
+    name: string;
+    avatar?: string;
+    level: number;
+  };
 }
 
 interface CommunityContextValue {
   posts: CommunityPost[];
   setPosts: React.Dispatch<React.SetStateAction<CommunityPost[]>>;
-  addPost: (payload: {
-    content: string;
-    bookTitle?: string;
-    bookAuthor?: string;
-    rating?: number;
-    authorName?: string;
-    authorLevel?: number;
-    authorAvatar?: string;
-  }) => void;
+  addPost: (post: Partial<CommunityPost> & { content: string }) => void;
 }
 
 const CommunityContext = createContext<CommunityContextValue | undefined>(undefined);
@@ -110,23 +108,19 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [posts]);
 
-  const addPost: CommunityContextValue["addPost"] = ({ content, bookTitle, bookAuthor, rating, authorName, authorLevel, authorAvatar }) => {
+  const addPost: CommunityContextValue["addPost"] = (postData) => {
     const newPost: CommunityPost = {
       id: Date.now().toString(),
       author: {
-        name: authorName || 'You',
-        avatar: authorAvatar,
-        level: authorLevel ?? 1,
+        name: 'You',
+        level: 1,
         isFollowing: false,
       },
-      content,
-      bookTitle,
-      bookAuthor,
-      rating,
       timestamp: new Date(),
       likes: 0,
       isLiked: false,
       replies: [],
+      ...postData,
     };
     setPosts(prev => [newPost, ...prev]);
   };

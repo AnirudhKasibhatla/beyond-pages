@@ -2,23 +2,37 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
-import { Heart, MessageCircle, Share2, UserPlus, UserMinus, Send, Plus } from "lucide-react";
-import { CreatePostDialog } from "@/components/CreatePostDialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { useCommunity, type CommunityPost, type Reply } from "@/context/CommunityContext";
+import { useCommunity } from "@/context/CommunityContext";
+import { 
+  Heart, 
+  MessageCircle, 
+  Share2, 
+  UserPlus, 
+  CheckCircle, 
+  PlusCircle, 
+  Star, 
+  Clock,
+  Book,
+  Repeat2,
+  Home
+} from "lucide-react";
+import { CreatePostDialog } from "./CreatePostDialog";
+import { useNavigate } from "react-router-dom";
 
-// Types imported from context
+import type { CommunityPost } from "@/context/CommunityContext";
 
 export const Community = () => {
-  const { posts, setPosts } = useCommunity();
-
+  const { posts, setPosts, addPost } = useCommunity();
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const [showReplyForm, setShowReplyForm] = useState<{ [key: string]: boolean }>({});
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const [quickPostContent, setQuickPostContent] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const toggleLike = (postId: string) => {
     setPosts(prev => prev.map(post => 
@@ -55,7 +69,7 @@ export const Community = () => {
     const replyContent = replyInputs[postId];
     if (!replyContent?.trim()) return;
 
-    const newReply: Reply = {
+    const newReply = {
       id: `r${Date.now()}`,
       author: { name: 'You' },
       content: replyContent,
@@ -73,15 +87,52 @@ export const Community = () => {
     
     toast({
       title: "Reply added!",
-      description: "Your reply has been posted. You earned 5 XP!",
+      description: "Your reply has been posted.",
     });
   };
 
   const sharePost = (post: CommunityPost) => {
     toast({
-      title: "Shared!",
-      description: `Shared ${post.author.name}'s post about "${post.bookTitle}"`,
+      title: "Post shared!",
+      description: "The post has been shared to your network.",
     });
+  };
+
+  const repostPost = (post: CommunityPost) => {
+    const repost = {
+      ...post,
+      id: Math.random().toString(36).substr(2, 9),
+      isRepost: true,
+      originalAuthor: post.author,
+      author: {
+        name: "Current User",
+        avatar: "",
+        level: 1,
+        isFollowing: false
+      },
+      timestamp: new Date(),
+      likes: 0,
+      isLiked: false,
+      replies: []
+    };
+    addPost(repost);
+    toast({
+      title: "Post reposted!",
+      description: "You've successfully reposted this content.",
+    });
+  };
+
+  const handleQuickPost = () => {
+    if (quickPostContent.trim()) {
+      addPost({
+        content: quickPostContent,
+      });
+      setQuickPostContent("");
+      toast({
+        title: "Post created!",
+        description: "Your reading thoughts have been shared with the community.",
+      });
+    }
   };
 
   const formatTimeAgo = (date: Date) => {
@@ -99,177 +150,222 @@ export const Community = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0">
-        <h2 className="text-3xl font-bold text-foreground">Community</h2>
-        <div className="flex items-center gap-3">
-          <Badge variant="default" className="text-sm px-4 py-2 w-fit">
-            {posts.filter(p => p.author.isFollowing).length} Following
-          </Badge>
-          <Button onClick={() => setIsCreatePostOpen(true)} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Create Post
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="gap-2"
+          >
+            <Home className="h-4 w-4" />
+            Home
           </Button>
+          <h1 className="text-3xl font-bold text-foreground">Community</h1>
         </div>
       </div>
+
+      {/* Quick Post Textarea */}
+      <Card className="p-4 mb-6">
+        <div className="space-y-3">
+          <Textarea
+            placeholder="Reading thoughts?"
+            value={quickPostContent}
+            onChange={(e) => setQuickPostContent(e.target.value)}
+            className="min-h-[80px] resize-none"
+          />
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-muted-foreground">
+              {quickPostContent.length}/280
+            </span>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsCreatePostOpen(true)}
+                className="gap-2"
+              >
+                <PlusCircle className="h-4 w-4" />
+                Add Book
+              </Button>
+              <Button
+                onClick={handleQuickPost}
+                disabled={!quickPostContent.trim() || quickPostContent.length > 280}
+                size="sm"
+              >
+                Post
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       <div className="space-y-6">
         {posts.map((post) => (
           <Card key={post.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card">
-            <div className="space-y-4">
-              {/* Post Header */}
-              <div className="flex flex-col space-y-3 md:flex-row md:items-start md:justify-between md:space-y-0">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <Avatar className="h-10 w-10 flex-shrink-0">
-                    <AvatarImage src={post.author.avatar} />
-                    <AvatarFallback className="bg-primary text-primary-foreground">
-                      {getAuthorInitials(post.author.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-col space-y-1 md:flex-row md:items-center md:gap-2 md:space-y-0">
-                      <h4 className="font-semibold text-card-foreground truncate">{post.author.name}</h4>
-                      <Badge variant="outline" className="text-xs w-fit">
-                        Level {post.author.level}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {formatTimeAgo(post.timestamp)}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant={post.author.isFollowing ? "outline" : "default"}
-                  size="sm"
-                  onClick={() => toggleFollow(post.id)}
-                  className="gap-2 w-full md:w-auto flex-shrink-0"
-                >
-                  {post.author.isFollowing ? (
-                    <>
-                      <UserMinus className="h-4 w-4" />
-                      <span className="hidden sm:inline">Unfollow</span>
-                      <span className="sm:hidden">Unfollow</span>
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="h-4 w-4" />
-                      <span className="hidden sm:inline">Follow</span>
-                      <span className="sm:hidden">Follow</span>
-                    </>
-                  )}
-                </Button>
+            {post.isRepost && (
+              <div className="flex items-center gap-2 mb-3 text-sm text-muted-foreground">
+                <Repeat2 className="h-4 w-4" />
+                <span>Reposted from {post.originalAuthor?.name}</span>
               </div>
+            )}
+            
+            <div className="flex items-center gap-3 mb-4">
+              <Avatar className="h-10 w-10">
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {getAuthorInitials(post.author.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-card-foreground">{post.author.name}</span>
+                  <Badge variant="secondary" className="text-xs">
+                    Level {post.author.level}
+                  </Badge>
+                  {post.author.isFollowing && (
+                    <CheckCircle className="h-4 w-4 text-success" />
+                  )}
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {formatTimeAgo(post.timestamp)}
+                </span>
+              </div>
+              <Button
+                variant={post.author.isFollowing ? "outline" : "default"}
+                size="sm"
+                onClick={() => toggleFollow(post.id)}
+                className="gap-2"
+              >
+                <UserPlus className="h-4 w-4" />
+                {post.author.isFollowing ? "Following" : "Follow"}
+              </Button>
+            </div>
 
-              {/* Book Info */}
-              {post.bookTitle && (
-                <Card className="p-4 bg-secondary/50 border-l-4 border-l-primary">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="default" className="text-xs">📚 Reading</Badge>
-                    <span className="font-medium text-card-foreground">{post.bookTitle}</span>
-                    <span className="text-muted-foreground">by {post.bookAuthor}</span>
-                  </div>
-                </Card>
-              )}
+            {/* Book info */}
+            {post.bookTitle && (
+              <Card className="p-3 mb-4 bg-secondary/30 border-l-4 border-l-primary">
+                <div className="flex items-center gap-2">
+                  <Book className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">{post.bookTitle}</span>
+                  {post.bookAuthor && (
+                    <span className="text-sm text-muted-foreground">by {post.bookAuthor}</span>
+                  )}
+                  {post.rating && (
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star 
+                          key={i} 
+                          className={`h-3 w-3 ${i < post.rating! ? 'fill-accent text-accent' : 'text-muted-foreground'}`} 
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
 
-              {/* Post Content */}
-              <p className="text-card-foreground leading-relaxed">{post.content}</p>
+            <p className="text-card-foreground mb-4 leading-relaxed">{post.content}</p>
 
-              {/* Post Actions */}
-              <div className="flex flex-col space-y-2 md:flex-row md:items-center md:gap-6 md:space-y-0 pt-2">
-                <div className="flex items-center justify-center gap-4 md:gap-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleLike(post.id)}
-                    className={`gap-2 flex-1 md:flex-none ${post.isLiked ? 'text-red-500' : ''}`}
+                    className={`gap-2 ${post.isLiked ? 'text-destructive' : ''}`}
                   >
                     <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
-                    <span className="hidden xs:inline">{post.likes}</span>
-                    <span className="xs:hidden">{post.likes}</span>
+                    {post.likes}
                   </Button>
-
+                  
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowReplyForm(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
-                    className="gap-2 flex-1 md:flex-none"
+                    className="gap-2"
                   >
                     <MessageCircle className="h-4 w-4" />
-                    <span className="hidden xs:inline">{post.replies.length} Replies</span>
-                    <span className="xs:hidden">{post.replies.length}</span>
+                    {post.replies?.length || 0}
                   </Button>
 
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => repostPost(post)}
+                    className="gap-2"
+                  >
+                    <Repeat2 className="h-4 w-4" />
+                    Repost
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => sharePost(post)}
-                    className="gap-2 flex-1 md:flex-none"
+                    className="gap-2"
                   >
                     <Share2 className="h-4 w-4" />
-                    <span className="hidden xs:inline">Share</span>
-                    <span className="xs:hidden">Share</span>
+                    Share
                   </Button>
                 </div>
               </div>
 
               {/* Replies */}
-              {post.replies.length > 0 && (
-                <div className="space-y-3 ml-6 border-l-2 border-border pl-4">
+              {post.replies && post.replies.length > 0 && (
+                <div className="mt-4 space-y-3 border-l-2 border-border pl-4">
                   {post.replies.map((reply) => (
-                    <div key={reply.id} className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className="bg-secondary text-xs">
-                            {getAuthorInitials(reply.author.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium text-sm">{reply.author.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {formatTimeAgo(reply.timestamp)}
-                        </span>
+                    <div key={reply.id} className="flex gap-3">
+                      <Avatar className="h-6 w-6">
+                        <AvatarFallback className="bg-secondary text-xs">
+                          {getAuthorInitials(reply.author.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm">{reply.author.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatTimeAgo(reply.timestamp)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-card-foreground">{reply.content}</p>
                       </div>
-                      <p className="text-sm text-card-foreground ml-8">{reply.content}</p>
                     </div>
                   ))}
                 </div>
               )}
 
-              {/* Reply Form */}
+              {/* Reply form */}
               {showReplyForm[post.id] && (
-                <div className="space-y-3 ml-6">
-                  <Separator />
+                <div className="mt-4 space-y-3">
                   <div className="flex gap-2">
-                    <Textarea
+                    <Input
                       placeholder="Write a reply..."
                       value={replyInputs[post.id] || ''}
                       onChange={(e) => setReplyInputs(prev => ({ ...prev, [post.id]: e.target.value }))}
                       className="flex-1"
-                      rows={2}
                     />
                     <Button
-                      variant="default"
-                      size="sm"
                       onClick={() => addReply(post.id)}
                       disabled={!replyInputs[post.id]?.trim()}
-                      className="gap-2 self-end"
+                      size="sm"
                     >
-                      <Send className="h-4 w-4" />
                       Reply
                     </Button>
                   </div>
                 </div>
               )}
-            </div>
           </Card>
         ))}
       </div>
 
-      {/* Community Stats */}
+      {/* Community engagement card */}
       <Card className="p-6 bg-gradient-accent text-center">
+        <Star className="h-8 w-8 mx-auto mb-4 text-accent-foreground" />
         <h3 className="text-lg font-semibold text-accent-foreground mb-2">
           Community Engagement
         </h3>
         <p className="text-accent-foreground/80">
-          Join the conversation and earn XP! Create posts (+10 XP), reply to posts (+5 XP), post threads (+15 XP)
+          Join the conversation! Share your reading thoughts, discover new books, and connect with fellow readers.
         </p>
       </Card>
 

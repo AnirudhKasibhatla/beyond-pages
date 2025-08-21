@@ -11,7 +11,7 @@ import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Book, Users, Trophy, Calendar, UserCircle, Users2, Target } from "lucide-react";
+import { Book, Users, Trophy, Calendar, UserCircle, Users2, Target, Settings as SettingsIcon } from "lucide-react";
 import heroImage from "@/assets/hero-bookshelf.jpg";
 import { CommunityProvider } from "@/context/CommunityContext";
 
@@ -73,7 +73,7 @@ const Dashboard = () => {
     { id: 'books' as ViewType, label: 'My Books', icon: Book },
     { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
     { id: 'profile' as ViewType, label: 'Profile', icon: UserCircle },
-    { id: 'settings' as ViewType, label: 'Settings', icon: UserCircle },
+    { id: 'settings' as ViewType, label: 'Settings', icon: SettingsIcon },
   ];
 
   // Create dynamic nav items: show pinned view in nav if it's from hamburger menu

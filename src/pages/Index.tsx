@@ -3,13 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award } from "lucide-react";
+import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User } from "lucide-react";
 import heroImage from "@/assets/hero-books.jpg";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 const Index = () => {
   const navigate = useNavigate();
   const featuresRef = useRef<HTMLDivElement>(null);
   const [highlightedFeature, setHighlightedFeature] = useState<number | null>(null);
+  const { user } = useAuth();
+  const { profile } = useProfile();
 
   const handleLearnMore = () => {
     featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -54,6 +58,26 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header with Login Status */}
+      {user && (
+        <div className="bg-primary/5 border-b border-border">
+          <div className="max-w-6xl mx-auto px-6 py-3">
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/dashboard')}
+                className="gap-2"
+              >
+                <User className="h-4 w-4" />
+                {profile?.first_name ? `Welcome back, ${profile.first_name}` : 'Welcome back'}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-hero">
         <div className="absolute inset-0">
