@@ -28,12 +28,12 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
   const filteredHamburgerItems = hamburgerItems.filter(item => item.id !== pinnedView);
   
   // Get the welcome message
-  const getWelcomeMessage = () => {
+ /* const getWelcomeMessage = () => {
     if (user && profile?.first_name) {
       return `Hi ${profile.first_name}`;
     }
     return "Reading Community";
-  };
+  }; */
   
   const handleProfileClick = () => {
     setCurrentView('profile');
@@ -46,7 +46,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
     <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between py-4">
-          <h1 className="text-2xl font-bold text-primary">{getWelcomeMessage()}</h1>
+        <!--  <h1 className="text-2xl font-bold text-primary">{getWelcomeMessage()}</h1> -->
           
           <Card className="p-2 shadow-soft">
             <div className="flex flex-wrap justify-center gap-2">
