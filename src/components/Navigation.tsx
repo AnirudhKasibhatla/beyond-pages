@@ -79,16 +79,18 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
             </div>
           </Card>
           
-          {/* Home button positioned at top right */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.location.href = '/'}
-            className="absolute right-0 gap-2"
-          >
-            <Home className="h-4 w-4" />
-            <span className="hidden sm:inline">Home</span>
-          </Button>
+          {/* Home button - only show when not on default dashboard view */}
+          {currentView !== 'books' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = '/'}
+              className="absolute right-0 gap-2"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Home</span>
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -31,6 +31,8 @@ export const Community = () => {
   const [showReplyForm, setShowReplyForm] = useState<{ [key: string]: boolean }>({});
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [quickPostContent, setQuickPostContent] = useState("");
+  const [showThreadSection, setShowThreadSection] = useState(false);
+  const [threadContent, setThreadContent] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -124,10 +126,19 @@ export const Community = () => {
 
   const handleQuickPost = () => {
     if (quickPostContent.trim()) {
-      addPost({
+      const postData: any = {
         content: quickPostContent,
-      });
+      };
+      
+      // Add thread content if available
+      if (showThreadSection && threadContent.trim()) {
+        postData.threadContent = threadContent;
+      }
+      
+      addPost(postData);
       setQuickPostContent("");
+      setThreadContent("");
+      setShowThreadSection(false);
       toast({
         title: "Post created!",
         description: "Your reading thoughts have been shared with the community.",
@@ -171,7 +182,7 @@ export const Community = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsCreatePostOpen(true)}
+                onClick={() => setShowThreadSection(!showThreadSection)}
                 className="gap-2"
               >
                 <PlusCircle className="h-4 w-4" />
@@ -186,6 +197,34 @@ export const Community = () => {
               </Button>
             </div>
           </div>
+          
+          {/* Thread Section */}
+          {showThreadSection && (
+            <div className="space-y-3 pt-3 border-t border-border">
+              <Textarea
+                placeholder="Continue your thread..."
+                value={threadContent}
+                onChange={(e) => setThreadContent(e.target.value)}
+                className="min-h-[60px] resize-none"
+              />
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">
+                  {threadContent.length}/280
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowThreadSection(false);
+                    setThreadContent("");
+                  }}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
 
