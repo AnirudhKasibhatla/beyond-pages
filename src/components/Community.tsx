@@ -150,19 +150,8 @@ export const Community = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/')}
-            className="gap-2"
-          >
-            <Home className="h-4 w-4" />
-            Home
-          </Button>
-          <h1 className="text-3xl font-bold text-foreground">Community</h1>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-foreground">Community</h1>
       </div>
 
       {/* Quick Post Textarea */}
@@ -186,7 +175,7 @@ export const Community = () => {
                 className="gap-2"
               >
                 <PlusCircle className="h-4 w-4" />
-                Add Book
+                Thread
               </Button>
               <Button
                 onClick={handleQuickPost}
@@ -295,7 +284,6 @@ export const Community = () => {
                     className="gap-2"
                   >
                     <Repeat2 className="h-4 w-4" />
-                    Repost
                   </Button>
                   
                   <Button
