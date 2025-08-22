@@ -210,7 +210,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-12">
-        <div className="max-w-6xl mx-auto px-6 text-center">
+        <div className="max-w-6xl mx-auto px-6 text-center font-bold">
           <p className="opacity-80 mb-6">
             Connecting readers, one page at a time.
           </p>
