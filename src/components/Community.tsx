@@ -179,15 +179,17 @@ export const Community = () => {
               {quickPostContent.length}/280
             </span>
             <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowThreadSection(!showThreadSection)}
-                className="gap-2"
-              >
-                <PlusCircle className="h-4 w-4" />
-                Thread
-              </Button>
+              {quickPostContent.length >= 280 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowThreadSection(!showThreadSection)}
+                  className="gap-2"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  Thread
+                </Button>
+              )}
               <Button
                 onClick={handleQuickPost}
                 disabled={!quickPostContent.trim() || quickPostContent.length > 280}

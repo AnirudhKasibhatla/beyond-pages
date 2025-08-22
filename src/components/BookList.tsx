@@ -9,6 +9,7 @@ import { HighlightConfirmation } from "@/components/HighlightConfirmation";
 import { useHighlights } from "@/hooks/useHighlights";
 import { ShareReviewDialog } from "@/components/ShareReviewDialog";
 import { GoodreadsImport } from "@/components/GoodreadsImport";
+import { GenreSelector } from "@/components/GenreSelector";
 import { detectPotentialQuote } from "@/utils/textAnalysis";
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw, Edit2, Save, X } from "lucide-react";
@@ -311,6 +312,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
               </DialogHeader>
               
               <div className="space-y-4">
+                <GenreSelector onGenreSelect={loadRecommendations} />
                 <div className="flex items-center justify-between">
                   <p className="text-muted-foreground">
                     Based on your reading history and preferences
