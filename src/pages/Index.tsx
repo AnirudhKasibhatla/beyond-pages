@@ -172,7 +172,7 @@ const Index = () => {
               return (
                 <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
                   <Card className={`p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group h-full ${
-                    highlightedFeature === index ? 'ring-2 ring-primary shadow-glow animate-pulse' : ''
+                  //  highlightedFeature === index ? 'ring-2 ring-primary shadow-glow animate-pulse' : ''
                   } ${isCommunityFeature ? 'ring-2 ring-accent shadow-glow bg-accent/5' : ''}`}>
                     <div className={`inline-flex p-4 rounded-full mb-6 group-hover:bg-primary/20 transition-colors duration-300 ${
                       isCommunityFeature ? 'bg-accent/20' : 'bg-primary/10'
