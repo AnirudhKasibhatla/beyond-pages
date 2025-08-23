@@ -8,16 +8,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, User, Settings } from "lucide-react";
+import { LogOut, User, Settings, Target } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
 interface UserMenuProps {
   onProfileClick?: () => void;
   onSettingsClick?: () => void;
+  onChallengesClick?: () => void;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick }) => {
+const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, onChallengesClick }) => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
 
@@ -67,6 +68,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick }) 
         <DropdownMenuItem onClick={onProfileClick}>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onChallengesClick}>
+          <Target className="mr-2 h-4 w-4" />
+          <span>Reading Challenges</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onSettingsClick}>
           <Settings className="mr-2 h-4 w-4" />

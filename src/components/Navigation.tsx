@@ -42,6 +42,10 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
   const handleSettingsClick = () => {
     setCurrentView('settings');
   };
+
+  const handleChallengesClick = () => {
+    setCurrentView('challenges');
+  };
   return (
     <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-6xl mx-auto px-6">
@@ -75,6 +79,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
               <UserMenu 
                 onProfileClick={handleProfileClick}
                 onSettingsClick={handleSettingsClick}
+                onChallengesClick={handleChallengesClick}
               />
             </div>
           </Card>

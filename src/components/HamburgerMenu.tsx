@@ -20,9 +20,6 @@ export const HamburgerMenu = ({ currentView, setCurrentView, menuItems: customMe
 
   const defaultMenuItems = [
     { id: 'books', label: 'My Books', icon: Book },
-    { id: 'challenges', label: 'Reading Challenges', icon: Target },
-    { id: 'profile', label: 'Profile', icon: UserCircle },
-    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   const menuItems = customMenuItems || defaultMenuItems;

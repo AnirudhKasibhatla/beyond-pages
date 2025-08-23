@@ -3,7 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User } from "lucide-react";
+import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import heroImage from "@/assets/hero-books.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -58,26 +64,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header with Login Status */}
-      {user && (
-        <div className="bg-primary/5 border-b border-border">
-          <div className="max-w-6xl mx-auto px-6 py-3">
-            <div className="flex justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/dashboard')}
-                className="gap-2"
-              >
-                <User className="h-4 w-4" />
-                {profile?.first_name ? `Welcome back, ${profile.first_name}` : 'Welcome back'}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-      
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-hero">
         <div className="absolute inset-0">
@@ -91,9 +77,35 @@ const Index = () => {
         </div>
         <div className="relative max-w-6xl mx-auto px-6 py-24">
           <div className="text-center">
-            <Badge variant="secondary" className="mb-6 text-lg px-6 py-2 bg-primary-foreground/20 text-primary-foreground">
-              📚 Welcome to Beyond Pages
-            </Badge>
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <Badge variant="secondary" className="text-lg px-6 py-2 bg-primary-foreground/20 text-primary-foreground">
+                📚 Welcome to Beyond Pages
+              </Badge>
+              {user && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/20 gap-2"
+                    >
+                      <User className="h-4 w-4" />
+                      {profile?.first_name ? `Hi, ${profile.first_name}` : 'Hi there'}
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 bg-card/95 backdrop-blur-sm border-border">
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dashboard')}
+                      className="cursor-pointer gap-2"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                      Go to Dashboard
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
             <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground mb-6">
               Beyond Pages
             </h1>
@@ -142,12 +154,15 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => {
             const Icon = feature.icon;
+            const isCommunityFeature = feature.title === "Join the Community";
             return (
               <Card key={index} className={`p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group ${
                 highlightedFeature === index ? 'ring-2 ring-primary shadow-glow animate-pulse' : ''
-              }`}>
-                <div className="inline-flex p-4 rounded-full bg-primary/10 mb-6 group-hover:bg-primary/20 transition-colors duration-300">
-                  <Icon className="h-8 w-8 text-primary" />
+              } ${isCommunityFeature ? 'ring-2 ring-accent shadow-glow bg-accent/5' : ''}`}>
+                <div className={`inline-flex p-4 rounded-full mb-6 group-hover:bg-primary/20 transition-colors duration-300 ${
+                  isCommunityFeature ? 'bg-accent/20' : 'bg-primary/10'
+                }`}>
+                  <Icon className={`h-8 w-8 ${isCommunityFeature ? 'text-accent' : 'text-primary'}`} />
                 </div>
                 <h3 className="text-xl font-semibold text-card-foreground mb-4">
                   {feature.title}
