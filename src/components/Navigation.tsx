@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LucideIcon, Home } from "lucide-react";
-import { HamburgerMenu } from "@/components/HamburgerMenu";
 import UserMenu from "./UserMenu";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useGuestAuth } from "@/hooks/useGuestAuth";
 
 interface NavItem {
   id: string;
@@ -16,24 +16,12 @@ interface NavigationProps {
   currentView: string;
   setCurrentView: (view: any) => void;
   navItems: NavItem[];
-  pinnedView?: string | null;
-  hamburgerItems?: NavItem[];
 }
 
-export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, hamburgerItems = [] }: NavigationProps) => {
+export const Navigation = ({ currentView, setCurrentView, navItems }: NavigationProps) => {
   const { user } = useAuth();
   const { profile } = useProfile();
-  
-  // Filter hamburger items to exclude the pinned view
-  const filteredHamburgerItems = hamburgerItems.filter(item => item.id !== pinnedView);
-  
-  // Get the welcome message
- /* const getWelcomeMessage = () => {
-    if (user && profile?.first_name) {
-      return `Hi ${profile.first_name}`;
-    }
-    return "Reading Community";
-  }; */
+  const { isGuest } = useGuestAuth();
   
   const handleProfileClick = () => {
     setCurrentView('profile');
@@ -55,6 +43,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = currentView === item.id;
+                const isChallenges = item.id === 'challenges';
                 
                 return (
                   <Button
@@ -64,18 +53,13 @@ export const Navigation = ({ currentView, setCurrentView, navItems, pinnedView, 
                     onClick={() => setCurrentView(item.id)}
                     className={`flex items-center gap-2 ${
                       isActive ? "shadow-medium" : "hover:shadow-soft"
-                    }`}
+                    } ${isChallenges ? "hidden lg:flex" : ""}`}
                   >
                     <Icon className="h-4 w-4" />
                     <span className="hidden sm:inline">{item.label}</span>
                   </Button>
                 );
               })}
-              <HamburgerMenu 
-                currentView={currentView} 
-                setCurrentView={setCurrentView} 
-                menuItems={filteredHamburgerItems}
-              />
               <UserMenu 
                 onProfileClick={handleProfileClick}
                 onSettingsClick={handleSettingsClick}

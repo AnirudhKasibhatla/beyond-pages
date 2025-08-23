@@ -14,6 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Book, Users, Trophy, Calendar, UserCircle, Users2, Target, Settings as SettingsIcon } from "lucide-react";
 import heroImage from "@/assets/hero-bookshelf.jpg";
 import { CommunityProvider } from "@/context/CommunityContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { useGuestAuth } from "@/hooks/useGuestAuth";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges';
 
@@ -24,6 +27,9 @@ const Dashboard = () => {
   const [highlightButtons, setHighlightButtons] = useState(false);
   const [pinnedView, setPinnedView] = useState<ViewType | null>(null);
   const libraryRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const { profile } = useProfile();
+  const { isGuest } = useGuestAuth();
 
   const handleViewChange = (view: ViewType) => {
     setCurrentView(view);
@@ -37,6 +43,16 @@ const Dashboard = () => {
       setHighlightButtons(true);
       setTimeout(() => setHighlightButtons(false), 3000);
     }, 100);
+  };
+
+  const getWelcomeMessage = () => {
+    if (isGuest) {
+      return "Welcome Reader";
+    }
+    if (user && profile?.first_name) {
+      return `Welcome ${profile.first_name}`;
+    }
+    return "Welcome Reader";
   };
 
   const renderCurrentView = () => {
@@ -68,18 +84,16 @@ const Dashboard = () => {
     { id: 'tournament' as ViewType, label: 'Tournament', icon: Trophy },
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
+    { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
   ];
 
   const hamburgerItems = [
-    { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
     { id: 'profile' as ViewType, label: 'Profile', icon: UserCircle },
     { id: 'settings' as ViewType, label: 'Settings', icon: SettingsIcon },
   ];
 
-  // Create dynamic nav items: show pinned view in nav if it's from hamburger menu
-  const navItems = pinnedView && hamburgerItems.some(item => item.id === pinnedView)
-    ? [...baseNavItems, hamburgerItems.find(item => item.id === pinnedView)!]
-    : baseNavItems;
+  // Use baseNavItems directly without hamburger menu logic
+  const navItems = baseNavItems;
 
   if (currentView === 'books') {
     return (
@@ -97,7 +111,7 @@ const Dashboard = () => {
             <div className="relative max-w-6xl mx-auto px-6 py-24">
               <div className="text-center">
                 <h1 className="text-5xl md:text-6xl font-bold text-primary-foreground mb-6">
-                  Welcome Reader
+                  {getWelcomeMessage()}
                 </h1>
                 <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
                   Track your reading journey, connect with fellow readers, and discover your next favorite book
@@ -128,8 +142,6 @@ const Dashboard = () => {
             currentView={currentView} 
             setCurrentView={handleViewChange} 
             navItems={navItems}
-            pinnedView={pinnedView}
-            hamburgerItems={hamburgerItems}
           />
 
           {/* Main Content */}
@@ -148,8 +160,6 @@ const Dashboard = () => {
           currentView={currentView} 
           setCurrentView={handleViewChange} 
           navItems={navItems}
-          pinnedView={pinnedView}
-          hamburgerItems={hamburgerItems}
         />
         <div className="max-w-6xl mx-auto px-6 py-8 justify-center">
           {renderCurrentView()}
