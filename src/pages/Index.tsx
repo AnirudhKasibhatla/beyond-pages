@@ -10,6 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import heroImage from "@/assets/hero-books.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -94,7 +101,7 @@ const Index = () => {
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-card/95 backdrop-blur-sm border-border">
+                  <DropdownMenuContent align="end" className="w-56 bg-muted/95 backdrop-blur-sm border-border">
                     <DropdownMenuItem 
                       onClick={() => navigate('/dashboard')}
                       className="cursor-pointer gap-2"
@@ -151,29 +158,41 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
-            const isCommunityFeature = feature.title === "Join the Community";
-            return (
-              <Card key={index} className={`p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group ${
-                highlightedFeature === index ? 'ring-2 ring-primary shadow-glow animate-pulse' : ''
-              } ${isCommunityFeature ? 'ring-2 ring-accent shadow-glow bg-accent/5' : ''}`}>
-                <div className={`inline-flex p-4 rounded-full mb-6 group-hover:bg-primary/20 transition-colors duration-300 ${
-                  isCommunityFeature ? 'bg-accent/20' : 'bg-primary/10'
-                }`}>
-                  <Icon className={`h-8 w-8 ${isCommunityFeature ? 'text-accent' : 'text-primary'}`} />
-                </div>
-                <h3 className="text-xl font-semibold text-card-foreground mb-4">
-                  {feature.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-              </Card>
-            );
-          })}
-        </div>
+        <Carousel 
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full max-w-5xl mx-auto"
+        >
+          <CarouselContent className="-ml-4">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              const isCommunityFeature = feature.title === "Join the Community";
+              return (
+                <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                  <Card className={`p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group h-full ${
+                    highlightedFeature === index ? 'ring-2 ring-primary shadow-glow animate-pulse' : ''
+                  } ${isCommunityFeature ? 'ring-2 ring-accent shadow-glow bg-accent/5' : ''}`}>
+                    <div className={`inline-flex p-4 rounded-full mb-6 group-hover:bg-primary/20 transition-colors duration-300 ${
+                      isCommunityFeature ? 'bg-accent/20' : 'bg-primary/10'
+                    }`}>
+                      <Icon className={`h-8 w-8 ${isCommunityFeature ? 'text-accent' : 'text-primary'}`} />
+                    </div>
+                    <h3 className="text-xl font-semibold text-card-foreground mb-4">
+                      {feature.title}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </Card>
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+          <CarouselPrevious className="hidden sm:flex" />
+          <CarouselNext className="hidden sm:flex" />
+        </Carousel>
       </div>
 
       {/* Stats Section */}
