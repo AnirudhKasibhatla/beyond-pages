@@ -48,6 +48,12 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
     }
 
     try {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !userData.user) {
+        throw new Error('User not authenticated');
+      }
+
       const { data, error } = await supabase
         .from('book_events')
         .insert({
@@ -60,7 +66,7 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
           category: formData.category,
           max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
           featured: formData.featured,
-          creator_id: (await supabase.auth.getUser()).data.user?.id
+          creator_id: userData.user.id
         });
 
       if (error) throw error;

@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CreateGroupDialog } from "./CreateGroupDialog";
+import { GroupChat } from "./GroupChat";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -24,6 +25,7 @@ interface BookGroup {
 
 export const BookGroups = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<BookGroup | null>(null);
   const [genreFilter, setGenreFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [activityFilter, setActivityFilter] = useState<string>("all");
@@ -346,9 +348,14 @@ export const BookGroups = () => {
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className="text-lg font-semibold text-card-foreground mb-2">{group.name}</h4>
-                      <p className="text-muted-foreground text-sm">{group.genre} group</p>
-                    </div>
+                       <h4 
+                         className="text-lg font-semibold text-card-foreground mb-2 cursor-pointer hover:text-primary transition-colors" 
+                         onClick={() => group.isJoined && setSelectedGroup(group)}
+                       >
+                         {group.name}
+                       </h4>
+                       <p className="text-muted-foreground text-sm">{group.genre} group</p>
+                     </div>
                     <Badge className={getActivityColor(group.activityLevel)}>
                       {group.activityLevel} activity
                     </Badge>
@@ -422,9 +429,14 @@ export const BookGroups = () => {
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className="text-lg font-semibold text-card-foreground mb-2">{group.name}</h4>
-                      <p className="text-muted-foreground text-sm">{group.genre} group</p>
-                    </div>
+                       <h4 
+                         className="text-lg font-semibold text-card-foreground mb-2 cursor-pointer hover:text-primary transition-colors" 
+                         onClick={() => group.isJoined && setSelectedGroup(group)}
+                       >
+                         {group.name}
+                       </h4>
+                       <p className="text-muted-foreground text-sm">{group.genre} group</p>
+                     </div>
                     <Badge className={getActivityColor(group.activityLevel)}>
                       {group.activityLevel} activity
                     </Badge>
@@ -505,6 +517,15 @@ export const BookGroups = () => {
 
       {/* Create Group Dialog */}
       <CreateGroupDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />
+      
+      {/* Group Chat Modal */}
+      {selectedGroup && (
+        <GroupChat 
+          groupId={selectedGroup.id}
+          groupName={selectedGroup.name}
+          onClose={() => setSelectedGroup(null)}
+        />
+      )}
     </div>
   );
 };
