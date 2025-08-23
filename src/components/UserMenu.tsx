@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, User, Settings, Target } from "lucide-react";
+import { LogOut, User, Settings, Target, Home } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { useGuestAuth } from '@/hooks/useGuestAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -69,6 +69,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, on
           </p>
         </div>
         <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => window.location.href = '/'}>
+          <Home className="mr-2 h-4 w-4" />
+          <span>Home</span>
+        </DropdownMenuItem>
         {!isGuest && (
           <DropdownMenuItem onClick={onProfileClick}>
             <User className="mr-2 h-4 w-4" />
