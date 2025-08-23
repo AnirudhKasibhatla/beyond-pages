@@ -42,48 +42,7 @@ interface CommunityContextValue {
 
 const CommunityContext = createContext<CommunityContextValue | undefined>(undefined);
 
-const initialPosts: CommunityPost[] = [
-  {
-    id: '1',
-    author: { name: 'Sarah Chen', level: 15, isFollowing: false },
-    content: 'Just finished "The Seven Husbands of Evelyn Hugo" and I\'m completely blown away! The storytelling is incredible and the characters feel so real. Anyone else read this?',
-    bookTitle: 'The Seven Husbands of Evelyn Hugo',
-    bookAuthor: 'Taylor Jenkins Reid',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    likes: 23,
-    isLiked: false,
-    replies: [
-      {
-        id: 'r1',
-        author: { name: 'Alex Johnson' },
-        content: 'Yes! That book changed my perspective on storytelling. The plot twists were amazing!',
-        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000)
-      }
-    ]
-  },
-  {
-    id: '2',
-    author: { name: 'Marcus Rodriguez', level: 8, isFollowing: true },
-    content: 'Starting my journey with "Dune" today. I\'ve heard so much about this series. Any tips for a first-time reader?',
-    bookTitle: 'Dune',
-    bookAuthor: 'Frank Herbert',
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-    likes: 15,
-    isLiked: true,
-    replies: []
-  },
-  {
-    id: '3',
-    author: { name: 'Emily Watson', level: 22, isFollowing: false },
-    content: 'Book club meeting tonight! We\'re discussing "Atomic Habits" and I can\'t wait to share my insights. The concepts in this book are life-changing.',
-    bookTitle: 'Atomic Habits',
-    bookAuthor: 'James Clear',
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-    likes: 31,
-    isLiked: false,
-    replies: []
-  }
-];
+const initialPosts: CommunityPost[] = [];
 
 export function CommunityProvider({ children }: { children: React.ReactNode }) {
   const [posts, setPosts] = useState<CommunityPost[]>(() => {

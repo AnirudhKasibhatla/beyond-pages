@@ -51,8 +51,8 @@ export const Profile = () => {
     xp: 0,
     level: 1,
     isPublic: true,
-    favoriteGenres: ['Fiction', 'Mystery'],
-    badges: ['First Steps'],
+    favoriteGenres: [],
+    badges: [],
     booksRead: 0,
     currentStreak: 0
   });

@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Medal, Crown, Target, RotateCcw } from "lucide-react";
+import { Trophy, Medal, Crown, Target, Book, Star, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface TournamentParticipant {
@@ -20,7 +20,7 @@ interface TournamentParticipant {
 export const Tournament = () => {
   const [currentSeason, setCurrentSeason] = useState(3);
   const [participants, setParticipants] = useState<TournamentParticipant[]>([]);
-
+  const [userXP] = useState(0); // This would come from user data
   const [eliminatedPlayers] = useState<TournamentParticipant[]>([]);
 
   const { toast } = useToast();
@@ -43,28 +43,6 @@ export const Tournament = () => {
     return <Trophy className="h-4 w-4 text-muted-foreground" />;
   };
 
-  const simulateWeeklyReset = () => {
-    // Simulate tournament reset logic
-    const newParticipants = participants.map(p => ({
-      ...p,
-      xp: Math.floor(p.xp * 0.1), // Reset XP but keep some bonus
-    }));
-
-    // Award bonus XP to top 3
-    newParticipants.slice(0, 3).forEach((p, index) => {
-      const bonusXP = [50, 30, 20][index]; // Different bonus for top 3
-      p.xp += bonusXP;
-      if (index === 0) p.level += 1; // Winner gets level up
-    });
-
-    setParticipants(newParticipants);
-    setCurrentSeason(prev => prev + 1);
-    
-    toast({
-      title: "Weekly Tournament Reset!",
-      description: `Season ${currentSeason + 1} has begun. Top performers received bonus XP!`,
-    });
-  };
 
   const getCurrentUserRank = () => {
     const userParticipant = participants.find(p => p.name === 'You');
@@ -97,21 +75,9 @@ export const Tournament = () => {
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0">
         <h2 className="text-3xl font-bold text-foreground">Weekly Tournament</h2>
-        <div className="flex flex-col space-y-2 md:flex-row md:items-center md:gap-4 md:space-y-0">
-          <Badge variant="default" className="text-sm px-4 py-2 w-fit">
-            Season {currentSeason}
-          </Badge>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={simulateWeeklyReset}
-            className="gap-2 w-full md:w-auto"
-          >
-            <RotateCcw className="h-4 w-4" />
-            <span className="hidden sm:inline">Simulate Reset</span>
-            <span className="sm:hidden">Reset</span>
-          </Button>
-        </div>
+        <Badge variant="default" className="text-sm px-4 py-2 w-fit">
+          Season {currentSeason}
+        </Badge>
       </div>
 
       {/* Tournament Info */}
@@ -142,62 +108,109 @@ export const Tournament = () => {
       </div>
 
       {/* Performance Message */}
-      <Card className="p-4 bg-secondary/50 border-l-4 border-l-primary">
-        <p className="text-center text-card-foreground font-medium">
-          {getPerformanceMessage()}
-        </p>
-      </Card>
+      {userXP > 0 && (
+        <Card className="p-4 bg-secondary/50 border-l-4 border-l-primary">
+          <p className="text-center text-card-foreground font-medium">
+            {getPerformanceMessage()}
+          </p>
+        </Card>
+      )}
 
-      {/* Leaderboard */}
-      <Card className="p-6 bg-gradient-card shadow-medium">
-        <h3 className="text-xl font-semibold mb-4 text-card-foreground">Current Standings</h3>
-        <div className="space-y-3">
-          {participants.map((participant) => (
-            <div 
-              key={participant.id} 
-              className={`flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0 p-4 rounded-lg transition-all duration-300 ${
-                participant.name === 'You' 
-                  ? 'bg-primary/10 border-2 border-primary shadow-medium' 
-                  : 'bg-secondary/30 hover:bg-secondary/50'
-              }`}
-            >
-              <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-                <div className="flex items-center gap-2 min-w-[50px] md:min-w-[60px] flex-shrink-0">
-                  {getRankIcon(participant.rank)}
-                  <span className="font-bold text-base md:text-lg">#{participant.rank}</span>
+      {/* Tournament Rules for 0 XP users or Leaderboard for others */}
+      {userXP === 0 ? (
+        <Card className="p-6 bg-gradient-card shadow-medium">
+          <h3 className="text-xl font-semibold mb-6 text-card-foreground flex items-center gap-2">
+            <Trophy className="h-6 w-6 text-primary" />
+            How Tournament Works
+          </h3>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 rounded-lg bg-primary/10">
+                <Book className="h-8 w-8 mx-auto mb-3 text-primary" />
+                <h4 className="font-semibold mb-2 text-card-foreground">Read Books</h4>
+                <p className="text-sm text-muted-foreground">Complete books to earn XP and climb the leaderboard</p>
+              </div>
+              <div className="text-center p-4 rounded-lg bg-accent/10">
+                <Star className="h-8 w-8 mx-auto mb-3 text-accent" />
+                <h4 className="font-semibold mb-2 text-card-foreground">Write Reviews</h4>
+                <p className="text-sm text-muted-foreground">Share your thoughts and earn bonus XP</p>
+              </div>
+              <div className="text-center p-4 rounded-lg bg-success/10">
+                <Users className="h-8 w-8 mx-auto mb-3 text-success" />
+                <h4 className="font-semibold mb-2 text-card-foreground">Engage</h4>
+                <p className="text-sm text-muted-foreground">Join community discussions and events</p>
+              </div>
+            </div>
+            
+            <div className="bg-secondary/30 p-4 rounded-lg">
+              <h4 className="font-semibold mb-3 text-card-foreground">Tournament Rules</h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>• Weekly tournaments run from Monday to Sunday</p>
+                <p>• Earn XP by reading books, writing reviews, and community engagement</p>
+                <p>• Top 3 finishers receive bonus XP for the next season</p>
+                <p>• League placement affects XP multipliers</p>
+                <p>• Bottom performers may be moved to lower leagues</p>
+              </div>
+            </div>
+            
+            <div className="text-center p-4 bg-gradient-hero rounded-lg">
+              <p className="text-primary-foreground font-medium">
+                Start reading and engaging to see your name on the leaderboard!
+              </p>
+            </div>
+          </div>
+        </Card>
+      ) : (
+        <Card className="p-6 bg-gradient-card shadow-medium">
+          <h3 className="text-xl font-semibold mb-4 text-card-foreground">Current Standings</h3>
+          <div className="space-y-3">
+            {participants.map((participant) => (
+              <div 
+                key={participant.id} 
+                className={`flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0 p-4 rounded-lg transition-all duration-300 ${
+                  participant.name === 'You' 
+                    ? 'bg-primary/10 border-2 border-primary shadow-medium' 
+                    : 'bg-secondary/30 hover:bg-secondary/50'
+                }`}
+              >
+                <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                  <div className="flex items-center gap-2 min-w-[50px] md:min-w-[60px] flex-shrink-0">
+                    {getRankIcon(participant.rank)}
+                    <span className="font-bold text-base md:text-lg">#{participant.rank}</span>
+                  </div>
+                  
+                  <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                      {participant.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  <div className="min-w-0 flex-1">
+                    <h4 className={`font-semibold text-sm md:text-base truncate ${participant.name === 'You' ? 'text-primary' : 'text-card-foreground'}`}>
+                      {participant.name}
+                    </h4>
+                    <div className="flex flex-col space-y-1 md:flex-row md:items-center md:gap-2 md:space-y-0">
+                      <Badge variant="outline" className="text-xs w-fit">
+                        Level {participant.level}
+                      </Badge>
+                      <Badge className={`text-xs w-fit ${getLeagueColor(participant.league)}`}>
+                        {participant.league}
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
                 
-                <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                    {participant.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="min-w-0 flex-1">
-                  <h4 className={`font-semibold text-sm md:text-base truncate ${participant.name === 'You' ? 'text-primary' : 'text-card-foreground'}`}>
-                    {participant.name}
-                  </h4>
-                  <div className="flex flex-col space-y-1 md:flex-row md:items-center md:gap-2 md:space-y-0">
-                    <Badge variant="outline" className="text-xs w-fit">
-                      Level {participant.level}
-                    </Badge>
-                    <Badge className={`text-xs w-fit ${getLeagueColor(participant.league)}`}>
-                      {participant.league}
-                    </Badge>
+                <div className="flex items-center justify-between md:text-right md:block">
+                  <p className="font-bold text-base md:text-lg text-card-foreground">{participant.xp} XP</p>
+                  <div className="w-20 md:w-24">
+                    <Progress value={(participant.xp / 350) * 100} className="h-2" />
                   </div>
                 </div>
               </div>
-              
-              <div className="flex items-center justify-between md:text-right md:block">
-                <p className="font-bold text-base md:text-lg text-card-foreground">{participant.xp} XP</p>
-                <div className="w-20 md:w-24">
-                  <Progress value={(participant.xp / 350) * 100} className="h-2" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* Eliminated Players (Previous Season) */}
       <Card className="p-6 bg-gradient-card shadow-medium">
@@ -223,17 +236,6 @@ export const Tournament = () => {
         </div>
       </Card>
 
-      {/* Tournament Rules */}
-      <Card className="p-6 bg-accent/10 border-accent/20">
-        <h3 className="text-lg font-semibold mb-3 text-card-foreground">Tournament Rules</h3>
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p>• Weekly tournaments run from Monday to Sunday</p>
-          <p>• Earn XP by reading books, writing reviews, and community engagement</p>
-          <p>• Top 3 finishers receive bonus XP for the next season</p>
-          <p>• League placement affects XP multipliers</p>
-          <p>• Bottom performers may be moved to lower leagues</p>
-        </div>
-      </Card>
     </div>
   );
 };
