@@ -19,7 +19,7 @@ interface Challenge {
 
 const mockChallenges: Challenge[] = [
   {
-    year: 2024,
+    year: 2025,
     goal: 25,
     completed: 0,
     status: 'in-progress',
