@@ -165,7 +165,7 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl h-[80vh] flex flex-col">
+      <Card className="w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="p-6 border-b border-border">
           <div className="flex items-center justify-between">
@@ -200,11 +200,11 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-6 overflow-hidden">
           {activeTab === 'posts' ? (
-            <div className="space-y-4">
+            <div className="h-full flex flex-col space-y-4">
               {/* New Post Input */}
-              <Card className="p-4">
+              <Card className="p-4 flex-shrink-0">
                 <div className="space-y-3">
                   <Input
                     placeholder="Share your thoughts about the book..."
@@ -222,65 +222,69 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
               </Card>
 
               {/* Posts List */}
-              <ScrollArea className="h-96">
-                <div className="space-y-4">
-                  {posts.map((post) => (
-                    <Card key={post.id} className="p-4">
-                      <div className="space-y-3">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-semibold text-card-foreground">{post.userName}</h4>
-                            <p className="text-sm text-muted-foreground">{formatTime(post.timestamp)}</p>
+              <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="space-y-4 pr-4">
+                    {posts.map((post) => (
+                      <Card key={post.id} className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h4 className="font-semibold text-card-foreground">{post.userName}</h4>
+                              <p className="text-sm text-muted-foreground">{formatTime(post.timestamp)}</p>
+                            </div>
+                          </div>
+                          <p className="text-card-foreground leading-relaxed">{post.content}</p>
+                          <div className="flex items-center gap-4">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => toggleLike(post.id, 'post')}
+                              className={`gap-2 ${post.isLiked ? 'text-red-500' : ''}`}
+                            >
+                              <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
+                              {post.likes}
+                            </Button>
+                            <Button variant="ghost" size="sm" className="gap-2">
+                              <MessageCircle className="h-4 w-4" />
+                              {post.comments}
+                            </Button>
                           </div>
                         </div>
-                        <p className="text-card-foreground leading-relaxed">{post.content}</p>
-                        <div className="flex items-center gap-4">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => toggleLike(post.id, 'post')}
-                            className={`gap-2 ${post.isLiked ? 'text-red-500' : ''}`}
-                          >
-                            <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
-                            {post.likes}
-                          </Button>
-                          <Button variant="ghost" size="sm" className="gap-2">
-                            <MessageCircle className="h-4 w-4" />
-                            {post.comments}
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </ScrollArea>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="h-full flex flex-col space-y-4">
               {/* Messages */}
-              <ScrollArea className="h-96">
-                <div className="space-y-3">
-                  {messages.map((message) => (
-                    <div 
-                      key={message.id} 
-                      className={`flex ${message.userId === user?.id ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className={`max-w-xs p-3 rounded-lg ${
-                        message.userId === user?.id 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted'
-                      }`}>
-                        <p className="text-sm font-medium mb-1">{message.userName}</p>
-                        <p className="text-sm">{message.content}</p>
-                        <p className="text-xs opacity-70 mt-1">{formatTime(message.timestamp)}</p>
+              <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="space-y-3 pr-4">
+                    {messages.map((message) => (
+                      <div 
+                        key={message.id} 
+                        className={`flex ${message.userId === user?.id ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div className={`max-w-xs p-3 rounded-lg ${
+                          message.userId === user?.id 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-muted'
+                        }`}>
+                          <p className="text-sm font-medium mb-1">{message.userName}</p>
+                          <p className="text-sm">{message.content}</p>
+                          <p className="text-xs opacity-70 mt-1">{formatTime(message.timestamp)}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
 
               {/* New Message Input */}
-              <Card className="p-4">
+              <Card className="p-4 flex-shrink-0">
                 <div className="flex gap-2">
                   <Input
                     placeholder="Type a message..."

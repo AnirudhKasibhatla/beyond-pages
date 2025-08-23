@@ -212,29 +212,31 @@ export const Tournament = () => {
         </Card>
       )}
 
-      {/* Eliminated Players (Previous Season) */}
-      <Card className="p-6 bg-gradient-card shadow-medium">
-        <h3 className="text-lg font-semibold mb-4 text-card-foreground flex items-center gap-2">
-          <Badge variant="outline">Season {currentSeason - 1}</Badge>
-          Eliminated Players
-        </h3>
-        <div className="space-y-2">
-          {eliminatedPlayers.map((player) => (
-            <div key={player.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-              <div className="flex items-center gap-3">
-                <span className="text-muted-foreground">#{player.rank}</span>
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-muted text-muted-foreground text-sm">
-                    {player.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-muted-foreground">{player.name}</span>
+      {/* Eliminated Players (Previous Season) - Only show if users are in tournament */}
+      {userXP > 0 && eliminatedPlayers.length > 0 && (
+        <Card className="p-6 bg-gradient-card shadow-medium">
+          <h3 className="text-lg font-semibold mb-4 text-card-foreground flex items-center gap-2">
+            <Badge variant="outline">Season {currentSeason - 1}</Badge>
+            Eliminated Players
+          </h3>
+          <div className="space-y-2">
+            {eliminatedPlayers.map((player) => (
+              <div key={player.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                <div className="flex items-center gap-3">
+                  <span className="text-muted-foreground">#{player.rank}</span>
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-muted text-muted-foreground text-sm">
+                      {player.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-muted-foreground">{player.name}</span>
+                </div>
+                <span className="text-sm text-muted-foreground">{player.xp} XP</span>
               </div>
-              <span className="text-sm text-muted-foreground">{player.xp} XP</span>
-            </div>
-          ))}
-        </div>
-      </Card>
+            ))}
+          </div>
+        </Card>
+      )}
 
     </div>
   );

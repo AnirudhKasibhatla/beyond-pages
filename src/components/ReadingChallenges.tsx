@@ -21,105 +21,12 @@ const mockChallenges: Challenge[] = [
   {
     year: 2024,
     goal: 25,
-    completed: 12,
+    completed: 0,
     status: 'in-progress',
-    bestMonth: 'March (4 books)',
-    favoriteGenre: 'Science Fiction',
-    books: [
-      'The Midnight Library',
-      'Project Hail Mary',
-      'Klara and the Sun',
-      'The Seven Husbands of Evelyn Hugo',
-      'Educated',
-      'Where the Crawdads Sing',
-      'The Silent Patient',
-      'Atomic Habits',
-      'The Invisible Life of Addie LaRue',
-      'The Guest List',
-      'The Four Winds',
-      'Malibu Rising'
-    ],
-    reviews: [
-      'Amazing storytelling in The Midnight Library',
-      'Project Hail Mary - best sci-fi of the year!',
-      'Klara and the Sun moved me to tears',
-      'The Seven Husbands kept me turning pages',
-      'Educated was a powerful memoir'
-    ]
-  },
-  {
-    year: 2023,
-    goal: 20,
-    completed: 18,
-    status: 'completed',
-    bestMonth: 'June (4 books)',
-    favoriteGenre: 'Mystery',
-    books: [
-      'Gone Girl',
-      'The Girl with the Dragon Tattoo',
-      'Big Little Lies',
-      'The Handmaid\'s Tale',
-      'Normal People',
-      'The Goldfinch',
-      'Circe',
-      'The Song of Achilles',
-      'Eleanor Oliphant Is Completely Fine',
-      'A Good Girl\'s Guide to Murder',
-      'The Thursday Murder Club',
-      'The Hunting Party',
-      'The Guest List',
-      'The Sanatorium',
-      'The Silent Companion',
-      'The Woman in the Window',
-      'Sharp Objects',
-      'Dark Places'
-    ],
-    reviews: [
-      'Gone Girl - psychological thriller at its finest',
-      'Dragon Tattoo series is absolutely gripping',
-      'Big Little Lies exceeded all expectations',
-      'Handmaid\'s Tale remains relevant and powerful',
-      'Normal People broke my heart in the best way'
-    ]
-  },
-  {
-    year: 2022,
-    goal: 15,
-    completed: 22,
-    status: 'completed',
-    bestMonth: 'August (5 books)',
-    favoriteGenre: 'Literary Fiction',
-    books: [
-      'The Alchemist',
-      'To Kill a Mockingbird',
-      'Pride and Prejudice',
-      '1984',
-      'The Great Gatsby',
-      'Jane Eyre',
-      'Wuthering Heights',
-      'The Catcher in the Rye',
-      'Lord of the Flies',
-      'Of Mice and Men',
-      'The Grapes of Wrath',
-      'Brave New World',
-      'Animal Farm',
-      'Fahrenheit 451',
-      'The Picture of Dorian Gray',
-      'Dracula',
-      'Frankenstein',
-      'The Strange Case of Dr. Jekyll and Mr. Hyde',
-      'Heart of Darkness',
-      'The Turn of the Screw',
-      'The Yellow Wallpaper',
-      'The Awakening'
-    ],
-    reviews: [
-      'The Alchemist - life-changing philosophy',
-      'To Kill a Mockingbird remains powerful',
-      'Pride and Prejudice - Austen\'s wit shines',
-      '1984 feels eerily prophetic',
-      'Gatsby captures the American Dream perfectly'
-    ]
+    bestMonth: 'No data',
+    favoriteGenre: 'No data',
+    books: [],
+    reviews: []
   }
 ];
 

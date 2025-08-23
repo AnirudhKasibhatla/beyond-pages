@@ -187,14 +187,11 @@ const Index = () => {
           <CarouselContent className="-ml-4">
             {features.map((feature, index) => {
               const Icon = feature.icon;
-              const isCommunityFeature = feature.title === "Join the Community";
               return (
                 <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <Card className={`p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group h-full ${isCommunityFeature ? 'ring-2 ring-accent bg-accent/5' : ''}`}>
-                    <div className={`inline-flex p-4 rounded-full mb-6 group-hover:bg-primary/20 transition-colors duration-300 ${
-                      isCommunityFeature ? 'bg-accent/20' : 'bg-primary/10'
-                    }`}>
-                      <Icon className={`h-8 w-8 ${isCommunityFeature ? 'text-accent' : 'text-primary'}`} />
+                  <Card className="p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group h-full">
+                    <div className="inline-flex p-4 rounded-full mb-6 bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                      <Icon className="h-8 w-8 text-primary" />
                     </div>
                     <h3 className="text-xl font-semibold text-card-foreground mb-4">
                       {feature.title}
