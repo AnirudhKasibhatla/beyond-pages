@@ -7,11 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useGuestAuth } from "@/hooks/useGuestAuth";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { setGuestUser } = useGuestAuth();
 
   useEffect(() => {
     if (user) {
@@ -44,6 +46,11 @@ const Auth = () => {
     }
   };
 
+  const handleSkipAuth = () => {
+    setGuestUser();
+    navigate('/dashboard');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -71,6 +78,14 @@ const Auth = () => {
               size="lg"
             >
               Continue with Google
+            </Button>
+            <Button 
+              onClick={handleSkipAuth}
+              variant="outline"
+              className="w-full"
+              size="lg"
+            >
+              Skip Authentication (Guest)
             </Button>
           </CardContent>
         </Card>

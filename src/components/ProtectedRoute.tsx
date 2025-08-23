@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useGuestAuth } from '@/hooks/useGuestAuth';
 import { Card } from '@/components/ui/card';
 import { BookOpen } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
+  const { isGuest } = useGuestAuth();
 
   if (loading) {
     return (
@@ -24,7 +26,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (!user) {
+  if (!user && !isGuest) {
     return <Navigate to="/auth" replace />;
   }
 

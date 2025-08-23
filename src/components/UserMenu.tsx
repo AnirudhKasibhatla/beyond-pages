@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User, Settings, Target } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
+import { useGuestAuth } from '@/hooks/useGuestAuth';
 import { useToast } from '@/hooks/use-toast';
 
 interface UserMenuProps {
@@ -20,6 +21,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, onChallengesClick }) => {
   const { user, signOut } = useAuth();
+  const { isGuest } = useGuestAuth();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
@@ -38,11 +40,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, on
     }
   };
 
-  if (!user) return null;
+  if (!user && !isGuest) return null;
 
-  const userInitials = user.user_metadata?.full_name 
-    ? user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
-    : user.email?.charAt(0).toUpperCase() || 'U';
+  const userInitials = isGuest 
+    ? 'G'
+    : user?.user_metadata?.full_name 
+      ? user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
+      : user?.email?.charAt(0).toUpperCase() || 'U';
 
   return (
     <DropdownMenu>
@@ -58,17 +62,19 @@ const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, on
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <div className="flex flex-col space-y-1 p-2">
           <p className="text-sm font-medium leading-none">
-            {user.user_metadata?.full_name || 'User'}
+            {isGuest ? 'Guest User' : user?.user_metadata?.full_name || 'User'}
           </p>
           <p className="text-xs leading-none text-muted-foreground">
-            {user.email}
+            {isGuest ? 'Browse as guest' : user?.email}
           </p>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onProfileClick}>
-          <User className="mr-2 h-4 w-4" />
-          <span>Profile</span>
-        </DropdownMenuItem>
+        {!isGuest && (
+          <DropdownMenuItem onClick={onProfileClick}>
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={onChallengesClick}>
           <Target className="mr-2 h-4 w-4" />
           <span>Reading Challenges</span>
