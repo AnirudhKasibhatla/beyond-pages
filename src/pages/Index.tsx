@@ -90,7 +90,7 @@ const Index = () => {
                       className="bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/20 gap-2"
                     >
                       <User className="h-4 w-4" />
-                      {profile?.first_name ? `Hi, ${profile.first_name}` : 'Hi there'}
+                      {profile?.first_name ? `Hi, ${profile.first_name}` : 'Hi Reader'}
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
