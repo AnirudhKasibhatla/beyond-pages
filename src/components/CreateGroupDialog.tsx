@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreateGroupDialogProps {
   open: boolean;
@@ -31,7 +32,7 @@ export const CreateGroupDialog = ({ open, onOpenChange }: CreateGroupDialogProps
 
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.location || !formData.totalSlots) {
@@ -43,22 +44,44 @@ export const CreateGroupDialog = ({ open, onOpenChange }: CreateGroupDialogProps
       return;
     }
 
-    // Here you would typically save to database
-    toast({
-      title: "Group Created!",
-      description: `"${formData.name}" has been created successfully. You earned 25 XP!`,
-    });
+    try {
+      const { data, error } = await supabase
+        .from('book_groups')
+        .insert({
+          name: formData.name,
+          location: formData.location,
+          total_slots: parseInt(formData.totalSlots),
+          description: formData.description,
+          genre: formData.genre,
+          type: formData.type,
+          creator_id: (await supabase.auth.getUser()).data.user?.id
+        });
 
-    // Reset form and close dialog
-    setFormData({
-      name: "",
-      location: "",
-      totalSlots: "",
-      description: "",
-      genre: "",
-      type: ""
-    });
-    onOpenChange(false);
+      if (error) throw error;
+
+      toast({
+        title: "Group Created!",
+        description: `"${formData.name}" has been created successfully. You earned 25 XP!`,
+      });
+
+      // Reset form and close dialog
+      setFormData({
+        name: "",
+        location: "",
+        totalSlots: "",
+        description: "",
+        genre: "",
+        type: ""
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error creating group:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create group. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {

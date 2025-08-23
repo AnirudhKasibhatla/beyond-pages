@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { CreateEventDialog } from "./CreateEventDialog";
 
 interface BookEvent {
   id: string;
@@ -27,108 +30,156 @@ export const Events = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [timeFilter, setTimeFilter] = useState<string>("all");
-  const [events, setEvents] = useState<BookEvent[]>([
-    {
-      id: '1',
-      title: 'Author Talk: Margaret Atwood on Climate Fiction',
-      description: 'Join bestselling author Margaret Atwood for an intimate discussion about her latest work and the role of climate fiction in modern literature.',
-      date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
-      time: '7:00 PM EST',
-      location: 'Virtual Event (Zoom)',
-      type: 'virtual',
-      category: 'author-talk',
-      attendees: 127,
-      maxAttendees: 200,
-      isRsvped: false,
-      hostXP: 25,
-      host: 'Literary Society',
-      featured: true
-    },
-    {
-      id: '2',
-      title: 'Mystery Book Club: "The Thursday Murder Club"',
-      description: 'Monthly book club discussion focusing on contemporary mystery novels. This month we\'re diving into Richard Osman\'s delightful debut.',
-      date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
-      time: '6:30 PM EST',
-      location: 'Central Library, Room 204',
-      type: 'in-person',
-      category: 'book-club',
-      attendees: 15,
-      maxAttendees: 25,
-      isRsvped: true,
-      hostXP: 15,
-      host: 'Sarah Chen'
-    },
-    {
-      id: '3',
-      title: 'Creative Writing Workshop: Character Development',
-      description: 'Learn the fundamentals of creating compelling characters in your fiction writing. Suitable for beginners and intermediate writers.',
-      date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
-      time: '2:00 PM EST',
-      location: 'Writers\' Studio Downtown',
-      type: 'in-person',
-      category: 'workshop',
-      attendees: 8,
-      maxAttendees: 12,
-      isRsvped: false,
-      hostXP: 20,
-      host: 'Marcus Rodriguez'
-    },
-    {
-      id: '4',
-      title: 'Sci-Fi Reading Marathon',
-      description: 'A fun social event where we read and discuss short sci-fi stories together. Bring your favorite snacks and prepare for mind-bending tales!',
-      date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
-      time: '1:00 PM EST',
-      location: 'Community Center',
-      type: 'in-person',
-      category: 'social',
-      attendees: 23,
-      maxAttendees: 30,
-      isRsvped: false,
-      hostXP: 18,
-      host: 'Emily Watson'
-    },
-    {
-      id: '5',
-      title: 'Virtual Poetry Night',
-      description: 'Share your favorite poems or your own original work in a supportive online environment. Open mic style event.',
-      date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-      time: '8:00 PM EST',
-      location: 'Discord Voice Channel',
-      type: 'virtual',
-      category: 'social',
-      attendees: 31,
-      isRsvped: true,
-      hostXP: 12,
-      host: 'Alex Johnson'
-    }
-  ]);
-
-  const [claimedHostEvents, setClaimedHostEvents] = useState<string[]>([]);
+  const [events, setEvents] = useState<BookEvent[]>([]);
+  const [userRSVPs, setUserRSVPs] = useState<string[]>([]);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const { toast } = useToast();
 
-  const toggleRSVP = (eventId: string) => {
-    setEvents(prev => prev.map(event => 
-      event.id === eventId 
-        ? { 
-            ...event, 
-            isRsvped: !event.isRsvped,
-            attendees: event.isRsvped ? event.attendees - 1 : event.attendees + 1
-          }
-        : event
-    ));
+  // Load events from database
+  useEffect(() => {
+    loadEvents();
+    if (user) {
+      loadUserRSVPs();
+    }
+  }, [user]);
 
-    const event = events.find(e => e.id === eventId);
-    if (event) {
+  const loadEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('book_events')
+        .select('*')
+        .order('event_date', { ascending: true });
+
+      if (error) throw error;
+
+      const eventsWithRSVPs = await Promise.all(
+        data.map(async (event) => {
+          const { data: rsvpData } = await supabase
+            .from('event_rsvps')
+            .select('id')
+            .eq('event_id', event.id);
+
+          return {
+            id: event.id,
+            title: event.title,
+            description: event.description || '',
+            date: new Date(event.event_date),
+            time: event.event_time,
+            location: event.location,
+            type: event.type as 'virtual' | 'in-person' | 'hybrid',
+            category: event.category as 'book-club' | 'author-talk' | 'workshop' | 'social',
+            attendees: rsvpData?.length || 0,
+            maxAttendees: event.max_attendees,
+            isRsvped: false, // Will be updated with user RSVPs
+            hostXP: event.host_xp,
+            host: 'Event Host', // We'll need to get creator info
+            featured: event.featured
+          };
+        })
+      );
+
+      setEvents(eventsWithRSVPs);
+    } catch (error) {
+      console.error('Error loading events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUserRSVPs = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('event_rsvps')
+        .select('event_id')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      const rsvpEventIds = data.map(rsvp => rsvp.event_id);
+      setUserRSVPs(rsvpEventIds);
+      
+      // Update events with RSVP status
+      setEvents(prev => prev.map(event => ({
+        ...event,
+        isRsvped: rsvpEventIds.includes(event.id)
+      })));
+    } catch (error) {
+      console.error('Error loading user RSVPs:', error);
+    }
+  };
+
+  const toggleRSVP = async (eventId: string) => {
+    if (!user) {
       toast({
-        title: event.isRsvped ? "RSVP Cancelled" : "RSVP Confirmed!",
-        description: event.isRsvped 
-          ? `You've cancelled your RSVP for "${event.title}"` 
-          : `You're now registered for "${event.title}"`,
+        title: "Authentication required",
+        description: "Please log in to RSVP for events.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const isCurrentlyRsvped = userRSVPs.includes(eventId);
+
+    try {
+      if (isCurrentlyRsvped) {
+        // Remove RSVP
+        const { error } = await supabase
+          .from('event_rsvps')
+          .delete()
+          .eq('event_id', eventId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        setUserRSVPs(prev => prev.filter(id => id !== eventId));
+        setEvents(prev => prev.map(event => 
+          event.id === eventId 
+            ? { ...event, isRsvped: false, attendees: event.attendees - 1 }
+            : event
+        ));
+
+        toast({
+          title: "RSVP Cancelled",
+          description: "You've cancelled your RSVP for this event.",
+        });
+      } else {
+        // Add RSVP
+        const { error } = await supabase
+          .from('event_rsvps')
+          .insert({
+            event_id: eventId,
+            user_id: user.id
+          });
+
+        if (error) throw error;
+
+        setUserRSVPs(prev => [...prev, eventId]);
+        setEvents(prev => prev.map(event => 
+          event.id === eventId 
+            ? { ...event, isRsvped: true, attendees: event.attendees + 1 }
+            : event
+        ));
+
+        toast({
+          title: "RSVP Confirmed!",
+          description: "You're now registered for this event.",
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling RSVP:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update RSVP. Please try again.",
+        variant: "destructive",
       });
     }
   };
+
+  const [claimedHostEvents, setClaimedHostEvents] = useState<string[]>([]);
 
   const claimHostXP = (eventId: string) => {
     const event = events.find(e => e.id === eventId);
@@ -204,7 +255,7 @@ export const Events = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-foreground">Book Events</h2>
-        <Button variant="hero" className="gap-2">
+        <Button variant="hero" className="gap-2" onClick={() => setShowCreateDialog(true)}>
           <Plus className="h-4 w-4" />
           Host Event
         </Button>
@@ -445,10 +496,13 @@ export const Events = () => {
           Share your passion for books with the community! Host a book club, organize a reading session, 
           or create a discussion group. Earn XP and connect with fellow readers.
         </p>
-        <Button variant="hero" size="lg" className="gap-2">
+        <Button variant="hero" size="lg" className="gap-2" onClick={() => setShowCreateDialog(true)}>
           <Plus className="h-5 w-5" />
           Start Hosting
         </Button>
+
+      {/* Create Event Dialog */}
+      <CreateEventDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />
       </Card>
     </div>
   );

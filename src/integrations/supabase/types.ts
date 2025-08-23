@@ -14,6 +14,211 @@ export type Database = {
   }
   public: {
     Tables: {
+      book_events: {
+        Row: {
+          category: string
+          created_at: string
+          creator_id: string
+          description: string | null
+          event_date: string
+          event_time: string
+          featured: boolean
+          host_xp: number
+          id: string
+          location: string
+          max_attendees: number | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          event_date: string
+          event_time: string
+          featured?: boolean
+          host_xp?: number
+          id?: string
+          location: string
+          max_attendees?: number | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          event_date?: string
+          event_time?: string
+          featured?: boolean
+          host_xp?: number
+          id?: string
+          location?: string
+          max_attendees?: number | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      book_groups: {
+        Row: {
+          activity_level: string
+          created_at: string
+          creator_id: string
+          current_book: string | null
+          current_members: number
+          description: string | null
+          genre: string | null
+          id: string
+          location: string
+          name: string
+          privacy: string
+          total_slots: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          activity_level?: string
+          created_at?: string
+          creator_id: string
+          current_book?: string | null
+          current_members?: number
+          description?: string | null
+          genre?: string | null
+          id?: string
+          location: string
+          name: string
+          privacy?: string
+          total_slots: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          activity_level?: string
+          created_at?: string
+          creator_id?: string
+          current_book?: string | null
+          current_members?: number
+          description?: string | null
+          genre?: string | null
+          id?: string
+          location?: string
+          name?: string
+          privacy?: string
+          total_slots?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      books: {
+        Row: {
+          author: string
+          created_at: string
+          genres: string[] | null
+          id: string
+          isbn: string | null
+          progress: string | null
+          rating: number | null
+          review_text: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          genres?: string[] | null
+          id?: string
+          isbn?: string | null
+          progress?: string | null
+          rating?: number | null
+          review_text?: string | null
+          status: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          genres?: string[] | null
+          id?: string
+          isbn?: string | null
+          progress?: string | null
+          rating?: number | null
+          review_text?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "book_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_memberships: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_memberships_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "book_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       highlights: {
         Row: {
           book_author: string | null
