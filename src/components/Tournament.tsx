@@ -19,22 +19,9 @@ interface TournamentParticipant {
 
 export const Tournament = () => {
   const [currentSeason, setCurrentSeason] = useState(3);
-  const [participants, setParticipants] = useState<TournamentParticipant[]>([
-    { id: '1', name: 'Sarah Chen', xp: 340, level: 15, rank: 1, league: 'Gold', status: 'active' },
-    { id: '2', name: 'Marcus Rodriguez', xp: 315, level: 14, rank: 2, league: 'Gold', status: 'active' },
-    { id: '3', name: 'Emily Watson', xp: 298, level: 13, rank: 3, league: 'Silver', status: 'active' },
-    { id: '4', name: 'You', xp: 125, level: 3, rank: 12, league: 'Copper', status: 'active' },
-    { id: '5', name: 'Alex Johnson', xp: 280, level: 12, rank: 4, league: 'Silver', status: 'active' },
-    { id: '6', name: 'Lisa Park', xp: 265, level: 11, rank: 5, league: 'Silver', status: 'active' },
-    { id: '7', name: 'David Kim', xp: 250, level: 10, rank: 6, league: 'Silver', status: 'active' },
-    { id: '8', name: 'Rachel Green', xp: 235, level: 9, rank: 7, league: 'Silver', status: 'active' },
-  ]);
+  const [participants, setParticipants] = useState<TournamentParticipant[]>([]);
 
-  const [eliminatedPlayers] = useState<TournamentParticipant[]>([
-    { id: 'e1', name: 'Tom Wilson', xp: 85, level: 2, rank: 15, league: 'Copper', status: 'eliminated' },
-    { id: 'e2', name: 'Anna Brown', xp: 70, level: 2, rank: 16, league: 'Copper', status: 'eliminated' },
-    { id: 'e3', name: 'Mike Davis', xp: 65, level: 1, rank: 17, league: 'Copper', status: 'eliminated' },
-  ]);
+  const [eliminatedPlayers] = useState<TournamentParticipant[]>([]);
 
   const { toast } = useToast();
 
