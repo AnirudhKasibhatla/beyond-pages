@@ -126,9 +126,20 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    caret-color: transparent;
   }
 
   body {
     @apply bg-background text-foreground font-roboto;
+  }
+
+  /* Enable cursor only in input areas */
+  input, textarea, [contenteditable] {
+    caret-color: hsl(var(--foreground));
+  }
+
+  /* Disable all cursor blinking animations */
+  .animate-caret-blink {
+    animation: none !important;
   }
 }
