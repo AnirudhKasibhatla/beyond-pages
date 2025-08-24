@@ -68,7 +68,7 @@ const Dashboard = () => {
                 <div className="space-y-2">
                   <h2 className="text-2xl font-bold text-foreground">Create Your Personal Library</h2>
                   <p className="text-muted-foreground">
-                    Sign in and add books that you've read, or want to read, or the books finished
+                    Sign in and add books that you're reading currently,  or you want to read, or books that you've finished reading.
                   </p>
                 </div>
                 <Button 
