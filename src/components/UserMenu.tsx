@@ -8,10 +8,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, User, Settings, Target, Home } from "lucide-react";
+import { LogOut, User, Settings, Target, Home, LogIn } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
 import { useGuestAuth } from '@/hooks/useGuestAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface UserMenuProps {
   onProfileClick?: () => void;
@@ -23,6 +24,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, on
   const { user, signOut } = useAuth();
   const { isGuest } = useGuestAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
@@ -47,6 +49,21 @@ const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, on
     : user?.user_metadata?.full_name 
       ? user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
       : user?.email?.charAt(0).toUpperCase() || 'U';
+
+  // Show Sign In button for guests instead of profile avatar
+  if (isGuest) {
+    return (
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={() => navigate('/auth')}
+        className="flex items-center gap-2"
+      >
+        <LogIn className="h-4 w-4" />
+        <span className="hidden sm:inline">Sign In</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>

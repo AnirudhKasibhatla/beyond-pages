@@ -120,7 +120,6 @@ export const CreatePostDialog = ({ open, onOpenChange }: CreatePostDialogProps) 
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="min-h-[100px] resize-none"
-              maxLength={MAX_CHARS}
             />
             
             {/* Character Counter */}

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Trophy, Calendar, BookOpen, Star, MessageSquare } from "lucide-react";
+import { ArrowLeft, Trophy, Calendar, BookOpen, Star, MessageSquare, Edit } from "lucide-react";
 
 interface Challenge {
   year: number;
@@ -45,19 +45,29 @@ export const ReadingChallenges = () => {
   if (selectedChallenge) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBackClick}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Challenges
+            </Button>
+            <h1 className="text-3xl font-bold text-foreground">
+              {selectedChallenge.year} Reading Challenge
+            </h1>
+          </div>
           <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleBackClick}
+            variant="default"
             className="flex items-center gap-2"
+            onClick={() => {/* TODO: Add edit functionality */}}
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Challenges
+            <Edit className="h-4 w-4" />
+            Edit Challenge
           </Button>
-          <h1 className="text-3xl font-bold text-foreground">
-            {selectedChallenge.year} Reading Challenge
-          </h1>
         </div>
 
         <Card className="p-6">

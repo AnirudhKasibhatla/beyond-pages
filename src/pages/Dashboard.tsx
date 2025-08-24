@@ -21,7 +21,7 @@ import { useGuestAuth } from "@/hooks/useGuestAuth";
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges';
 
 const Dashboard = () => {
-  const [currentView, setCurrentView] = useState<ViewType>('books');
+  const [currentView, setCurrentView] = useState<ViewType>('community');
   const [userLevel, setUserLevel] = useState(1);
   const [userXP, setUserXP] = useState(0);
   const [highlightButtons, setHighlightButtons] = useState(false);
@@ -47,12 +47,12 @@ const Dashboard = () => {
 
   const getWelcomeMessage = () => {
     if (isGuest) {
-      return "Welcome Reader";
+      return "Hi Reader";
     }
     if (user && profile?.first_name) {
-      return `Welcome ${profile.first_name}`;
+      return `Hi ${profile.first_name}`;
     }
-    return "Welcome Reader";
+    return "Hi Reader";
   };
 
   const renderCurrentView = () => {
@@ -80,10 +80,10 @@ const Dashboard = () => {
 
   const baseNavItems = [
     { id: 'community' as ViewType, label: 'Community', icon: Users },
-    { id: 'books' as ViewType, label: 'My Books', icon: Book },
     { id: 'tournament' as ViewType, label: 'Tournament', icon: Trophy },
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
+    { id: 'books' as ViewType, label: 'My Books', icon: Book },
     { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
   ];
 
