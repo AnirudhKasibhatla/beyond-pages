@@ -18,10 +18,10 @@ All colors MUST be HSL.
     --popover: 35 25% 96%;
     --popover-foreground: 25 15% 15%;
 
-    /* Primary - Light blue */
-    --primary: 200 85% 65%;
+    /* Primary - Rich book burgundy */
+    --primary: 15 65% 35%;
     --primary-foreground: 35 20% 98%;
-    --primary-glow: 200 75% 75%;
+    --primary-glow: 15 55% 45%;
 
     /* Secondary - Warm cream */
     --secondary: 35 35% 85%;

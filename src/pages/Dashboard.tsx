@@ -58,6 +58,29 @@ const Dashboard = () => {
   const renderCurrentView = () => {
     switch (currentView) {
       case 'books':
+        if (isGuest) {
+          return (
+            <div className="max-w-2xl mx-auto text-center py-12">
+              <div className="space-y-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                  <Book className="h-8 w-8 text-primary" />
+                </div>
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-foreground">Create Your Personal Library</h2>
+                  <p className="text-muted-foreground">
+                    Sign in and add books that you've read, or want to read, or the books finished
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => window.location.href = '/auth'}
+                  className="px-8"
+                >
+                  Sign In to Get Started
+                </Button>
+              </div>
+            </div>
+          );
+        }
         return <BookList highlightButtons={highlightButtons} />;
       case 'community':
         return <Community />;
@@ -83,7 +106,7 @@ const Dashboard = () => {
     { id: 'tournament' as ViewType, label: 'Tournament', icon: Trophy },
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
-    { id: 'books' as ViewType, label: 'My Books', icon: Book },
+    { id: 'books' as ViewType, label: 'My Shelf', icon: Book },
     { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
   ];
 
