@@ -19,9 +19,9 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'nunito': ['Nunito', 'sans-serif'],
 				'playfair': ['Playfair Display', 'serif'],
-				'sans': ['Nunito', 'sans-serif'],
+				'inter': ['Inter', 'sans-serif'],
+				'sans': ['Inter', 'sans-serif'],
 				'serif': ['Playfair Display', 'serif'],
 			},
 			colors: {
@@ -87,25 +87,25 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			backgroundImage: {
-				'gradient-forest': 'var(--grad-forest)',
-				'gradient-ink': 'var(--grad-ink)',
-				'gradient-parchment': 'var(--grad-parchment)',
-				'gradient-sky': 'var(--grad-sky)',
-				'gradient-moss': 'var(--grad-moss)'
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-accent': 'var(--gradient-accent)',
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-card': 'var(--gradient-card)',
+				'gradient-nature': 'var(--gradient-nature)',
+				'gradient-page': 'var(--gradient-page)'
 			},
 			boxShadow: {
-				'elevation-1': 'var(--elev-1)',
-				'elevation-2': 'var(--elev-2)',
-				'elevation-3': 'var(--elev-3)'
+				'soft': 'var(--shadow-soft)',
+				'medium': 'var(--shadow-medium)',
+				'strong': 'var(--shadow-strong)',
+				'glow': 'var(--shadow-glow)',
+				'page': 'var(--shadow-page)'
 			},
 			transitionTimingFunction: {
-				'gentle': 'var(--motion-ease-gentle)',
-				'smooth': 'var(--motion-ease-smooth)'
-			},
-			transitionDuration: {
-				'quick': 'var(--motion-duration-quick)',
-				'base': 'var(--motion-duration-base)',
-				'slow': 'var(--motion-duration-slow)'
+				'smooth': 'var(--transition-smooth)',
+				'bounce': 'var(--transition-bounce)',
+				'leaf': 'var(--transition-leaf)',
+				'page': 'var(--transition-page)'
 			},
 			keyframes: {
 				'accordion-down': {
