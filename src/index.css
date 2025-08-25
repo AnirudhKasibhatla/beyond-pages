@@ -1,158 +1,144 @@
+@import '@fontsource/nunito/400.css';
+@import '@fontsource/nunito/500.css';
+@import '@fontsource/nunito/600.css';
+@import '@fontsource/nunito/700.css';
 @import '@fontsource/playfair-display/400.css';
 @import '@fontsource/playfair-display/700.css';
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Nature + Books Reading Experience Design System
-Serene palette inspired by reading in parks: leafy greens, warm parchment, muted browns, sky accents.
-All colors MUST be HSL.
+/* Serene Park Reading Experience Design System
+Books × Nature × Calm theme with contrast gradients and rounded typography.
+All colors MUST be HSL. Primary surfaces use gradients only.
 */
 
 @layer base {
   :root {
-    /* Base colors - Nature-inspired palette */
-    --background: 120 20% 98%; /* Soft morning mist */
-    --foreground: 140 15% 15%; /* Deep forest text */
+    /* Base colors - Serene park reading palette */
+    --background: 45 25% 98%; /* Soft parchment white */
+    --foreground: 145 25% 15%; /* Deep forest text */
 
-    --card: 115 25% 96%; /* Gentle paper white */
-    --card-foreground: 140 15% 15%;
+    --card: 45 20% 96%; /* Gentle paper */
+    --card-foreground: 145 25% 15%;
 
-    --popover: 115 25% 96%;
-    --popover-foreground: 140 15% 15%;
+    --popover: 45 20% 96%;
+    --popover-foreground: 145 25% 15%;
 
-    /* Primary - Leafy forest green */
-    --primary: 140 45% 35%;
-    --primary-foreground: 120 20% 98%;
-    --primary-glow: 140 35% 45%;
+    /* Primary gradients - High contrast, smooth */
+    --grad-forest: linear-gradient(135deg, #0B3D2E 0%, #2E7D32 100%);
+    --grad-ink: linear-gradient(135deg, #0A0F14 0%, #1F2A37 100%);
+    --grad-parchment: linear-gradient(135deg, #FAF7F2 0%, #EDE7DD 100%);
+    --grad-sky: linear-gradient(135deg, #0E3A8A 0%, #38BDF8 100%);
+    --grad-moss: linear-gradient(135deg, #064E3B 0%, #34D399 100%);
 
-    /* Secondary - Warm parchment */
-    --secondary: 45 35% 85%;
-    --secondary-foreground: 140 15% 15%;
+    /* Color tokens for text contrast */
+    --primary: 145 45% 25%; /* Forest green */
+    --primary-foreground: 45 25% 98%;
+    --primary-glow: 145 35% 35%;
 
-    /* Muted - Soft meadow */
-    --muted: 120 25% 90%;
-    --muted-foreground: 135 10% 50%;
+    --secondary: 45 35% 85%; /* Warm parchment */
+    --secondary-foreground: 145 25% 15%;
 
-    /* Accent - Sky blossom */
-    --accent: 200 65% 65%;
-    --accent-foreground: 140 15% 15%;
+    --muted: 120 20% 88%; /* Soft meadow */
+    --muted-foreground: 145 15% 45%;
+
+    --accent: 200 70% 60%; /* Sky blue */
+    --accent-foreground: 145 25% 15%;
     --accent-soft: 200 45% 85%;
 
-    /* Success - Fresh growth */
-    --success: 125 65% 45%;
-    --success-foreground: 120 20% 98%;
+    --success: 125 60% 45%; /* Fresh growth */
+    --success-foreground: 45 25% 98%;
 
-    /* Destructive - Autumn warmth */
-    --destructive: 15 65% 55%;
-    --destructive-foreground: 120 20% 98%;
+    --destructive: 15 70% 55%; /* Autumn warmth */
+    --destructive-foreground: 45 25% 98%;
 
-    /* Nature elements */
-    --wood: 35 45% 75%; /* Warm wood tones */
-    --bark: 30 35% 45%; /* Tree bark */
-    --leaf: 140 55% 55%; /* Fresh leaf green */
-    --flower: 320 45% 75%; /* Soft blossom pink */
+    /* UI element colors */
+    --border: 120 15% 82%;
+    --input: 120 15% 88%;
+    --ring: 145 45% 25%;
 
-    /* Borders and inputs - Natural tones */
-    --border: 120 20% 85%;
-    --input: 120 20% 90%;
-    --ring: 140 45% 35%;
+    /* Elevation shadows - Natural, layered */
+    --elev-1: 0 1px 2px rgba(0,0,0,0.08);
+    --elev-2: 0 4px 12px rgba(0,0,0,0.10);
+    --elev-3: 0 12px 28px rgba(0,0,0,0.14);
 
-    /* Nature-inspired gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-soft)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--wood)) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
-    --gradient-nature: linear-gradient(180deg, hsl(var(--accent-soft)) 0%, hsl(var(--secondary)) 100%);
-    --gradient-page: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--secondary)) 100%);
+    /* Motion system - Smooth, gentle */
+    --motion-ease-gentle: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --motion-ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --motion-duration-quick: 150ms;
+    --motion-duration-base: 200ms;
+    --motion-duration-slow: 250ms;
 
-    /* Natural shadows */
-    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.1);
-    --shadow-medium: 0 8px 30px hsl(var(--primary) / 0.15);
-    --shadow-strong: 0 12px 40px hsl(var(--primary) / 0.2);
-    --shadow-glow: 0 0 30px hsl(var(--accent) / 0.3);
-    --shadow-page: 0 2px 10px hsl(var(--wood) / 0.1);
-
-    /* Nature-inspired animations - Smooth like leaves in breeze */
-    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --transition-leaf: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-    --transition-page: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    --radius: 16px; /* More organic curves */
+    /* Border radius - Rounded, friendly */
+    --radius: 16px;
+    --radius-sm: 12px;
+    --radius-lg: 20px;
 
     /* Sidebar - Forest theme */
-    --sidebar-background: 140 15% 96%;
-    --sidebar-foreground: 140 15% 15%;
-    --sidebar-primary: 140 45% 35%;
-    --sidebar-primary-foreground: 120 20% 98%;
-    --sidebar-accent: 120 25% 90%;
-    --sidebar-accent-foreground: 140 15% 15%;
-    --sidebar-border: 120 20% 85%;
-    --sidebar-ring: 140 45% 35%;
+    --sidebar-background: 145 15% 96%;
+    --sidebar-foreground: 145 25% 15%;
+    --sidebar-primary: 145 45% 25%;
+    --sidebar-primary-foreground: 45 25% 98%;
+    --sidebar-accent: 120 20% 88%;
+    --sidebar-accent-foreground: 145 25% 15%;
+    --sidebar-border: 120 15% 82%;
+    --sidebar-ring: 145 45% 25%;
   }
 
   .dark {
-    /* Dark mode - Dusk forest reading palette */
-    --background: 140 20% 8%; /* Deep forest night */
-    --foreground: 120 20% 95%; /* Moonlight text */
+    /* Dark mode - Evening forest reading */
+    --background: 145 25% 8%; /* Deep forest night */
+    --foreground: 45 25% 95%; /* Warm lamplight text */
 
-    --card: 140 25% 10%; /* Shadowed pages */
-    --card-foreground: 120 20% 95%;
+    --card: 145 20% 10%; /* Shadowed pages */
+    --card-foreground: 45 25% 95%;
 
-    --popover: 140 25% 10%;
-    --popover-foreground: 120 20% 95%;
+    --popover: 145 20% 10%;
+    --popover-foreground: 45 25% 95%;
 
-    /* Primary - Soft forest glow */
-    --primary: 140 35% 65%;
-    --primary-foreground: 140 20% 8%;
-    --primary-glow: 140 45% 75%;
+    /* Dark mode gradients */
+    --grad-forest: linear-gradient(135deg, #0F4C36 0%, #166534 100%);
+    --grad-ink: linear-gradient(135deg, #0F172A 0%, #334155 100%);
+    --grad-parchment: linear-gradient(135deg, #1F2937 0%, #374151 100%);
+    --grad-sky: linear-gradient(135deg, #1E3A8A 0%, #0EA5E9 100%);
+    --grad-moss: linear-gradient(135deg, #10B981 0%, #6EE7B7 100%);
 
-    /* Secondary - Dark parchment */
-    --secondary: 35 25% 20%;
-    --secondary-foreground: 120 20% 95%;
+    /* Dark color tokens */
+    --primary: 145 35% 60%;
+    --primary-foreground: 145 25% 8%;
+    --primary-glow: 145 45% 70%;
 
-    /* Muted - Forest shadows */
-    --muted: 140 15% 15%;
-    --muted-foreground: 120 15% 65%;
+    --secondary: 45 25% 20%;
+    --secondary-foreground: 45 25% 95%;
 
-    /* Accent - Night sky */
+    --muted: 145 15% 15%;
+    --muted-foreground: 145 15% 65%;
+
     --accent: 200 45% 55%;
-    --accent-foreground: 120 20% 95%;
+    --accent-foreground: 45 25% 95%;
     --accent-soft: 200 35% 25%;
 
-    /* Dark nature elements */
-    --wood: 35 35% 25%;
-    --bark: 30 25% 15%;
-    --leaf: 140 45% 45%;
-    --flower: 320 35% 45%;
-
-    /* Success - Night growth */
     --success: 125 55% 55%;
-    --success-foreground: 140 20% 8%;
+    --success-foreground: 145 25% 8%;
 
-    /* Destructive - Ember glow */
     --destructive: 15 55% 65%;
-    --destructive-foreground: 140 20% 8%;
+    --destructive-foreground: 145 25% 8%;
 
-    /* Dark borders and inputs */
-    --border: 140 15% 20%;
-    --input: 140 15% 15%;
-    --ring: 140 35% 65%;
+    --border: 145 15% 20%;
+    --input: 145 15% 15%;
+    --ring: 145 35% 60%;
 
-    /* Dark sidebar - Deep forest */
-    --sidebar-background: 140 25% 10%;
-    --sidebar-foreground: 120 20% 95%;
-    --sidebar-primary: 140 35% 65%;
-    --sidebar-primary-foreground: 140 20% 8%;
-    --sidebar-accent: 140 15% 15%;
-    --sidebar-accent-foreground: 120 20% 95%;
-    --sidebar-border: 140 15% 20%;
-    --sidebar-ring: 140 35% 65%;
+    /* Dark sidebar */
+    --sidebar-background: 145 20% 10%;
+    --sidebar-foreground: 45 25% 95%;
+    --sidebar-primary: 145 35% 60%;
+    --sidebar-primary-foreground: 145 25% 8%;
+    --sidebar-accent: 145 15% 15%;
+    --sidebar-accent-foreground: 45 25% 95%;
+    --sidebar-border: 145 15% 20%;
+    --sidebar-ring: 145 35% 60%;
   }
 }
 
@@ -167,16 +153,22 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-foreground font-nunito;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--motion-duration-base) var(--motion-ease-gentle);
   }
 
-  /* Typography hierarchy */
+  /* Typography hierarchy - Rounded Nunito primary, Playfair for large headings */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-playfair;
-    letter-spacing: -0.02em;
+    @apply font-nunito font-semibold;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  h1 {
+    @apply font-playfair text-4xl md:text-5xl lg:text-6xl;
   }
 
   /* Enable cursor only in input areas */
@@ -192,6 +184,7 @@ All colors MUST be HSL.
   /* Focus states for accessibility */
   :focus-visible {
     @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+    transition: box-shadow var(--motion-duration-quick) var(--motion-ease-gentle);
   }
 
   /* Reduced motion support */
@@ -204,78 +197,158 @@ All colors MUST be HSL.
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+
+    html {
+      scroll-behavior: auto;
+    }
   }
 }
 
 @layer components {
-  /* Nature-inspired animations */
-  .animate-leaf-sway {
-    animation: leafSway 3s ease-in-out infinite;
+  /* Motion system utilities */
+  .motion-safe {
+    transition-timing-function: var(--motion-ease-gentle);
   }
 
-  .animate-page-turn {
-    animation: pageTurn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  .motion-quick {
+    transition-duration: var(--motion-duration-quick);
   }
 
-  .animate-gentle-float {
-    animation: gentleFloat 4s ease-in-out infinite;
+  .motion-base {
+    transition-duration: var(--motion-duration-base);
   }
 
-  .animate-fade-in-up {
-    animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  .motion-slow {
+    transition-duration: var(--motion-duration-slow);
   }
 
-  .animate-scale-in {
-    animation: scaleIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Gradient surfaces - Primary UI elements */
+  .gradient-forest {
+    background: var(--grad-forest);
+    color: hsl(var(--primary-foreground));
   }
 
-  /* Interactive elements */
+  .gradient-ink {
+    background: var(--grad-ink);
+    color: hsl(var(--primary-foreground));
+  }
+
+  .gradient-parchment {
+    background: var(--grad-parchment);
+    color: hsl(var(--foreground));
+  }
+
+  .gradient-sky {
+    background: var(--grad-sky);
+    color: hsl(var(--primary-foreground));
+  }
+
+  .gradient-moss {
+    background: var(--grad-moss);
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Elevation system */
+  .elevation-1 {
+    box-shadow: var(--elev-1);
+  }
+
+  .elevation-2 {
+    box-shadow: var(--elev-2);
+  }
+
+  .elevation-3 {
+    box-shadow: var(--elev-3);
+  }
+
+  /* Interactive animations */
   .hover-lift {
-    @apply transition-all duration-300 ease-out;
-    &:hover {
-      @apply -translate-y-1 shadow-medium;
-    }
+    @apply motion-safe motion-base;
+    transform: translateY(0) scale(1);
   }
 
-  .hover-grow {
-    @apply transition-transform duration-200 ease-out;
-    &:hover {
-      @apply scale-105;
-    }
+  .hover-lift:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--elev-2);
   }
 
-  .hover-underline {
+  .hover-lift:focus-visible {
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: var(--elev-2);
+  }
+
+  /* Page transition animations */
+  .page-enter {
+    animation: pageEnter var(--motion-duration-slow) var(--motion-ease-gentle);
+  }
+
+  .page-exit {
+    animation: pageExit var(--motion-duration-base) var(--motion-ease-gentle);
+  }
+
+  /* Staggered list animations */
+  .stagger-children > * {
+    animation: fadeInUp var(--motion-duration-base) var(--motion-ease-gentle);
+  }
+
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 30ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 60ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 90ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 120ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 150ms; }
+
+  /* Link underline ink reveal */
+  .link-ink {
     @apply relative;
-    &::after {
-      @apply absolute bottom-0 left-0 w-full h-0.5 bg-current scale-x-0 origin-left transition-transform duration-300;
-      content: '';
-    }
-    &:hover::after {
-      @apply scale-x-100;
-    }
+    text-decoration: none;
   }
 
-  /* Page-like cards */
+  .link-ink::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--motion-duration-base) var(--motion-ease-gentle);
+  }
+
+  .link-ink:hover::after,
+  .link-ink:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Card components - Book page metaphor */
   .card-page {
-    @apply bg-gradient-card border border-border/50 shadow-page rounded-lg;
+    @apply bg-card border border-border/50 elevation-1 motion-safe motion-base;
+    border-radius: var(--radius);
     position: relative;
-    &::before {
-      content: '';
-      @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 transition-opacity duration-300;
-      border-radius: inherit;
-    }
-    &:hover::before {
-      @apply opacity-100;
-    }
+    overflow: hidden;
+  }
+
+  .card-page::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0;
+    transition: opacity var(--motion-duration-base) var(--motion-ease-gentle);
+  }
+
+  .card-page:hover {
+    @apply elevation-2;
+  }
+
+  .card-page:hover::before {
+    @apply opacity-100;
   }
 
   /* Book spine effect */
   .book-spine {
-    @apply relative;
-    &::before {
-      content: '';
-      @apply absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-primary to-primary-glow rounded-full;
-    }
+    @apply relative pl-4;
+  }
+
+  .book-spine::before {
+    content: '';
+    @apply absolute left-0 top-0 h-full w-1 rounded-full;
+    background: var(--grad-forest);
   }
 
   /* Reading bench layout */
@@ -286,44 +359,105 @@ All colors MUST be HSL.
 
   /* Nature shelf effect */
   .nature-shelf {
-    @apply relative p-6 bg-gradient-to-br from-secondary/20 to-muted/30 border border-secondary/30 rounded-lg;
-    &::after {
-      content: '';
-      @apply absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-secondary to-transparent;
-    }
+    @apply relative p-6 bg-gradient-to-br from-secondary/20 to-muted/30 border border-secondary/30 elevation-1;
+    border-radius: var(--radius);
+  }
+
+  .nature-shelf::after {
+    content: '';
+    @apply absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-secondary to-transparent;
+  }
+
+  /* Skeleton loading with parchment theme */
+  .skeleton-parchment {
+    @apply bg-gradient-to-r from-muted via-muted/50 to-muted animate-pulse;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Toast notifications - Page note style */
+  .toast-page-note {
+    @apply card-page bg-gradient-parchment text-foreground;
+    border-left: 4px solid;
+    border-left-color: hsl(var(--primary));
+  }
+
+  /* Empty state - Quiet bench */
+  .empty-bench {
+    @apply text-center py-12 px-6 space-y-4;
+  }
+
+  .empty-bench-icon {
+    @apply w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center;
+    background: var(--grad-parchment);
+    animation: gentleFloat 4s ease-in-out infinite;
   }
 }
 
 @layer utilities {
-  /* Keyframes for nature-inspired animations */
-  @keyframes leafSway {
-    0%, 100% { transform: translateX(0) rotate(0deg); }
-    25% { transform: translateX(2px) rotate(1deg); }
-    75% { transform: translateX(-2px) rotate(-1deg); }
+  /* Animation keyframes */
+  @keyframes pageEnter {
+    0% { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
   }
 
-  @keyframes pageTurn {
-    0% { transform: rotateY(-15deg) scale(0.95); opacity: 0; }
-    100% { transform: rotateY(0deg) scale(1); opacity: 1; }
-  }
-
-  @keyframes gentleFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
+  @keyframes pageExit {
+    0% { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+    100% { 
+      opacity: 0; 
+      transform: translateY(-10px); 
+    }
   }
 
   @keyframes fadeInUp {
-    0% { transform: translateY(20px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
+    0% { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
   }
 
-  @keyframes scaleIn {
-    0% { transform: scale(0.95); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+  @keyframes gentleFloat {
+    0%, 100% { 
+      transform: translateY(0px); 
+    }
+    50% { 
+      transform: translateY(-6px); 
+    }
   }
 
-  /* Skeleton loading with nature theme */
-  .skeleton {
-    @apply bg-gradient-to-r from-muted via-muted/50 to-muted animate-pulse rounded;
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Touch target utilities */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Rounded corners system */
+  .rounded-gentle {
+    border-radius: var(--radius-sm);
+  }
+
+  .rounded-friendly {
+    border-radius: var(--radius);
+  }
+
+  .rounded-warm {
+    border-radius: var(--radius-lg);
   }
 }
