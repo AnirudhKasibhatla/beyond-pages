@@ -59,8 +59,8 @@ const Auth = () => {
             <BookOpen className="h-8 w-8 text-primary-foreground" />
             <h1 className="text-3xl font-bold text-primary-foreground">Beyond Pages</h1>
           </div>
-          <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground">
-            📚 Join the Reading Community
+          <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground flex items-center gap-1">
+            <BookOpen className="h-4 w-4" /> Join the Reading Community
           </Badge>
         </div>
 

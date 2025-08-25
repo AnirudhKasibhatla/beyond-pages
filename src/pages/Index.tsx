@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User, ChevronDown } from "lucide-react";
+import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User, ChevronDown, Sparkles } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -103,8 +103,8 @@ const Index = () => {
         <div className="relative max-w-6xl mx-auto px-6 py-24">
           <div className="text-center">
             <div className="flex items-center justify-center gap-4 mb-6">
-              <Badge variant="secondary" className="text-lg px-6 py-2 bg-primary-foreground/20 text-primary-foreground">
-                📚 Welcome to Beyond Pages
+              <Badge variant="secondary" className="text-lg px-6 py-2 bg-primary-foreground/20 text-primary-foreground flex items-center gap-2">
+                <BookOpen className="h-5 w-5" /> Welcome to Beyond Pages
               </Badge>
               {user && (
                 <DropdownMenu>
@@ -164,8 +164,8 @@ const Index = () => {
       {/* Features Section */}
       <div ref={featuresRef} className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
-          <Badge variant="default" className="mb-4 text-lg px-6 py-2">
-            ✨ Features
+          <Badge variant="default" className="mb-4 text-lg px-6 py-2 flex items-center gap-2 mx-auto w-fit">
+            <Sparkles className="h-5 w-5" /> Features
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
             Everything You Need for Your Reading Journey

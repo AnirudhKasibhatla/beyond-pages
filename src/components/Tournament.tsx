@@ -51,10 +51,10 @@ export const Tournament = () => {
 
   const getPerformanceMessage = () => {
     const rank = getCurrentUserRank();
-    if (rank <= 3) return "🏆 Amazing performance! You're in the top 3!";
-    if (rank <= 6) return "📈 Great progress! Keep climbing the leaderboard!";
-    if (rank <= 10) return "🎯 You're doing well! Push for the top 10!";
-    return "💪 Keep reading and engaging to climb the rankings!";
+    if (rank <= 3) return "Amazing performance! You're in the top 3!";
+    if (rank <= 6) return "Great progress! Keep climbing the leaderboard!";
+    if (rank <= 10) return "You're doing well! Push for the top 10!";
+    return "Keep reading and engaging to climb the rankings!";
   };
 
   // Calculate time until next reset (simulated)

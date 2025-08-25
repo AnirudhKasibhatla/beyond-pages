@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter } from "lucide-react";
+import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter, Globe, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CreateGroupDialog } from "./CreateGroupDialog";
 import { GroupChat } from "./GroupChat";
@@ -177,11 +177,11 @@ export const BookGroups = () => {
   const getTypeIcon = (type: BookGroup['type']) => {
     switch (type) {
       case 'local':
-        return '📍';
+        return <MapPin className="h-4 w-4" />;
       case 'online':
-        return '💻';
+        return <Globe className="h-4 w-4" />;
       case 'hybrid':
-        return '🔄';
+        return <RefreshCw className="h-4 w-4" />;
     }
   };
 
@@ -421,7 +421,7 @@ export const BookGroups = () => {
       {onlineGroups.length > 0 && (
         <div>
           <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
-            💻 Online Communities
+            <Globe className="h-6 w-6" /> Online Communities
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {onlineGroups.map((group) => (

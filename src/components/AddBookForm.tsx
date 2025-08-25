@@ -520,11 +520,11 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
                     <SelectValue placeholder="Select rating" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">⭐ 1 Star</SelectItem>
-                    <SelectItem value="2">⭐⭐ 2 Stars</SelectItem>
-                    <SelectItem value="3">⭐⭐⭐ 3 Stars</SelectItem>
-                    <SelectItem value="4">⭐⭐⭐⭐ 4 Stars</SelectItem>
-                    <SelectItem value="5">⭐⭐⭐⭐⭐ 5 Stars</SelectItem>
+                    <SelectItem value="1">1 Star</SelectItem>
+                    <SelectItem value="2">2 Stars</SelectItem>
+                    <SelectItem value="3">3 Stars</SelectItem>
+                    <SelectItem value="4">4 Stars</SelectItem>
+                    <SelectItem value="5">5 Stars</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

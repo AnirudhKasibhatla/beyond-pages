@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Upload, Download, FileText, BookOpen, Clock, CheckCircle } from "lucide-react";
+import { Upload, Download, FileText, BookOpen, Clock, CheckCircle, Star } from "lucide-react";
 import { toast } from "sonner";
 
 interface Book {
@@ -242,8 +242,8 @@ export const GoodreadsImport = ({ onBooksImport }: GoodreadsImportProps) => {
                       </div>
                       <div className="flex items-center gap-2">
                         {book.rating && (
-                          <Badge variant="outline" className="text-xs">
-                            ⭐ {book.rating}
+                          <Badge variant="outline" className="text-xs flex items-center gap-1">
+                            <Star className="h-3 w-3" /> {book.rating}
                           </Badge>
                         )}
                         <div className="flex items-center gap-1">

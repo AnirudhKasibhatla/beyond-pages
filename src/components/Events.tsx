@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter, Globe, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -195,11 +195,11 @@ export const Events = () => {
   const getTypeIcon = (type: BookEvent['type']) => {
     switch (type) {
       case 'virtual':
-        return '💻';
+        return <Globe className="h-4 w-4" />;
       case 'in-person':
-        return '📍';
+        return <MapPin className="h-4 w-4" />;
       case 'hybrid':
-        return '🔄';
+        return <RefreshCw className="h-4 w-4" />;
     }
   };
 
@@ -350,8 +350,8 @@ export const Events = () => {
       {filteredEvents.filter(e => e.featured).map(event => (
         <Card key={event.id} className="p-6 bg-gradient-hero text-primary-foreground shadow-strong">
           <div className="flex items-start justify-between mb-4">
-            <Badge variant="secondary" className="text-primary bg-primary-foreground">
-              ⭐ Featured Event
+            <Badge variant="secondary" className="text-primary bg-primary-foreground flex items-center gap-1">
+              <Star className="h-3 w-3" /> Featured Event
             </Badge>
             {isEventSoon(event.date) && (
               <Badge variant="destructive" className="animate-pulse">
