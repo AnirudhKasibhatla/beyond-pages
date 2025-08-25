@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User, ChevronDown, Sparkles } from "lucide-react";
+import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -165,7 +165,7 @@ const Index = () => {
       <div ref={featuresRef} className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <Badge variant="default" className="mb-4 text-lg px-6 py-2 flex items-center gap-2 mx-auto w-fit">
-            <Sparkles className="h-5 w-5" /> Features
+            <Star className="h-5 w-5" /> Features
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
             Everything You Need for Your Reading Journey
