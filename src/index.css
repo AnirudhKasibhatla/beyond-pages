@@ -286,10 +286,10 @@ All colors MUST be HSL.
 
   /* Nature shelf effect */
   .nature-shelf {
-    @apply relative p-6 bg-gradient-to-br from-wood/20 to-bark/10 border border-wood/30 rounded-lg;
+    @apply relative p-6 bg-gradient-to-br from-secondary/20 to-muted/30 border border-secondary/30 rounded-lg;
     &::after {
       content: '';
-      @apply absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-wood to-transparent;
+      @apply absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-secondary to-transparent;
     }
   }
 }
