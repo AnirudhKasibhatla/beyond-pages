@@ -7,6 +7,7 @@ import { AddBookForm } from "@/components/AddBookForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { HighlightConfirmation } from "@/components/HighlightConfirmation";
 import { useHighlights } from "@/hooks/useHighlights";
+import { useBooks, type Book } from "@/hooks/useBooks";
 import { ShareReviewDialog } from "@/components/ShareReviewDialog";
 import { GoodreadsImport } from "@/components/GoodreadsImport";
 import { GenreSelector } from "@/components/GenreSelector";
@@ -15,19 +16,6 @@ import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw, Edit2, Save, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useCommunity } from "@/context/CommunityContext";
-
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  isbn?: string;
-  status: 'to-read' | 'reading' | 'finished';
-  genres: string[];
-  progress?: string;
-  rating?: number;
-  reviewText?: string;
-  createdAt: Date;
-}
 
 interface BookRecommendation {
   title: string;
@@ -42,7 +30,7 @@ interface BookListProps {
 }
 
 export const BookList = ({ highlightButtons = false }: BookListProps) => {
-  const [books, setBooks] = useState<Book[]>([]);
+  const { books, addBook: addBookToDb, updateBookStatus, deleteBook: deleteBookFromDb, updateBookReview, loading } = useBooks();
   const [showAddForm, setShowAddForm] = useState(false);
   const [activeTab, setActiveTab] = useState<'reading' | 'to-read' | 'finished'>('reading');
   const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
@@ -77,51 +65,78 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
     }
   };
 
-  const addBook = (newBook: Omit<Book, 'id' | 'createdAt'>) => {
-    const book: Book = {
-      ...newBook,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-    };
-    setBooks(prev => [...prev, book]);
-    setShowAddForm(false);
-    
-    // Check for quotes in review text
-    if (newBook.reviewText) {
-      checkForQuotes(newBook.reviewText, newBook.title);
-    }
+  const addBook = async (formData: any) => {
+    try {
+      // Map form data to database format
+      const bookData = {
+        title: formData.title,
+        author: formData.author,
+        isbn: formData.isbn,
+        status: formData.status,
+        genres: formData.genres || [],
+        progress: formData.progress,
+        rating: formData.rating,
+        review_text: formData.reviewText
+      };
+      
+      await addBookToDb(bookData);
+      setShowAddForm(false);
+      
+      // Check for quotes in review text
+      if (bookData.review_text) {
+        checkForQuotes(bookData.review_text, bookData.title);
+      }
 
-    // Open share dialog and create community post if rating and review are provided
-    if (newBook.rating && newBook.reviewText?.trim()) {
-      openShare({
-        title: newBook.title,
-        author: newBook.author,
-        rating: newBook.rating,
-        reviewText: newBook.reviewText,
-      });
-      maybeCreateCommunityPost({
-        title: newBook.title,
-        author: newBook.author,
-        rating: newBook.rating,
-        reviewText: newBook.reviewText,
-      });
+      // Open share dialog and create community post if rating and review are provided
+      if (bookData.rating && bookData.review_text?.trim()) {
+        openShare({
+          title: bookData.title,
+          author: bookData.author,
+          rating: bookData.rating,
+          reviewText: bookData.review_text,
+        });
+        maybeCreateCommunityPost({
+          title: bookData.title,
+          author: bookData.author,
+          rating: bookData.rating,
+          reviewText: bookData.review_text,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to add book:', error);
     }
   };
 
-  const handleGoodreadsImport = (importedBooks: Book[]) => {
-    setBooks(prev => [...prev, ...importedBooks]);
-    
-    // Create community posts for books with reviews
-    importedBooks.forEach(book => {
-      if (book.reviewText?.trim() && book.rating) {
-        maybeCreateCommunityPost({
-          title: book.title,
-          author: book.author,
-          rating: book.rating,
-          reviewText: book.reviewText,
-        });
+  const handleGoodreadsImport = async (importedBooks: any[]) => {
+    // Convert imported books to our Book format and add them to database
+    for (const importedBook of importedBooks) {
+      try {
+        const bookData = {
+          title: importedBook.title,
+          author: importedBook.author,
+          isbn: importedBook.isbn,
+          status: importedBook.status,
+          genres: importedBook.genres || [],
+          progress: importedBook.progress,
+          rating: importedBook.rating,
+          review_text: importedBook.reviewText || importedBook.review_text
+        };
+        
+        await addBookToDb(bookData);
+        
+        // Create community posts for books with reviews
+        if (bookData.review_text?.trim() && bookData.rating) {
+          maybeCreateCommunityPost({
+            title: bookData.title,
+            author: bookData.author,
+            rating: bookData.rating,
+            reviewText: bookData.review_text,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to import book:', importedBook.title, error);
       }
-    });
+    }
   };
 
   const maybeCreateCommunityPost = (payload: { title: string; author: string; rating?: number; reviewText?: string }) => {
@@ -135,58 +150,64 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
     }
   };
 
-  const updateBookStatus = (bookId: string, newStatus: Book['status']) => {
-    setBooks(prev => prev.map(book => 
-      book.id === bookId ? { ...book, status: newStatus } : book
-    ));
+  const handleUpdateBookStatus = async (bookId: string, newStatus: Book['status']) => {
+    try {
+      await updateBookStatus(bookId, newStatus);
+    } catch (error) {
+      console.error('Failed to update book status:', error);
+    }
   };
 
-  const deleteBook = (bookId: string) => {
-    setBooks(prev => prev.filter(book => book.id !== bookId));
+  const handleDeleteBook = async (bookId: string) => {
+    try {
+      await deleteBookFromDb(bookId);
+    } catch (error) {
+      console.error('Failed to delete book:', error);
+    }
   };
 
   const startEditingReview = (book: Book) => {
     setEditingBookId(book.id);
-    setEditReviewText(book.reviewText || '');
+    setEditReviewText(book.review_text || '');
     setEditRating(book.rating || 0);
   };
 
-  const saveReviewEdit = (bookId: string) => {
-    const prevBook = books.find(b => b.id === bookId);
-    const updatedText = editReviewText;
-    const updatedRating = editRating;
+  const saveReviewEdit = async (bookId: string) => {
+    try {
+      const prevBook = books.find(b => b.id === bookId);
+      const updatedText = editReviewText;
+      const updatedRating = editRating;
 
-    setBooks(prev => prev.map(book => 
-      book.id === bookId 
-        ? { ...book, reviewText: updatedText, rating: updatedRating || undefined }
-        : book
-    ));
-    setEditingBookId(null);
-    setEditReviewText('');
-    setEditRating(0);
-    
-    // Check for quotes in the updated review
-    if (updatedText) {
-      const book = prevBook;
-      if (book) {
-        checkForQuotes(updatedText, book.title);
+      await updateBookReview(bookId, updatedText, updatedRating || undefined);
+      setEditingBookId(null);
+      setEditReviewText('');
+      setEditRating(0);
+      
+      // Check for quotes in the updated review
+      if (updatedText) {
+        const book = prevBook;
+        if (book) {
+          checkForQuotes(updatedText, book.title);
+        }
       }
-    }
 
-    // Open share dialog and create community post if rating and review are provided
-    if (prevBook && updatedRating > 0 && updatedText?.trim()) {
-      openShare({
-        title: prevBook.title,
-        author: prevBook.author,
-        rating: updatedRating,
-        reviewText: updatedText,
-      });
-      maybeCreateCommunityPost({
-        title: prevBook.title,
-        author: prevBook.author,
-        rating: updatedRating,
-        reviewText: updatedText,
-      });
+      // Open share dialog and create community post if rating and review are provided
+      if (prevBook && updatedRating > 0 && updatedText?.trim()) {
+        openShare({
+          title: prevBook.title,
+          author: prevBook.author,
+          rating: updatedRating,
+          reviewText: updatedText,
+        });
+        maybeCreateCommunityPost({
+          title: prevBook.title,
+          author: prevBook.author,
+          rating: updatedRating,
+          reviewText: updatedText,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to save review:', error);
     }
   };
 
@@ -264,16 +285,18 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
     }
   };
 
-  const addRecommendedBook = (rec: BookRecommendation) => {
-    const book: Book = {
-      id: Date.now().toString(),
-      title: rec.title,
-      author: rec.author,
-      status: 'to-read',
-      genres: [rec.genre],
-      createdAt: new Date(),
-    };
-    setBooks(prev => [...prev, book]);
+  const addRecommendedBook = async (rec: BookRecommendation) => {
+    try {
+      const bookData = {
+        title: rec.title,
+        author: rec.author,
+        status: 'to-read' as const,
+        genres: [rec.genre],
+      };
+      await addBookToDb(bookData);
+    } catch (error) {
+      console.error('Failed to add recommended book:', error);
+    }
   };
 
   return (
@@ -464,7 +487,28 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
       </div>
 
       {/* Books Grid */}
-      {currentBooks.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Card key={i} className="p-6 bg-gradient-card animate-pulse">
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <div className="space-y-2 flex-1">
+                    <div className="h-5 bg-muted rounded w-3/4"></div>
+                    <div className="h-4 bg-muted rounded w-1/2"></div>
+                  </div>
+                  <div className="h-6 bg-muted rounded w-16"></div>
+                </div>
+                <div className="flex gap-1">
+                  <div className="h-5 bg-muted rounded w-12"></div>
+                  <div className="h-5 bg-muted rounded w-12"></div>
+                </div>
+                <div className="h-12 bg-muted rounded"></div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : currentBooks.length === 0 ? (
         <Card className="p-12 text-center bg-gradient-card shadow-soft">
           <div className="flex flex-col items-center gap-4">
             {getStatusIcon(activeTab)}
@@ -594,9 +638,9 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                       )}
                     </div>
 
-                    {book.reviewText && (
+                    {book.review_text && (
                       <p className="text-sm text-muted-foreground line-clamp-3">
-                        {book.reviewText}
+                        {book.review_text}
                       </p>
                     )}
 
@@ -608,7 +652,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                         className="gap-2 text-muted-foreground hover:text-foreground"
                       >
                         <Edit2 className="h-3 w-3" />
-                        {book.reviewText || book.rating ? 'Edit Review' : 'Add Review'}
+                        {book.review_text || book.rating ? 'Edit Review' : 'Add Review'}
                       </Button>
                     )}
                   </div>
@@ -624,7 +668,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => updateBookStatus(book.id, 'reading')}
+                        onClick={() => handleUpdateBookStatus(book.id, 'reading')}
                         className="flex-1"
                       >
                         Start Reading
@@ -634,7 +678,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => updateBookStatus(book.id, 'finished')}
+                        onClick={() => handleUpdateBookStatus(book.id, 'finished')}
                         className="flex-1"
                       >
                         Mark Finished
@@ -644,7 +688,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => deleteBook(book.id)}
+                    onClick={() => handleDeleteBook(book.id)}
                     className="text-destructive hover:text-destructive w-full"
                   >
                     Remove

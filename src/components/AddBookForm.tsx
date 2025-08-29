@@ -258,47 +258,17 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
       return;
     }
     
-    try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) {
-        toast({
-          title: "Authentication required",
-          description: "Please log in to add books.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('books')
-        .insert({
-          title: formData.title,
-          author: formData.author,
-          isbn: formData.isbn || null,
-          status: formData.status,
-          genres: formData.genres,
-          progress: formData.progress || null,
-          rating: formData.rating || null,
-          review_text: formData.reviewText || null,
-          user_id: user.data.user.id
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Book added!",
-        description: `"${formData.title}" has been added to your library.`,
-      });
-
-      onAddBook(formData);
-    } catch (error) {
-      console.error('Error adding book:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add book. Please try again.",
-        variant: "destructive",
-      });
-    }
+    // Pass the book data to parent component for database handling
+    onAddBook({
+      title: formData.title,
+      author: formData.author,
+      isbn: formData.isbn,
+      status: formData.status,
+      genres: formData.genres,
+      progress: formData.progress,
+      rating: formData.rating,
+      reviewText: formData.reviewText
+    });
   };
 
   return (
