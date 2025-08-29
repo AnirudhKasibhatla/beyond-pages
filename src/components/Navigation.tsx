@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { LucideIcon, Home } from "lucide-react";
+import { LucideIcon, Home, Microscope } from "lucide-react";
 import UserMenu from "./UserMenu";
+import { GlobalSearch } from "./GlobalSearch";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
@@ -22,6 +24,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems }: Navigation
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   
   const handleProfileClick = () => {
     setCurrentView('profile');
@@ -33,6 +36,14 @@ export const Navigation = ({ currentView, setCurrentView, navItems }: Navigation
 
   const handleChallengesClick = () => {
     setCurrentView('challenges');
+  };
+
+  const handleSearchClick = () => {
+    setIsSearchOpen(true);
+  };
+
+  const handleSearchClose = () => {
+    setIsSearchOpen(false);
   };
   return (
     <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
@@ -58,18 +69,33 @@ export const Navigation = ({ currentView, setCurrentView, navItems }: Navigation
                     <Icon className="h-4 w-4" />
                     <span className="hidden sm:inline">{item.label}</span>
                   </Button>
-                );
-              })}
-              <UserMenu 
-                onProfileClick={handleProfileClick}
-                onSettingsClick={handleSettingsClick}
-                onChallengesClick={handleChallengesClick}
-              />
-            </div>
-          </Card>
-          
+                  );
+                })}
+                
+                {/* Search Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSearchClick}
+                  className="flex items-center gap-2 hover:shadow-soft"
+                >
+                  <Microscope className="h-4 w-4" />
+                  <span className="hidden sm:inline">Search</span>
+                </Button>
+                
+                <UserMenu 
+                  onProfileClick={handleProfileClick}
+                  onSettingsClick={handleSettingsClick}
+                  onChallengesClick={handleChallengesClick}
+                />
+              </div>
+            </Card>
+            
+          </div>
         </div>
+        
+        {/* Global Search Modal */}
+        <GlobalSearch isOpen={isSearchOpen} onClose={handleSearchClose} />
       </div>
-    </div>
-  );
-};
+    );
+  };
