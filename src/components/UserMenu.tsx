@@ -29,6 +29,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, on
   const handleSignOut = async () => {
     try {
       await signOut();
+      // Navigate to home after sign out
+      navigate('/');
       toast({
         title: "Signed out",
         description: "You have been successfully signed out.",

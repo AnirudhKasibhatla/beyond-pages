@@ -14,6 +14,11 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Clear guest status when user signs in
+        if (session?.user) {
+          localStorage.removeItem('isGuest');
+        }
       }
     );
 
@@ -22,12 +27,19 @@ export const useAuth = () => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Clear guest status if there's an existing session
+      if (session?.user) {
+        localStorage.removeItem('isGuest');
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signOut = async () => {
+    // Clear guest status when signing out
+    localStorage.removeItem('isGuest');
     await supabase.auth.signOut();
   };
 
