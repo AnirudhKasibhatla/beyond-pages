@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { User, Trophy, Star, Book, Edit, Save, X, Quote } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { HighlightsList } from "@/components/HighlightsList";
+
 import { EditUsernameDialog } from "./EditUsernameDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -358,9 +358,6 @@ export const Profile = () => {
           </Card>
 
           {/* Reading Goals moved to Reading Challenges tab */}
-
-          {/* Highlights Section */}
-          <HighlightsList />
         </div>
       </div>
 

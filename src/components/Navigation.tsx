@@ -18,24 +18,48 @@ interface NavigationProps {
   currentView: string;
   setCurrentView: (view: any) => void;
   navItems: NavItem[];
+  onProfileClick?: () => void;
+  onSettingsClick?: () => void;
+  onChallengesClick?: () => void;
+  onHighlightsClick?: () => void;
 }
 
-export const Navigation = ({ currentView, setCurrentView, navItems }: NavigationProps) => {
+export const Navigation = ({ currentView, setCurrentView, navItems, onProfileClick, onSettingsClick, onChallengesClick, onHighlightsClick }: NavigationProps) => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   
   const handleProfileClick = () => {
-    setCurrentView('profile');
+    if (onProfileClick) {
+      onProfileClick();
+    } else {
+      setCurrentView('profile');
+    }
   };
 
   const handleSettingsClick = () => {
-    setCurrentView('settings');
+    if (onSettingsClick) {
+      onSettingsClick();
+    } else {
+      setCurrentView('settings');
+    }
   };
 
   const handleChallengesClick = () => {
-    setCurrentView('challenges');
+    if (onChallengesClick) {
+      onChallengesClick();
+    } else {
+      setCurrentView('challenges');
+    }
+  };
+
+  const handleHighlightsClick = () => {
+    if (onHighlightsClick) {
+      onHighlightsClick();
+    } else {
+      setCurrentView('highlights');
+    }
   };
 
   const handleSearchClick = () => {
@@ -87,6 +111,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems }: Navigation
                   onProfileClick={handleProfileClick}
                   onSettingsClick={handleSettingsClick}
                   onChallengesClick={handleChallengesClick}
+                  onHighlightsClick={handleHighlightsClick}
                 />
               </div>
             </Card>

@@ -7,6 +7,7 @@ import { Events } from "@/components/Events";
 import { BookGroups } from "@/components/BookGroups";
 import { Settings } from "@/components/Settings";
 import { ReadingChallenges } from "@/components/ReadingChallenges";
+import { HighlightsList } from "@/components/HighlightsList";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,7 +21,7 @@ import { useGuestAuth } from "@/hooks/useGuestAuth";
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
 import { ReadingChallengeModal } from "@/components/ReadingChallengeModal";
 
-type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges';
+type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges' | 'highlights';
 
 const Dashboard = () => {
   const [currentView, setCurrentView] = useState<ViewType>('community');
@@ -99,6 +100,8 @@ const Dashboard = () => {
         return <Settings />;
       case 'challenges':
         return <ReadingChallenges />;
+      case 'highlights':
+        return <HighlightsList />;
       default:
         return <BookList highlightButtons={highlightButtons} />;
     }
@@ -163,10 +166,14 @@ const Dashboard = () => {
 
 
           {/* Navigation */}
-          <Navigation 
-            currentView={currentView} 
-            setCurrentView={handleViewChange} 
-            navItems={navItems}
+        <Navigation 
+          currentView={currentView} 
+          setCurrentView={handleViewChange} 
+          navItems={navItems}
+          onProfileClick={() => setCurrentView('profile')}
+          onSettingsClick={() => setCurrentView('settings')}
+          onChallengesClick={() => setCurrentView('challenges')}
+          onHighlightsClick={() => setCurrentView('highlights')}
           />
 
           {/* Main Content */}
@@ -194,6 +201,10 @@ const Dashboard = () => {
           currentView={currentView} 
           setCurrentView={handleViewChange} 
           navItems={navItems}
+          onProfileClick={() => setCurrentView('profile')}
+          onSettingsClick={() => setCurrentView('settings')}
+          onChallengesClick={() => setCurrentView('challenges')}
+          onHighlightsClick={() => setCurrentView('highlights')}
         />
         <div className="max-w-6xl mx-auto px-6 py-8 justify-center">
           {renderCurrentView()}
