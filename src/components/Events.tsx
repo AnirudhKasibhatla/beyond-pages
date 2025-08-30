@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { CreateEventDialog } from "./CreateEventDialog";
+import { EventDetailsDialog } from "./EventDetailsDialog";
 
 interface BookEvent {
   id: string;
@@ -36,6 +37,8 @@ export const Events = () => {
   const [userRSVPs, setUserRSVPs] = useState<string[]>([]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<BookEvent | null>(null);
+  const [showEventDetails, setShowEventDetails] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -193,6 +196,11 @@ export const Events = () => {
   };
 
   const [claimedHostEvents, setClaimedHostEvents] = useState<string[]>([]);
+
+  const handleEventClick = (event: BookEvent) => {
+    setSelectedEvent(event);
+    setShowEventDetails(true);
+  };
 
   const claimHostXP = (eventId: string) => {
     const event = events.find(e => e.id === eventId);
@@ -361,7 +369,7 @@ export const Events = () => {
 
       {/* Featured Event */}
       {filteredEvents.filter(e => e.featured).map(event => (
-        <Card key={event.id} className="p-6 bg-gradient-hero text-primary-foreground shadow-strong">
+        <Card key={event.id} className="p-6 bg-gradient-hero text-primary-foreground shadow-strong cursor-pointer" onClick={() => handleEventClick(event)}>
           <div className="flex items-start justify-between mb-4">
             <Badge variant="secondary" className="text-primary bg-primary-foreground flex items-center gap-1">
               <Star className="h-3 w-3" /> Featured Event
@@ -428,7 +436,7 @@ export const Events = () => {
       {/* Events Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredEvents.filter(e => !e.featured).map((event) => (
-          <Card key={event.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card">
+          <Card key={event.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card cursor-pointer" onClick={() => handleEventClick(event)}>
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -528,6 +536,13 @@ export const Events = () => {
 
       {/* Create Event Dialog */}
       <CreateEventDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />
+      
+      <EventDetailsDialog 
+        event={selectedEvent}
+        isOpen={showEventDetails}
+        onClose={() => setShowEventDetails(false)}
+        onRSVP={toggleRSVP}
+      />
       </Card>
     </div>
   );

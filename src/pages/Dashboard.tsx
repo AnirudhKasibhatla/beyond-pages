@@ -109,7 +109,6 @@ const Dashboard = () => {
 
   const baseNavItems = [
     { id: 'community' as ViewType, label: 'Community', icon: Users },
-    { id: 'tournament' as ViewType, label: 'Tournament', icon: Trophy },
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
     { id: 'books' as ViewType, label: 'My Shelf', icon: Book },

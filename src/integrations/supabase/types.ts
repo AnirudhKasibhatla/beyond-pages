@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       book_events: {
         Row: {
+          additional_info: string | null
           category: string
           created_at: string
           creator_id: string
@@ -23,15 +24,21 @@ export type Database = {
           event_date: string
           event_time: string
           featured: boolean
+          host_bio: string | null
           host_xp: number
           id: string
+          image_url: string | null
           location: string
           max_attendees: number | null
+          recurring: boolean | null
+          recurring_days: string[] | null
+          recurring_duration: number | null
           title: string
           type: string
           updated_at: string
         }
         Insert: {
+          additional_info?: string | null
           category: string
           created_at?: string
           creator_id: string
@@ -39,15 +46,21 @@ export type Database = {
           event_date: string
           event_time: string
           featured?: boolean
+          host_bio?: string | null
           host_xp?: number
           id?: string
+          image_url?: string | null
           location: string
           max_attendees?: number | null
+          recurring?: boolean | null
+          recurring_days?: string[] | null
+          recurring_duration?: number | null
           title: string
           type: string
           updated_at?: string
         }
         Update: {
+          additional_info?: string | null
           category?: string
           created_at?: string
           creator_id?: string
@@ -55,10 +68,15 @@ export type Database = {
           event_date?: string
           event_time?: string
           featured?: boolean
+          host_bio?: string | null
           host_xp?: number
           id?: string
+          image_url?: string | null
           location?: string
           max_attendees?: number | null
+          recurring?: boolean | null
+          recurring_days?: string[] | null
+          recurring_duration?: number | null
           title?: string
           type?: string
           updated_at?: string
@@ -68,6 +86,8 @@ export type Database = {
       book_groups: {
         Row: {
           activity_level: string
+          additional_info: string | null
+          book_cover_url: string | null
           created_at: string
           creator_id: string
           current_book: string | null
@@ -75,6 +95,7 @@ export type Database = {
           description: string | null
           genre: string | null
           id: string
+          image_url: string | null
           location: string
           name: string
           privacy: string
@@ -84,6 +105,8 @@ export type Database = {
         }
         Insert: {
           activity_level?: string
+          additional_info?: string | null
+          book_cover_url?: string | null
           created_at?: string
           creator_id: string
           current_book?: string | null
@@ -91,6 +114,7 @@ export type Database = {
           description?: string | null
           genre?: string | null
           id?: string
+          image_url?: string | null
           location: string
           name: string
           privacy?: string
@@ -100,6 +124,8 @@ export type Database = {
         }
         Update: {
           activity_level?: string
+          additional_info?: string | null
+          book_cover_url?: string | null
           created_at?: string
           creator_id?: string
           current_book?: string | null
@@ -107,6 +133,7 @@ export type Database = {
           description?: string | null
           genre?: string | null
           id?: string
+          image_url?: string | null
           location?: string
           name?: string
           privacy?: string
@@ -161,6 +188,41 @@ export type Database = {
         }
         Relationships: []
       }
+      event_details: {
+        Row: {
+          additional_details: string | null
+          created_at: string
+          event_id: string
+          host_bio: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          additional_details?: string | null
+          created_at?: string
+          event_id: string
+          host_bio?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          additional_details?: string | null
+          created_at?: string
+          event_id?: string
+          host_bio?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_details_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "book_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_rsvps: {
         Row: {
           created_at: string
@@ -186,6 +248,41 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "book_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_details: {
+        Row: {
+          additional_details: string | null
+          book_covers: string[] | null
+          created_at: string
+          group_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          additional_details?: string | null
+          book_covers?: string[] | null
+          created_at?: string
+          group_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          additional_details?: string | null
+          book_covers?: string[] | null
+          created_at?: string
+          group_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_details_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "book_groups"
             referencedColumns: ["id"]
           },
         ]

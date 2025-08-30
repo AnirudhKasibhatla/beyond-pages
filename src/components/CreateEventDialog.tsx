@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +31,10 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
     type: "",
     category: "",
     maxAttendees: "",
-    featured: false
+    featured: false,
+    recurring: false,
+    recurringDays: [] as string[],
+    recurringDuration: ""
   });
 
   const { toast } = useToast();
@@ -67,7 +71,10 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
           category: formData.category,
           max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
           featured: formData.featured,
-          creator_id: userData.user.id
+          creator_id: userData.user.id,
+          recurring: formData.recurring,
+          recurring_days: formData.recurring ? formData.recurringDays : null,
+          recurring_duration: formData.recurring && formData.recurringDuration ? parseInt(formData.recurringDuration) : null
         })
         .select()
         .single();
@@ -99,7 +106,10 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
         type: "",
         category: "",
         maxAttendees: "",
-        featured: false
+        featured: false,
+        recurring: false,
+        recurringDays: [],
+        recurringDuration: ""
       });
       onOpenChange(false);
     } catch (error) {
@@ -112,11 +122,25 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
     }
   };
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleRecurringDayChange = (day: string, checked: boolean) => {
+    if (checked) {
+      setFormData(prev => ({
+        ...prev,
+        recurringDays: [...prev.recurringDays, day]
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        recurringDays: prev.recurringDays.filter(d => d !== day)
+      }));
+    }
   };
 
   return (
@@ -230,6 +254,50 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
               value={formData.maxAttendees}
               onChange={(e) => handleInputChange("maxAttendees", e.target.value)}
             />
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="recurring"
+                checked={formData.recurring}
+                onCheckedChange={(checked) => handleInputChange("recurring", checked as boolean)}
+              />
+              <Label htmlFor="recurring">Make this a recurring event</Label>
+            </div>
+
+            {formData.recurring && (
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                <div className="space-y-2">
+                  <Label>Days of the week</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                      <div key={day} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={day.toLowerCase()}
+                          checked={formData.recurringDays.includes(day.toLowerCase())}
+                          onCheckedChange={(checked) => handleRecurringDayChange(day.toLowerCase(), checked as boolean)}
+                        />
+                        <Label htmlFor={day.toLowerCase()} className="text-sm">{day}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="recurring-duration">Number of weeks to repeat</Label>
+                  <Input
+                    id="recurring-duration"
+                    type="number"
+                    placeholder="e.g., 4"
+                    min="1"
+                    max="52"
+                    value={formData.recurringDuration}
+                    onChange={(e) => handleInputChange("recurringDuration", e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">

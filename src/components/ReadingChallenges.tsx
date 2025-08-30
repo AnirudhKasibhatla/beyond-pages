@@ -9,12 +9,14 @@ import { ArrowLeft, Trophy, Calendar, BookOpen, Star, MessageSquare, Edit, Plus 
 import { useReadingChallenges, ReadingChallenge } from "@/hooks/useReadingChallenges";
 import { useBooks } from "@/hooks/useBooks";
 import { EditChallengeDialog } from "./EditChallengeDialog";
+import { ReadingChallengeModal } from "./ReadingChallengeModal";
 import { useToast } from "@/hooks/use-toast";
 
 export const ReadingChallenges = () => {
   const [selectedChallenge, setSelectedChallenge] = useState<ReadingChallenge | null>(null);
   const [viewMode, setViewMode] = useState<'books' | 'reviews'>('books');
   const [editingChallenge, setEditingChallenge] = useState<ReadingChallenge | null>(null);
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
   
   const { challenges, loading, createChallenge } = useReadingChallenges();
   const { books } = useBooks();
@@ -80,7 +82,7 @@ export const ReadingChallenges = () => {
           <Button
             variant="default"
             className="flex items-center gap-2"
-            onClick={() => setEditingChallenge(selectedChallenge)}
+            onClick={() => setShowChallengeModal(true)}
           >
             <Edit className="h-4 w-4" />
             Edit Challenge
@@ -339,6 +341,12 @@ export const ReadingChallenges = () => {
         isOpen={!!editingChallenge}
         onClose={() => setEditingChallenge(null)}
         challenge={editingChallenge}
+      />
+      
+      <ReadingChallengeModal 
+        isOpen={showChallengeModal}
+        onClose={() => setShowChallengeModal(false)}
+        onComplete={() => setShowChallengeModal(false)}
       />
     </div>
   );
