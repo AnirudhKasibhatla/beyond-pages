@@ -263,6 +263,7 @@ export type Database = {
           phone: string | null
           updated_at: string
           user_id: string
+          username: string | null
         }
         Insert: {
           country?: string | null
@@ -277,6 +278,7 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           user_id: string
+          username?: string | null
         }
         Update: {
           country?: string | null
@@ -291,6 +293,46 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      reading_challenges: {
+        Row: {
+          best_month: string | null
+          completed: number
+          created_at: string
+          favorite_genre: string | null
+          goal: number
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          best_month?: string | null
+          completed?: number
+          created_at?: string
+          favorite_genre?: string | null
+          goal?: number
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          best_month?: string | null
+          completed?: number
+          created_at?: string
+          favorite_genre?: string | null
+          goal?: number
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          year?: number
         }
         Relationships: []
       }
@@ -323,7 +365,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_username: {
+        Args: { first_name_input: string; last_name_input: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
