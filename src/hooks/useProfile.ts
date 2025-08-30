@@ -9,6 +9,7 @@ interface Profile {
   last_name: string | null;
   name: string | null;
   bio: string | null;
+  username: string | null;
   display_name?: string | null;
   email?: string | null;
   phone?: string | null;

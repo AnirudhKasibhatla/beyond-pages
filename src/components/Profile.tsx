@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { User, Trophy, Star, Book, Edit, Save, X, Quote } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { HighlightsList } from "@/components/HighlightsList";
+import { EditUsernameDialog } from "./EditUsernameDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import badgeImage from "@/assets/badge-reading.png";
@@ -59,6 +60,7 @@ export const Profile = () => {
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState(profile);
+  const [showUsernameDialog, setShowUsernameDialog] = useState(false);
 
   // Update profile when database profile changes
   useEffect(() => {
@@ -197,6 +199,20 @@ export const Profile = () => {
                     onChange={(e) => setEditForm({...editForm, name: e.target.value})}
                     placeholder="Your name"
                   />
+                  <div className="flex gap-2">
+                    <Input
+                      value={`@${dbProfile?.username || ''}`}
+                      disabled
+                      className="opacity-50 flex-1"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowUsernameDialog(true)}
+                    >
+                      Edit
+                    </Button>
+                  </div>
                   <Textarea
                     value={editForm.bio}
                     onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
@@ -207,6 +223,9 @@ export const Profile = () => {
               ) : (
                 <>
                   <h3 className="text-xl font-bold text-card-foreground">{profile.name}</h3>
+                  {dbProfile?.username && (
+                    <p className="text-muted-foreground text-sm">@{dbProfile.username}</p>
+                  )}
                   <p className="text-muted-foreground text-sm">{profile.bio}</p>
                 </>
               )}
@@ -344,6 +363,11 @@ export const Profile = () => {
           <HighlightsList />
         </div>
       </div>
+
+      <EditUsernameDialog 
+        isOpen={showUsernameDialog}
+        onClose={() => setShowUsernameDialog(false)}
+      />
     </div>
   );
 };

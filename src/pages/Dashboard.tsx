@@ -17,6 +17,8 @@ import { CommunityProvider } from "@/context/CommunityContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
+import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
+import { ReadingChallengeModal } from "@/components/ReadingChallengeModal";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges';
 
@@ -30,6 +32,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
+  const { showModal, closeModal } = useFirstTimeUser();
 
   const handleViewChange = (view: ViewType) => {
     setCurrentView(view);
@@ -107,7 +110,6 @@ const Dashboard = () => {
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
     { id: 'books' as ViewType, label: 'My Shelf', icon: Book },
-    { id: 'challenges' as ViewType, label: 'Reading Challenges', icon: Target },
   ];
 
   const hamburgerItems = [
@@ -171,6 +173,15 @@ const Dashboard = () => {
           <div ref={libraryRef} className="max-w-6xl mx-auto px-6 py-8">
             {renderCurrentView()}
           </div>
+          
+          {/* First Time User Modal for Books View */}
+          {!isGuest && (
+            <ReadingChallengeModal 
+              isOpen={showModal}
+              onClose={closeModal}
+              onComplete={closeModal}
+            />
+          )}
         </div>
       </CommunityProvider>
     );

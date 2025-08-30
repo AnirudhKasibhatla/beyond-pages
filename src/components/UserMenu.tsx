@@ -98,7 +98,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ onProfileClick, onSettingsClick, on
             <span>Profile</span>
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem onClick={onChallengesClick} className="lg:hidden">
+        <DropdownMenuItem onClick={onChallengesClick}>
           <Target className="mr-2 h-4 w-4" />
           <span>Reading Challenges</span>
         </DropdownMenuItem>

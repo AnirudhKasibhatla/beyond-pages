@@ -4,38 +4,55 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Trophy, Calendar, BookOpen, Star, MessageSquare, Edit } from "lucide-react";
-
-interface Challenge {
-  year: number;
-  goal: number;
-  completed: number;
-  status: 'completed' | 'in-progress' | 'failed';
-  bestMonth: string;
-  favoriteGenre: string;
-  books: string[];
-  reviews: string[];
-}
-
-const mockChallenges: Challenge[] = [
-  {
-    year: 2025,
-    goal: 25,
-    completed: 0,
-    status: 'in-progress',
-    bestMonth: 'No data',
-    favoriteGenre: 'No data',
-    books: [],
-    reviews: []
-  }
-];
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { ArrowLeft, Trophy, Calendar, BookOpen, Star, MessageSquare, Edit, Plus } from "lucide-react";
+import { useReadingChallenges, ReadingChallenge } from "@/hooks/useReadingChallenges";
+import { useBooks } from "@/hooks/useBooks";
+import { EditChallengeDialog } from "./EditChallengeDialog";
+import { useToast } from "@/hooks/use-toast";
 
 export const ReadingChallenges = () => {
-  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [selectedChallenge, setSelectedChallenge] = useState<ReadingChallenge | null>(null);
   const [viewMode, setViewMode] = useState<'books' | 'reviews'>('books');
+  const [editingChallenge, setEditingChallenge] = useState<ReadingChallenge | null>(null);
+  
+  const { challenges, loading, createChallenge } = useReadingChallenges();
+  const { books } = useBooks();
+  const { toast } = useToast();
 
-  const handleChallengeClick = (challenge: Challenge) => {
+  const handleChallengeClick = (challenge: ReadingChallenge) => {
     setSelectedChallenge(challenge);
+  };
+
+  const handleCreateChallenge = async () => {
+    const currentYear = new Date().getFullYear();
+    
+    try {
+      const { error } = await createChallenge({
+        year: currentYear,
+        goal: 12,
+        status: 'in-progress',
+        completed: 0,
+        best_month: 'No data',
+        favorite_genre: 'No preference'
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Challenge Created!",
+        description: `Your ${currentYear} reading challenge has been created.`,
+      });
+    } catch (error) {
+      console.error('Error creating challenge:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create reading challenge. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleBackClick = () => {
@@ -63,7 +80,7 @@ export const ReadingChallenges = () => {
           <Button
             variant="default"
             className="flex items-center gap-2"
-            onClick={() => {/* TODO: Add edit functionality */}}
+            onClick={() => setEditingChallenge(selectedChallenge)}
           >
             <Edit className="h-4 w-4" />
             Edit Challenge
@@ -104,11 +121,11 @@ export const ReadingChallenges = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Best Month</span>
-              <span className="font-medium">{selectedChallenge.bestMonth}</span>
+              <span className="font-medium">{selectedChallenge.best_month}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Favorite Genre</span>
-              <span className="font-medium">{selectedChallenge.favoriteGenre}</span>
+              <span className="font-medium">{selectedChallenge.favorite_genre}</span>
             </div>
           </div>
         </Card>
@@ -120,7 +137,7 @@ export const ReadingChallenges = () => {
             className="flex items-center gap-2"
           >
             <BookOpen className="h-4 w-4" />
-            Books ({selectedChallenge.books.length})
+            Books ({books.filter(book => book.status === 'finished').length})
           </Button>
           <Button
             variant={viewMode === 'reviews' ? 'default' : 'outline'}
@@ -128,7 +145,7 @@ export const ReadingChallenges = () => {
             className="flex items-center gap-2"
           >
             <MessageSquare className="h-4 w-4" />
-            Reviews ({selectedChallenge.reviews.length})
+            Reviews ({books.filter(book => book.review_text).length})
           </Button>
         </div>
 
@@ -140,24 +157,30 @@ export const ReadingChallenges = () => {
                 Books Read in {selectedChallenge.year}
               </CardTitle>
               <CardDescription>
-                All {selectedChallenge.books.length} books you completed this year
+                All {books.filter(book => book.status === 'finished').length} books you completed this year
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {selectedChallenge.books.map((book, index) => (
-                  <Card key={index} className="p-4 hover:shadow-medium transition-shadow">
+                {books.filter(book => book.status === 'finished').map((book) => (
+                  <Card key={book.id} className="p-4 hover:shadow-medium transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                         <BookOpen className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-sm leading-tight">{book}</h4>
-                        <div className="flex items-center gap-1 mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
-                          ))}
-                        </div>
+                        <h4 className="font-medium text-sm leading-tight">{book.title}</h4>
+                        <p className="text-xs text-muted-foreground mt-1">{book.author}</p>
+                        {book.rating && (
+                          <div className="flex items-center gap-1 mt-1">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`h-3 w-3 ${i < book.rating ? 'fill-current text-yellow-400' : 'text-gray-300'}`} 
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Card>
@@ -173,24 +196,30 @@ export const ReadingChallenges = () => {
                 Reviews from {selectedChallenge.year}
               </CardTitle>
               <CardDescription>
-                All {selectedChallenge.reviews.length} reviews you wrote this year
+                All {books.filter(book => book.review_text).length} reviews you wrote this year
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {selectedChallenge.reviews.map((review, index) => (
-                  <Card key={index} className="p-4 hover:shadow-soft transition-shadow">
+                {books.filter(book => book.review_text).map((book) => (
+                  <Card key={book.id} className="p-4 hover:shadow-soft transition-shadow">
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
                         <MessageSquare className="h-4 w-4 text-accent" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm text-muted-foreground">{review}</p>
-                        <div className="flex items-center gap-1 mt-2">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
-                          ))}
-                        </div>
+                        <h4 className="font-medium text-sm mb-1">{book.title}</h4>
+                        <p className="text-sm text-muted-foreground">{book.review_text}</p>
+                        {book.rating && (
+                          <div className="flex items-center gap-1 mt-2">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`h-3 w-3 ${i < book.rating ? 'fill-current text-yellow-400' : 'text-gray-300'}`} 
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Card>
@@ -214,8 +243,26 @@ export const ReadingChallenges = () => {
 
       <Separator />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockChallenges.map((challenge) => (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <LoadingSkeleton key={i} className="h-48" />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="flex justify-between items-center">
+            <p className="text-muted-foreground">
+              {challenges.length === 0 ? 'No challenges yet. Create your first one!' : `You have ${challenges.length} reading challenge${challenges.length !== 1 ? 's' : ''}`}
+            </p>
+            <Button onClick={handleCreateChallenge} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              New Challenge
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {challenges.map((challenge) => (
           <Card 
             key={challenge.year}
             className={`p-6 cursor-pointer transition-all duration-300 hover:shadow-medium ${
@@ -266,13 +313,13 @@ export const ReadingChallenges = () => {
                   <span className={challenge.status === 'in-progress' ? 'text-white/90' : 'text-muted-foreground'}>
                     Best Month
                   </span>
-                  <span className="font-medium">{challenge.bestMonth}</span>
+                  <span className="font-medium">{challenge.best_month}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className={challenge.status === 'in-progress' ? 'text-white/90' : 'text-muted-foreground'}>
                     Favorite Genre
                   </span>
-                  <span className="font-medium">{challenge.favoriteGenre}</span>
+                  <span className="font-medium">{challenge.favorite_genre}</span>
                 </div>
               </div>
 
@@ -283,8 +330,16 @@ export const ReadingChallenges = () => {
               </div>
             </div>
           </Card>
-        ))}
-      </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <EditChallengeDialog 
+        isOpen={!!editingChallenge}
+        onClose={() => setEditingChallenge(null)}
+        challenge={editingChallenge}
+      />
     </div>
   );
 };
