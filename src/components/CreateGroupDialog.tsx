@@ -45,7 +45,14 @@ export const CreateGroupDialog = ({ open, onOpenChange }: CreateGroupDialogProps
     }
 
     try {
-      const { data, error } = await supabase
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !userData.user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Create the group
+      const { data: groupData, error } = await supabase
         .from('book_groups')
         .insert({
           name: formData.name,
@@ -54,10 +61,23 @@ export const CreateGroupDialog = ({ open, onOpenChange }: CreateGroupDialogProps
           description: formData.description,
           genre: formData.genre,
           type: formData.type,
-          creator_id: (await supabase.auth.getUser()).data.user?.id
-        });
+          creator_id: userData.user.id
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Automatically add creator as a moderator member
+      const { error: membershipError } = await supabase
+        .from('group_memberships')
+        .insert({
+          group_id: groupData.id,
+          user_id: userData.user.id,
+          role: 'moderator'
+        });
+
+      if (membershipError) throw membershipError;
 
       toast({
         title: "Group Created!",

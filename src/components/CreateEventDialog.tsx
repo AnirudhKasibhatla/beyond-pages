@@ -54,7 +54,8 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
         throw new Error('User not authenticated');
       }
 
-      const { data, error } = await supabase
+      // Create the event
+      const { data: eventData, error } = await supabase
         .from('book_events')
         .insert({
           title: formData.title,
@@ -67,9 +68,21 @@ export const CreateEventDialog = ({ open, onOpenChange }: CreateEventDialogProps
           max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
           featured: formData.featured,
           creator_id: userData.user.id
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Automatically add creator as an attendee (host)
+      const { error: rsvpError } = await supabase
+        .from('event_rsvps')
+        .insert({
+          event_id: eventData.id,
+          user_id: userData.user.id
+        });
+
+      if (rsvpError) throw rsvpError;
 
       toast({
         title: "Event Created!",

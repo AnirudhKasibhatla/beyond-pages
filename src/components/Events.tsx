@@ -24,6 +24,8 @@ interface BookEvent {
   hostXP: number;
   host: string;
   featured?: boolean;
+  creatorId: string;
+  isHost: boolean;
 }
 
 export const Events = () => {
@@ -61,6 +63,15 @@ export const Events = () => {
             .select('id')
             .eq('event_id', event.id);
 
+          // Get host name from profiles
+          const { data: hostProfile } = await supabase
+            .from('profiles')
+            .select('name, username')
+            .eq('user_id', event.creator_id)
+            .single();
+
+          const hostName = hostProfile?.name || hostProfile?.username || 'Unknown Host';
+
           return {
             id: event.id,
             title: event.title,
@@ -74,8 +85,10 @@ export const Events = () => {
             maxAttendees: event.max_attendees,
             isRsvped: false, // Will be updated with user RSVPs
             hostXP: event.host_xp,
-            host: 'Event Host', // We'll need to get creator info
-            featured: event.featured
+            host: user?.id === event.creator_id ? 'You' : hostName,
+            featured: event.featured,
+            creatorId: event.creator_id,
+            isHost: user?.id === event.creator_id
           };
         })
       );
@@ -392,8 +405,14 @@ export const Events = () => {
               variant={event.isRsvped ? "outline" : "secondary"}
               onClick={() => toggleRSVP(event.id)}
               className="gap-2"
+              disabled={event.isHost}
             >
-              {event.isRsvped ? (
+              {event.isHost ? (
+                <>
+                  <Star className="h-4 w-4" />
+                  Host
+                </>
+              ) : event.isRsvped ? (
                 <>
                   <Check className="h-4 w-4" />
                   RSVP'd
@@ -459,8 +478,14 @@ export const Events = () => {
                   size="sm"
                   onClick={() => toggleRSVP(event.id)}
                   className="flex-1 gap-2"
+                  disabled={event.isHost}
                 >
-                  {event.isRsvped ? (
+                  {event.isHost ? (
+                    <>
+                      <Star className="h-4 w-4" />
+                      Host
+                    </>
+                  ) : event.isRsvped ? (
                     <>
                       <Check className="h-4 w-4" />
                       RSVP'd
@@ -470,7 +495,7 @@ export const Events = () => {
                   )}
                 </Button>
 
-                {isMyEvent(event.host) && !claimedHostEvents.includes(event.id) && (
+                {event.isHost && !claimedHostEvents.includes(event.id) && (
                   <Button 
                     variant="accent"
                     size="sm"

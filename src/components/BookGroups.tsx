@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter, Globe, RefreshCw } from "lucide-react";
+import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter, Globe, RefreshCw, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CreateGroupDialog } from "./CreateGroupDialog";
 import { GroupChat } from "./GroupChat";
@@ -21,6 +21,8 @@ interface BookGroup {
   currentBook: string;
   privacy: 'public' | 'private';
   activityLevel: 'low' | 'moderate' | 'high';
+  creatorId: string;
+  isCreator: boolean;
 }
 
 export const BookGroups = () => {
@@ -70,7 +72,9 @@ export const BookGroups = () => {
             isJoined: false, // Will be updated with user memberships
             currentBook: group.current_book || 'No current book',
             privacy: group.privacy as 'public' | 'private',
-            activityLevel: group.activity_level as 'low' | 'moderate' | 'high'
+            activityLevel: group.activity_level as 'low' | 'moderate' | 'high',
+            creatorId: group.creator_id,
+            isCreator: user?.id === group.creator_id
           };
         })
       );
@@ -397,8 +401,14 @@ export const BookGroups = () => {
                     variant={group.isJoined ? "outline" : "default"}
                     onClick={() => toggleJoinGroup(group.id)}
                     className="w-full gap-2"
+                    disabled={group.isCreator || group.isJoined}
                   >
-                    {group.isJoined ? (
+                    {group.isCreator ? (
+                      <>
+                        <Star className="h-4 w-4" />
+                        Moderator
+                      </>
+                    ) : group.isJoined ? (
                       <>
                         <Check className="h-4 w-4" />
                         Joined
@@ -478,8 +488,14 @@ export const BookGroups = () => {
                     variant={group.isJoined ? "outline" : "default"}
                     onClick={() => toggleJoinGroup(group.id)}
                     className="w-full gap-2"
+                    disabled={group.isCreator || group.isJoined}
                   >
-                    {group.isJoined ? (
+                    {group.isCreator ? (
+                      <>
+                        <Star className="h-4 w-4" />
+                        Moderator
+                      </>
+                    ) : group.isJoined ? (
                       <>
                         <Check className="h-4 w-4" />
                         Joined
