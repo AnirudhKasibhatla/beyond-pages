@@ -11,8 +11,11 @@ export const useFirstTimeUser = () => {
   useEffect(() => {
     if (!user || loading || hasChecked) return;
 
-    // Check if user has any reading challenges
-    if (challenges.length === 0) {
+    // Check if user has any reading challenges for current year
+    const currentYear = new Date().getFullYear();
+    const hasCurrentYearChallenge = challenges.some(challenge => challenge.year === currentYear);
+    
+    if (!hasCurrentYearChallenge) {
       setShowModal(true);
     }
     setHasChecked(true);

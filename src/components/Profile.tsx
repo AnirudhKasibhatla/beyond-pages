@@ -9,7 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { User, Trophy, Star, Book, Edit, Save, X, Quote } from "lucide-react";
+import { User, Trophy, Star, Book, Edit, Save, X, Quote, Plus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 import { EditUsernameDialog } from "./EditUsernameDialog";
@@ -52,10 +53,10 @@ export const Profile = () => {
     xp: 0,
     level: 1,
     isPublic: true,
-    favoriteGenres: [],
-    badges: [],
-    booksRead: 0,
-    currentStreak: 0
+    favoriteGenres: ['Fantasy', 'Science Fiction'],
+    badges: ['First Steps', 'Early Bird'],
+    booksRead: 5,
+    currentStreak: 7
   });
   
   const [isEditing, setIsEditing] = useState(false);
@@ -98,6 +99,13 @@ export const Profile = () => {
   };
 
   const currentLeague = getLeague(profile.level);
+
+  const availableGenres = [
+    "Fantasy", "Science Fiction", "Mystery", "Romance", "Thriller",
+    "Historical Fiction", "Literary Fiction", "Non-fiction", "Biography",
+    "Self-help", "Horror", "Adventure", "Young Adult", "Children's",
+    "Poetry", "Philosophy", "Psychology", "Business", "Health & Fitness", "Travel"
+  ];
 
   const handleSave = async () => {
     if (user && dbProfile) {
@@ -325,13 +333,54 @@ export const Profile = () => {
           {/* Favorite Genres */}
           <Card className="p-6 bg-gradient-card shadow-medium">
             <h4 className="text-lg font-semibold mb-4 text-card-foreground">Favorite Genres</h4>
-            <div className="flex flex-wrap gap-2">
-              {profile.favoriteGenres.map((genre) => (
-                <Badge key={genre} variant="default" className="text-sm px-3 py-1">
-                  {genre}
-                </Badge>
-              ))}
-            </div>
+            {isEditing ? (
+              <div className="space-y-3">
+                <Select 
+                  onValueChange={(value) => {
+                    if (!editForm.favoriteGenres.includes(value)) {
+                      setEditForm({
+                        ...editForm,
+                        favoriteGenres: [...editForm.favoriteGenres, value]
+                      });
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Add a genre..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableGenres.filter(genre => !editForm.favoriteGenres.includes(genre)).map((genre) => (
+                      <SelectItem key={genre} value={genre}>
+                        {genre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="flex flex-wrap gap-2">
+                  {editForm.favoriteGenres.map((genre) => (
+                    <Badge 
+                      key={genre} 
+                      variant="default" 
+                      className="text-sm px-3 py-1 cursor-pointer hover:bg-destructive"
+                      onClick={() => setEditForm({
+                        ...editForm,
+                        favoriteGenres: editForm.favoriteGenres.filter(g => g !== genre)
+                      })}
+                    >
+                      {genre} ×
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {profile.favoriteGenres.map((genre) => (
+                  <Badge key={genre} variant="default" className="text-sm px-3 py-1">
+                    {genre}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </Card>
 
           {/* Badges & Achievements */}
