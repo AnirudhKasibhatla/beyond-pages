@@ -1,3 +1,4 @@
+/*
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -79,9 +80,9 @@ export const Tournament = () => {
           Season {currentSeason}
         </Badge>
       </div>
-
+*/
       {/* Tournament Info */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <!--    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4 bg-gradient-hero text-primary-foreground shadow-medium">
           <div className="text-center">
             <Target className="h-8 w-8 mx-auto mb-2" />
@@ -105,7 +106,7 @@ export const Tournament = () => {
             <p className="text-2xl font-bold text-primary">{participants.length}</p>
           </div>
         </Card>
-      </div>
+      </div> -->
 
       {/* Performance Message */}
       {userXP > 0 && (
