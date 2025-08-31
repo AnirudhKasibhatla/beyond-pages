@@ -4,11 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState } from 'react';
-import { Quote, BookOpen, Trash2, Calendar, Share2, Copy, Users, Plus } from 'lucide-react';
+import { Quote, BookOpen, Trash2, Calendar, Share2, Copy, Users, Plus, Heart } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { CommunityHighlights } from '@/components/CommunityHighlights';
 import { useHighlights } from '@/hooks/useHighlights';
+import { useHighlightFollows } from '@/hooks/useHighlightFollows';
 import { AddHighlightDialog } from '@/components/AddHighlightDialog';
 
 interface Highlight {
@@ -22,6 +23,7 @@ interface Highlight {
 
 export const HighlightsList = () => {
   const { highlights, loading, addHighlight, deleteHighlight } = useHighlights();
+  const { follows, toggleFollow, isFollowing } = useHighlightFollows();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const { toast } = useToast();
 
@@ -165,6 +167,14 @@ export const HighlightsList = () => {
                         </Button>
                       </div>
                       <div className="flex gap-2 shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleFollow(highlight.id)}
+                          className={`${isFollowing(highlight.id) ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'}`}
+                        >
+                          <Heart className={`h-4 w-4 ${isFollowing(highlight.id) ? 'fill-current' : ''}`} />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"

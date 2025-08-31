@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter, Globe, RefreshCw, Star } from "lucide-react";
+import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter, Globe, RefreshCw, Star, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CreateGroupDialog } from "./CreateGroupDialog";
 import { GroupChat } from "./GroupChat";
@@ -173,6 +173,30 @@ export const BookGroups = () => {
       toast({
         title: "Error",
         description: "Failed to update group membership. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteGroup = async (groupId: string) => {
+    try {
+      const { error } = await supabase
+        .from('book_groups')
+        .delete()
+        .eq('id', groupId);
+
+      if (error) throw error;
+
+      setGroups(prev => prev.filter(g => g.id !== groupId));
+      toast({
+        title: "Group Deleted",
+        description: "Your group has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting group:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete group. Please try again.",
         variant: "destructive",
       });
     }
@@ -397,29 +421,53 @@ export const BookGroups = () => {
                     </div>
                   </div>
 
-                  <Button 
-                    variant={group.isJoined ? "outline" : "default"}
-                    onClick={() => toggleJoinGroup(group.id)}
-                    className="w-full gap-2"
-                    disabled={group.isCreator || group.isJoined}
-                  >
-                    {group.isCreator ? (
-                      <>
-                        <Star className="h-4 w-4" />
-                        Moderator
-                      </>
-                    ) : group.isJoined ? (
-                      <>
-                        <Check className="h-4 w-4" />
-                        Joined
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="h-4 w-4" />
-                        Join Group
-                      </>
-                    )}
-                  </Button>
+                  {group.isCreator ? (
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toast({
+                            title: "Edit Group",
+                            description: "Edit functionality coming soon!",
+                          });
+                        }}
+                        className="flex-1 gap-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit
+                      </Button>
+                      <Button 
+                        variant="destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteGroup(group.id);
+                        }}
+                        className="gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      variant={group.isJoined ? "outline" : "default"}
+                      onClick={() => toggleJoinGroup(group.id)}
+                      className="w-full gap-2"
+                      disabled={group.isJoined}
+                    >
+                      {group.isJoined ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          Joined
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="h-4 w-4" />
+                          Join Group
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </div>
               </Card>
             ))}
@@ -484,29 +532,53 @@ export const BookGroups = () => {
                     </div>
                   </div>
 
-                  <Button 
-                    variant={group.isJoined ? "outline" : "default"}
-                    onClick={() => toggleJoinGroup(group.id)}
-                    className="w-full gap-2"
-                    disabled={group.isCreator || group.isJoined}
-                  >
-                    {group.isCreator ? (
-                      <>
-                        <Star className="h-4 w-4" />
-                        Moderator
-                      </>
-                    ) : group.isJoined ? (
-                      <>
-                        <Check className="h-4 w-4" />
-                        Joined
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="h-4 w-4" />
-                        Join Group
-                      </>
-                    )}
-                  </Button>
+                  {group.isCreator ? (
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toast({
+                            title: "Edit Group",
+                            description: "Edit functionality coming soon!",
+                          });
+                        }}
+                        className="flex-1 gap-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit
+                      </Button>
+                      <Button 
+                        variant="destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteGroup(group.id);
+                        }}
+                        className="gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      variant={group.isJoined ? "outline" : "default"}
+                      onClick={() => toggleJoinGroup(group.id)}
+                      className="w-full gap-2"
+                      disabled={group.isJoined}
+                    >
+                      {group.isJoined ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          Joined
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="h-4 w-4" />
+                          Join Group
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </div>
               </Card>
             ))}

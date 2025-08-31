@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { LucideIcon, Home, Microscope } from "lucide-react";
+import { LucideIcon, Home, Microscope, Quote } from "lucide-react";
 import UserMenu from "./UserMenu";
 import { GlobalSearch } from "./GlobalSearch";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,9 +22,10 @@ interface NavigationProps {
   onSettingsClick?: () => void;
   onChallengesClick?: () => void;
   onHighlightsClick?: () => void;
+  dynamicTab?: string;
 }
 
-export const Navigation = ({ currentView, setCurrentView, navItems, onProfileClick, onSettingsClick, onChallengesClick, onHighlightsClick }: NavigationProps) => {
+export const Navigation = ({ currentView, setCurrentView, navItems, onProfileClick, onSettingsClick, onChallengesClick, onHighlightsClick, dynamicTab }: NavigationProps) => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
@@ -95,6 +96,37 @@ export const Navigation = ({ currentView, setCurrentView, navItems, onProfileCli
                   </Button>
                   );
                 })}
+                
+                {/* Highlights Tab (dynamic based on selection) */}
+                <Button
+                  variant={currentView === 'highlights' ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setCurrentView('highlights')}
+                  className={`flex items-center gap-2 ${
+                    currentView === 'highlights' ? "shadow-medium" : "hover:shadow-soft"
+                  }`}
+                >
+                  <Quote className="h-4 w-4" />
+                  <span className="hidden sm:inline">Highlights</span>
+                </Button>
+
+                {/* Dynamic Tab (profile item promoted from dropdown) */}
+                {dynamicTab && dynamicTab !== 'highlights' && (
+                  <Button
+                    variant={currentView === dynamicTab ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setCurrentView(dynamicTab)}
+                    className={`flex items-center gap-2 ${
+                      currentView === dynamicTab ? "shadow-medium" : "hover:shadow-soft"
+                    }`}
+                  >
+                    {dynamicTab === 'profile' && <Home className="h-4 w-4" />}
+                    {dynamicTab === 'challenges' && <Home className="h-4 w-4" />}
+                    <span className="hidden sm:inline">
+                      {dynamicTab.charAt(0).toUpperCase() + dynamicTab.slice(1)}
+                    </span>
+                  </Button>
+                )}
                 
                 {/* Search Button */}
                 <Button

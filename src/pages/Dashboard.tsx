@@ -173,6 +173,7 @@ const Dashboard = () => {
           onSettingsClick={() => setCurrentView('settings')}
           onChallengesClick={() => setCurrentView('challenges')}
           onHighlightsClick={() => setCurrentView('highlights')}
+          dynamicTab={(['profile', 'challenges'] as ViewType[]).includes(currentView) ? currentView : undefined}
           />
 
           {/* Main Content */}
@@ -204,6 +205,7 @@ const Dashboard = () => {
           onSettingsClick={() => setCurrentView('settings')}
           onChallengesClick={() => setCurrentView('challenges')}
           onHighlightsClick={() => setCurrentView('highlights')}
+          dynamicTab={(['profile', 'challenges'] as ViewType[]).includes(currentView) ? currentView : undefined}
         />
         <div className="max-w-6xl mx-auto px-6 py-8 justify-center">
           {renderCurrentView()}

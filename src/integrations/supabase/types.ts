@@ -319,6 +319,27 @@ export type Database = {
           },
         ]
       }
+      highlight_follows: {
+        Row: {
+          created_at: string
+          highlight_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          highlight_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          highlight_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       highlights: {
         Row: {
           book_author: string | null

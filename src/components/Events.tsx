@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter, Globe, RefreshCw } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter, Globe, RefreshCw, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -200,6 +200,30 @@ export const Events = () => {
   const handleEventClick = (event: BookEvent) => {
     setSelectedEvent(event);
     setShowEventDetails(true);
+  };
+
+  const deleteEvent = async (eventId: string) => {
+    try {
+      const { error } = await supabase
+        .from('book_events')
+        .delete()
+        .eq('id', eventId);
+
+      if (error) throw error;
+
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+      toast({
+        title: "Event Deleted",
+        description: "Your event has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete event. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const claimHostXP = (eventId: string) => {
@@ -459,7 +483,7 @@ export const Events = () => {
                   <MapPin className="h-4 w-4" />
                   {event.location}
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
+               <div className="flex items-center gap-2 text-muted-foreground">
                   <Users className="h-4 w-4" />
                   {event.attendees} attending
                   {event.maxAttendees && ` / ${event.maxAttendees}`}
@@ -484,7 +508,10 @@ export const Events = () => {
                 <Button 
                   variant={event.isRsvped ? "outline" : "default"}
                   size="sm"
-                  onClick={() => toggleRSVP(event.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleRSVP(event.id);
+                  }}
                   className="flex-1 gap-2"
                   disabled={event.isHost}
                 >
@@ -503,11 +530,45 @@ export const Events = () => {
                   )}
                 </Button>
 
+                {event.isHost && (
+                  <>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Edit functionality - could open edit dialog
+                        toast({
+                          title: "Edit Event",
+                          description: "Edit functionality coming soon!",
+                        });
+                      }}
+                      className="gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="destructive"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteEvent(event.id);
+                      }}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+
                 {event.isHost && !claimedHostEvents.includes(event.id) && (
                   <Button 
                     variant="accent"
                     size="sm"
-                    onClick={() => claimHostXP(event.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      claimHostXP(event.id);
+                    }}
                     className="gap-2"
                   >
                     <Star className="h-4 w-4" />

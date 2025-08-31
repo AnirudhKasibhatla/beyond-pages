@@ -18,7 +18,7 @@ export const ReadingChallenges = () => {
   const [editingChallenge, setEditingChallenge] = useState<ReadingChallenge | null>(null);
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   
-  const { challenges, loading, createChallenge } = useReadingChallenges();
+  const { challenges, loading, createChallenge, deleteChallenge } = useReadingChallenges();
   const { books } = useBooks();
   const { toast } = useToast();
 
@@ -79,14 +79,31 @@ export const ReadingChallenges = () => {
               {selectedChallenge.year} Reading Challenge
             </h1>
           </div>
-          <Button
-            variant="default"
-            className="flex items-center gap-2"
-            onClick={() => setShowChallengeModal(true)}
-          >
-            <Edit className="h-4 w-4" />
-            Edit Challenge
-          </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="default"
+                    className="flex items-center gap-2"
+                    onClick={() => setShowChallengeModal(true)}
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit Challenge
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={async () => {
+                      const { error } = await deleteChallenge(selectedChallenge.id);
+                      if (!error) {
+                        setSelectedChallenge(null);
+                        toast({
+                          title: "Challenge Deleted",
+                          description: "Your reading challenge has been deleted.",
+                        });
+                      }
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
         </div>
 
         <Card className="p-6">
