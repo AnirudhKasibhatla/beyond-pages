@@ -21,11 +21,11 @@ interface NavigationProps {
   onProfileClick?: () => void;
   onSettingsClick?: () => void;
   onChallengesClick?: () => void;
-  onHighlightsClick?: () => void;
+  
   dynamicTab?: string;
 }
 
-export const Navigation = ({ currentView, setCurrentView, navItems, onProfileClick, onSettingsClick, onChallengesClick, onHighlightsClick, dynamicTab }: NavigationProps) => {
+export const Navigation = ({ currentView, setCurrentView, navItems, onProfileClick, onSettingsClick, onChallengesClick, dynamicTab }: NavigationProps) => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
@@ -56,11 +56,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems, onProfileCli
   };
 
   const handleHighlightsClick = () => {
-    if (onHighlightsClick) {
-      onHighlightsClick();
-    } else {
-      setCurrentView('highlights');
-    }
+    setCurrentView('highlights');
   };
 
   const handleSearchClick = () => {
@@ -143,7 +139,6 @@ export const Navigation = ({ currentView, setCurrentView, navItems, onProfileCli
                   onProfileClick={handleProfileClick}
                   onSettingsClick={handleSettingsClick}
                   onChallengesClick={handleChallengesClick}
-                  onHighlightsClick={handleHighlightsClick}
                 />
               </div>
             </Card>

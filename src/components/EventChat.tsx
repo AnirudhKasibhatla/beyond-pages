@@ -10,9 +10,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 
-interface GroupChatProps {
-  groupId: string;
-  groupName: string;
+interface EventChatProps {
+  eventId: string;
+  eventTitle: string;
   onClose: () => void;
 }
 
@@ -25,7 +25,7 @@ interface Message {
   user_name?: string;
 }
 
-export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
+export const EventChat = ({ eventId, eventTitle, onClose }: EventChatProps) => {
   const [activeTab, setActiveTab] = useState<'posts' | 'chat'>('posts');
   const [messages, setMessages] = useState<Message[]>([]);
   const [newPost, setNewPost] = useState('');
@@ -36,14 +36,14 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
 
   useEffect(() => {
     loadMessages();
-  }, [groupId]);
+  }, [eventId]);
 
   const loadMessages = async () => {
     try {
       const { data, error } = await supabase
-        .from('group_messages')
+        .from('event_messages')
         .select('*')
-        .eq('group_id', groupId)
+        .eq('event_id', eventId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -61,9 +61,9 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
 
     try {
       const { error } = await supabase
-        .from('group_messages')
+        .from('event_messages')
         .insert({
-          group_id: groupId,
+          event_id: eventId,
           user_id: user.id,
           content: newPost,
           message_type: 'post'
@@ -76,7 +76,7 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
       
       toast({
         title: "Post shared!",
-        description: "Your thought has been shared with the group.",
+        description: "Your post has been shared with event attendees.",
       });
     } catch (error) {
       console.error('Error posting message:', error);
@@ -93,9 +93,9 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
 
     try {
       const { error } = await supabase
-        .from('group_messages')
+        .from('event_messages')
         .insert({
-          group_id: groupId,
+          event_id: eventId,
           user_id: user.id,
           content: newMessage,
           message_type: 'message'
@@ -147,8 +147,8 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
         <div className="p-6 border-b border-border">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{groupName}</h2>
-              <p className="text-muted-foreground">Group Discussion</p>
+              <h2 className="text-2xl font-bold text-foreground">{eventTitle}</h2>
+              <p className="text-muted-foreground">Event Discussion</p>
             </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -171,7 +171,7 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
               className="gap-2"
             >
               <Users className="h-4 w-4" />
-              Group Chat
+              Event Chat
             </Button>
           </div>
         </div>
@@ -184,7 +184,7 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
               <Card className="p-4 flex-shrink-0">
                 <div className="space-y-3">
                   <Input
-                    placeholder="Share your thoughts about the book..."
+                    placeholder="Share your thoughts about the event..."
                     value={newPost}
                     onChange={(e) => setNewPost(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handlePostSubmit()}

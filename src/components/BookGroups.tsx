@@ -378,7 +378,7 @@ export const BookGroups = () => {
                     <div className="flex-1">
                        <h4 
                          className="text-lg font-semibold text-card-foreground mb-2 cursor-pointer hover:text-primary transition-colors" 
-                         onClick={() => group.isJoined && setSelectedGroup(group)}
+                         onClick={() => (group.isJoined || group.isCreator) && setSelectedGroup(group)}
                        >
                          {group.name}
                        </h4>
@@ -487,12 +487,12 @@ export const BookGroups = () => {
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                       <h4 
-                         className="text-lg font-semibold text-card-foreground mb-2 cursor-pointer hover:text-primary transition-colors" 
-                         onClick={() => group.isJoined && setSelectedGroup(group)}
-                       >
-                         {group.name}
-                       </h4>
+                        <h4 
+                          className="text-lg font-semibold text-card-foreground mb-2 cursor-pointer hover:text-primary transition-colors" 
+                          onClick={() => (group.isJoined || group.isCreator) && setSelectedGroup(group)}
+                        >
+                          {group.name}
+                        </h4>
                        <p className="text-muted-foreground text-sm">{group.genre} group</p>
                      </div>
                     <Badge className={getActivityColor(group.activityLevel)}>

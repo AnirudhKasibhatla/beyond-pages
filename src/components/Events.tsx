@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter, Globe, RefreshCw, Edit, Trash2 } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter, Globe, RefreshCw, Edit, Trash2, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { CreateEventDialog } from "./CreateEventDialog";
 import { EventDetailsDialog } from "./EventDetailsDialog";
+import { EventChat } from "./EventChat";
 
 interface BookEvent {
   id: string;
@@ -38,6 +39,7 @@ export const Events = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<BookEvent | null>(null);
+  const [selectedChatEvent, setSelectedChatEvent] = useState<BookEvent | null>(null);
   const [showEventDetails, setShowEventDetails] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -530,6 +532,21 @@ export const Events = () => {
                   )}
                 </Button>
 
+                {(event.isRsvped || event.isHost) && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedChatEvent(event);
+                    }}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Chat
+                  </Button>
+                )}
+
                 {event.isHost && (
                   <>
                     <Button 
@@ -604,6 +621,14 @@ export const Events = () => {
         onClose={() => setShowEventDetails(false)}
         onRSVP={toggleRSVP}
       />
+
+      {selectedChatEvent && (
+        <EventChat
+          eventId={selectedChatEvent.id}
+          eventTitle={selectedChatEvent.title}
+          onClose={() => setSelectedChatEvent(null)}
+        />
+      )}
       </Card>
     </div>
   );
