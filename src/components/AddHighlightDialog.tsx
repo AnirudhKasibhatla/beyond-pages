@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -49,36 +49,46 @@ export const AddHighlightDialog = ({
     onClose();
   };
 
-  const handleScanQuote = async () => {
+  const handleScanQuote = useCallback(async () => {
     try {
       setIsScanning(true);
+      toast({
+        title: "Scanning",
+        description: "Please take a photo of the text you want to extract",
+      });
+      
       const imageFile = await captureImageFromCamera();
+      toast({
+        title: "Processing",
+        description: "Extracting text from image...",
+      });
+      
       const extractedText = await extractTextFromImage(imageFile);
       
-      if (extractedText) {
+      if (extractedText && extractedText.trim()) {
         setQuoteText(extractedText);
         toast({
-          title: "Text extracted",
-          description: "Quote text has been added to the form",
+          title: "Success",
+          description: "Text extracted successfully!",
         });
       } else {
         toast({
           title: "No text found",
-          description: "Try taking a clearer photo of the text",
+          description: "No readable text was found in the image. Please try again with a clearer image.",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('Error scanning quote:', error);
+      console.error('Error during text extraction:', error);
       toast({
-        title: "Scan failed",
-        description: "Unable to extract text from image",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Unable to extract text from the image. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsScanning(false);
     }
-  };
+  }, [toast]);
 
   const handleCancel = () => {
     setQuoteText('');
