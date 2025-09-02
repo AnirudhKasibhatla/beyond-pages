@@ -4,7 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Quote, BookOpen } from 'lucide-react';
+import { Quote, BookOpen, Camera, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { captureImageFromCamera, extractTextFromImage } from '@/utils/textExtraction';
 
 interface AddHighlightDialogProps {
   isOpen: boolean;
@@ -26,6 +28,8 @@ export const AddHighlightDialog = ({
   const [bookTitle, setBookTitle] = useState('');
   const [bookAuthor, setBookAuthor] = useState('');
   const [pageNumber, setPageNumber] = useState('');
+  const [isScanning, setIsScanning] = useState(false);
+  const { toast } = useToast();
 
   const handleAddHighlight = () => {
     if (!quoteText.trim() || !bookTitle.trim()) return;
@@ -43,6 +47,37 @@ export const AddHighlightDialog = ({
     setBookAuthor('');
     setPageNumber('');
     onClose();
+  };
+
+  const handleScanQuote = async () => {
+    try {
+      setIsScanning(true);
+      const imageFile = await captureImageFromCamera();
+      const extractedText = await extractTextFromImage(imageFile);
+      
+      if (extractedText) {
+        setQuoteText(extractedText);
+        toast({
+          title: "Text extracted",
+          description: "Quote text has been added to the form",
+        });
+      } else {
+        toast({
+          title: "No text found",
+          description: "Try taking a clearer photo of the text",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error scanning quote:', error);
+      toast({
+        title: "Scan failed",
+        description: "Unable to extract text from image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   const handleCancel = () => {
@@ -68,7 +103,24 @@ export const AddHighlightDialog = ({
         
         <div className="space-y-4">
           <div>
-            <Label htmlFor="quoteText">Quote *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="quoteText">Quote *</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleScanQuote}
+                disabled={isScanning}
+                className="gap-2"
+              >
+                {isScanning ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
+                {isScanning ? 'Scanning...' : 'Scan Quote'}
+              </Button>
+            </div>
             <Textarea
               id="quoteText"
               placeholder="Enter the quote you want to highlight..."
