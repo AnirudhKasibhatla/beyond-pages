@@ -107,30 +107,33 @@ export const HighlightsList = () => {
   return (
     <>
       <Tabs defaultValue="my-highlights" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="my-highlights" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 h-auto p-1">
+          <TabsTrigger value="my-highlights" className="flex items-center gap-2 h-10 text-sm px-3 data-[state=active]:shadow-sm">
             <Quote className="h-4 w-4" />
-            My Highlights
+            <span className="hidden sm:inline">My Highlights</span>
+            <span className="sm:hidden">Mine</span>
           </TabsTrigger>
-          <TabsTrigger value="community" className="flex items-center gap-2">
+          <TabsTrigger value="community" className="flex items-center gap-2 h-10 text-sm px-3 data-[state=active]:shadow-sm">
             <Users className="h-4 w-4" />
-            Community
+            <span className="hidden sm:inline">Community</span>
+            <span className="sm:hidden">Community</span>
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="my-highlights" className="mt-6">
+        <TabsContent value="my-highlights" className="mt-4 sm:mt-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 sm:mb-6">
               <div className="flex items-center gap-2">
                 <Quote className="h-5 w-5 text-primary" />
-                <h3 className="text-xl font-semibold">My Highlights</h3>
+                <h3 className="text-lg sm:text-xl font-semibold">My Highlights</h3>
                 <Badge variant="secondary" className="ml-2">
                   {highlights.length}
                 </Badge>
               </div>
-              <Button onClick={() => setShowAddDialog(true)} className="gap-2">
+              <Button onClick={() => setShowAddDialog(true)} className="gap-2 w-full sm:w-auto">
                 <Plus className="h-4 w-4" />
-                Add Quote
+                <span className="hidden sm:inline">Add Quote</span>
+                <span className="sm:hidden">Add</span>
               </Button>
             </div>
             
@@ -150,28 +153,28 @@ export const HighlightsList = () => {
               </Card>
             ) : (
               highlights.map((highlight) => (
-                <Card key={highlight.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card">
+                <Card key={highlight.id} className="p-4 sm:p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card">
                   <div className="space-y-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 relative">
-                        <blockquote className="border-l-4 border-primary pl-4 italic text-card-foreground">
+                    <div className="flex flex-col gap-4">
+                      <div className="relative group">
+                        <blockquote className="border-l-4 border-primary pl-4 italic text-card-foreground pr-10">
                           "{highlight.quote_text}"
                         </blockquote>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleCopyQuote(highlight.quote_text)}
-                          className="absolute top-0 right-0 text-muted-foreground hover:text-primary"
+                          className="absolute top-0 right-0 z-20 text-muted-foreground hover:text-primary bg-background/80 hover:bg-background/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                         >
                           <Copy className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="flex gap-2 shrink-0">
+                      <div className="flex flex-wrap gap-2 justify-end">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleFollow(highlight.id)}
-                          className={`${isFollowing(highlight.id) ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'}`}
+                          className={`${isFollowing(highlight.id) ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'} h-8 px-2`}
                         >
                           <Heart className={`h-4 w-4 ${isFollowing(highlight.id) ? 'fill-current' : ''}`} />
                         </Button>
@@ -179,7 +182,7 @@ export const HighlightsList = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleShare(highlight)}
-                          className="text-muted-foreground hover:text-primary"
+                          className="text-muted-foreground hover:text-primary h-8 px-2"
                         >
                           <Share2 className="h-4 w-4" />
                         </Button>
@@ -187,7 +190,7 @@ export const HighlightsList = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => deleteHighlight(highlight.id)}
-                          className="text-muted-foreground hover:text-destructive"
+                          className="text-muted-foreground hover:text-destructive h-8 px-2"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -196,27 +199,29 @@ export const HighlightsList = () => {
                     
                     <Separator />
                     
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
-                        <BookOpen className="h-4 w-4" />
-                        <span className="font-medium">{highlight.book_title}</span>
+                        <BookOpen className="h-4 w-4 flex-shrink-0" />
+                        <span className="font-medium truncate">{highlight.book_title}</span>
                       </div>
                       
                       {highlight.book_author && (
-                        <span>by {highlight.book_author}</span>
+                        <span className="truncate">by {highlight.book_author}</span>
                       )}
                       
-                      {highlight.page_number && (
-                        <Badge variant="outline" className="text-xs">
-                          Page {highlight.page_number}
-                        </Badge>
-                      )}
-                      
-                      <div className="flex items-center gap-1 ml-auto">
-                        <Calendar className="h-3 w-3" />
-                        <span className="text-xs">
-                          {format(new Date(highlight.created_at), 'MMM d, yyyy')}
-                        </span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {highlight.page_number && (
+                          <Badge variant="outline" className="text-xs">
+                            Page {highlight.page_number}
+                          </Badge>
+                        )}
+                        
+                        <div className="flex items-center gap-1 ml-auto">
+                          <Calendar className="h-3 w-3" />
+                          <span className="text-xs whitespace-nowrap">
+                            {format(new Date(highlight.created_at), 'MMM d, yyyy')}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -226,7 +231,7 @@ export const HighlightsList = () => {
           </div>
         </TabsContent>
         
-        <TabsContent value="community" className="mt-6">
+        <TabsContent value="community" className="mt-4 sm:mt-6">
           <CommunityHighlights />
         </TabsContent>
       </Tabs>

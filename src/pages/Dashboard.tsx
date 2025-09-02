@@ -135,19 +135,19 @@ const Dashboard = () => {
                 className="w-full h-full object-cover opacity-20"
               />
             </div>
-            <div className="relative max-w-6xl mx-auto px-6 py-24">
+            <div className="relative max-w-6xl mx-auto px-3 sm:px-6 py-12 sm:py-24">
               <div className="text-center">
-                <h1 className="text-5xl md:text-6xl font-bold text-primary-foreground mb-6">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-4 sm:mb-6">
                   {getWelcomeMessage()}
                 </h1>
-                <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
+                <p className="text-lg sm:text-xl md:text-2xl text-primary-foreground/90 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
                   Track your reading journey, connect with fellow readers, and discover your next favorite book
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                  <Badge variant="secondary" className="text-lg px-4 py-2">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center items-center mb-6 sm:mb-8">
+                  <Badge variant="secondary" className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2">
                     Level {userLevel}
                   </Badge>
-                  <Badge variant="outline" className="text-lg px-4 py-2 bg-white/10 text-primary-foreground border-white/20">
+                  <Badge variant="outline" className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2 bg-white/10 text-primary-foreground border-white/20">
                     {userXP} XP
                   </Badge>
                 </div>
@@ -155,7 +155,7 @@ const Dashboard = () => {
                   variant="hero" 
                   size="xl"
                   onClick={handleStartReading}
-                  className="hover-scale transition-all duration-300 hover:shadow-glow"
+                  className="hover-scale transition-all duration-300 hover:shadow-glow w-full sm:w-auto"
                 >
                   Start Reading Journey
                 </Button>
@@ -176,7 +176,7 @@ const Dashboard = () => {
           />
 
           {/* Main Content */}
-          <div ref={libraryRef} className="max-w-6xl mx-auto px-6 py-8">
+          <div ref={libraryRef} className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
             {renderCurrentView()}
           </div>
           
@@ -203,10 +203,9 @@ const Dashboard = () => {
           onProfileClick={() => setCurrentView('profile')}
           onSettingsClick={() => setCurrentView('settings')}
           onChallengesClick={() => setCurrentView('challenges')}
-          
           dynamicTab={(['profile', 'challenges'] as ViewType[]).includes(currentView) ? currentView : undefined}
         />
-        <div className="max-w-6xl mx-auto px-6 py-8 justify-center">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8 justify-center">
           {renderCurrentView()}
         </div>
       </div>
