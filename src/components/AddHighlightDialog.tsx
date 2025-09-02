@@ -121,14 +121,16 @@ export const AddHighlightDialog = ({
                 size="sm"
                 onClick={handleScanQuote}
                 disabled={isScanning}
-                className="gap-2"
+                className="gap-2 mb-2"
               >
                 {isScanning ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Camera className="h-4 w-4" />
                 )}
-                {isScanning ? 'Scanning...' : 'Scan Quote'}
+                <span className="hidden sm:inline">
+                  {isScanning ? 'Scanning...' : 'Scan Quote'}
+                </span>
               </Button>
             </div>
             <Textarea
