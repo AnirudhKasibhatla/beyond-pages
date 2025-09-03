@@ -1,19 +1,23 @@
-import { useState, useRef } from "react";
-import { BookList } from "@/components/BookList";
-import { Community } from "@/components/Community";
-import { Profile } from "@/components/Profile";
-import { Tournament } from "@/components/Tournament";
-import { Events } from "@/components/Events";
-import { BookGroups } from "@/components/BookGroups";
-import { Settings } from "@/components/Settings";
-import { ReadingChallenges } from "@/components/ReadingChallenges";
-import { HighlightsList } from "@/components/HighlightsList";
+import { useState, useRef, lazy, Suspense } from "react";
 import { Navigation } from "@/components/Navigation";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+
+// Lazy load components for better performance
+const BookList = lazy(() => import("@/components/BookList").then(module => ({ default: module.BookList })));
+const Community = lazy(() => import("@/components/Community").then(module => ({ default: module.Community })));
+const Profile = lazy(() => import("@/components/Profile").then(module => ({ default: module.Profile })));
+const Tournament = lazy(() => import("@/components/Tournament").then(module => ({ default: module.Tournament })));
+const Events = lazy(() => import("@/components/Events").then(module => ({ default: module.Events })));
+const BookGroups = lazy(() => import("@/components/BookGroups").then(module => ({ default: module.BookGroups })));
+const Settings = lazy(() => import("@/components/Settings").then(module => ({ default: module.Settings })));
+const ReadingChallenges = lazy(() => import("@/components/ReadingChallenges").then(module => ({ default: module.ReadingChallenges })));
+const HighlightsList = lazy(() => import("@/components/HighlightsList").then(module => ({ default: module.HighlightsList })));
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Book, Users, Trophy, Calendar, UserCircle, Users2, Target, Settings as SettingsIcon } from "lucide-react";
 import heroImage from "@/assets/hero-bookshelf.jpg";
+import { OptimizedImage } from "@/components/OptimizedImage";
 import { CommunityProvider } from "@/context/CommunityContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -60,6 +64,8 @@ const Dashboard = () => {
   };
 
   const renderCurrentView = () => {
+    const fallback = <LoadingSkeleton type="shelf" className="py-8" />;
+    
     switch (currentView) {
       case 'books':
         if (isGuest) {
@@ -85,25 +91,65 @@ const Dashboard = () => {
             </div>
           );
         }
-        return <BookList highlightButtons={highlightButtons} />;
+        return (
+          <Suspense fallback={fallback}>
+            <BookList highlightButtons={highlightButtons} />
+          </Suspense>
+        );
       case 'community':
-        return <Community />;
+        return (
+          <Suspense fallback={fallback}>
+            <Community />
+          </Suspense>
+        );
       case 'profile':
-        return <Profile />;
+        return (
+          <Suspense fallback={fallback}>
+            <Profile />
+          </Suspense>
+        );
       case 'tournament':
-        return <Tournament />;
+        return (
+          <Suspense fallback={fallback}>
+            <Tournament />
+          </Suspense>
+        );
       case 'events':
-        return <Events />;
+        return (
+          <Suspense fallback={fallback}>
+            <Events />
+          </Suspense>
+        );
       case 'groups':
-        return <BookGroups />;
+        return (
+          <Suspense fallback={fallback}>
+            <BookGroups />
+          </Suspense>
+        );
       case 'settings':
-        return <Settings />;
+        return (
+          <Suspense fallback={fallback}>
+            <Settings />
+          </Suspense>
+        );
       case 'challenges':
-        return <ReadingChallenges />;
+        return (
+          <Suspense fallback={fallback}>
+            <ReadingChallenges />
+          </Suspense>
+        );
       case 'highlights':
-        return <HighlightsList />;
+        return (
+          <Suspense fallback={fallback}>
+            <HighlightsList />
+          </Suspense>
+        );
       default:
-        return <BookList highlightButtons={highlightButtons} />;
+        return (
+          <Suspense fallback={fallback}>
+            <BookList highlightButtons={highlightButtons} />
+          </Suspense>
+        );
     }
   };
 
@@ -129,10 +175,12 @@ const Dashboard = () => {
           {/* Hero Section */}
           <div className="relative overflow-hidden bg-gradient-hero">
             <div className="absolute inset-0">
-              <img
+              <OptimizedImage
                 src={heroImage}
                 alt="Books and reading"
                 className="w-full h-full object-cover opacity-20"
+                loading="eager"
+                fetchPriority="high"
               />
             </div>
             <div className="relative max-w-6xl mx-auto px-3 sm:px-6 py-12 sm:py-24">

@@ -68,20 +68,20 @@ export const AddHighlightDialog = ({
       if (extractedText && extractedText.trim()) {
         setQuoteText(extractedText);
         toast({
-          title: "Success",
-          description: "Text extracted successfully!",
+          title: "Text Extracted Successfully",
+          description: "The text has been extracted from your image. You can edit it if needed.",
         });
       } else {
         toast({
-          title: "No text found",
-          description: "No readable text was found in the image. Please try again with a clearer image.",
+          title: "No Text Found",
+          description: "Could not extract any readable text from the image. Please try again with a clearer image or better lighting.",
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error('Error during text extraction:', error);
       toast({
-        title: "Error",
+        title: "Scan Failed", 
         description: error instanceof Error ? error.message : "Unable to extract text from the image. Please try again.",
         variant: "destructive",
       });
@@ -121,7 +121,7 @@ export const AddHighlightDialog = ({
                 size="sm"
                 onClick={handleScanQuote}
                 disabled={isScanning}
-                className="gap-2 mb-2"
+                className="gap-2 mb-2 pb-2"
               >
                 {isScanning ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

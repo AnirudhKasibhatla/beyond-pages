@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,9 +17,11 @@ import {
   CarouselApi,
 } from "@/components/ui/carousel";
 import { CarouselDots } from "@/components/CarouselDots";
+import { FeatureCard } from "@/components/MemoizedComponents";
 import heroImage from "@/assets/hero-books.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { OptimizedImage } from "@/components/OptimizedImage";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -54,7 +56,8 @@ const Index = () => {
     };
   }, [carouselApi]);
 
-  const features = [
+  // Memoize features for better performance
+  const features = useMemo(() => [
     {
       icon: Book,
       title: "Track Your Reading",
@@ -85,14 +88,14 @@ const Index = () => {
       title: "Events & Groups",
       description: "Participate in book events, join discussion groups, and host your own literary gatherings."
     }
-  ];
+  ], []);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-hero">
         <div className="absolute inset-0">
-          <img
+          <OptimizedImage
             src={heroImage}
             alt="Books and reading"
             className="w-full h-full object-cover opacity-20"
@@ -185,24 +188,15 @@ const Index = () => {
           setApi={setCarouselApi}
         >
           <CarouselContent className="-ml-4">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <Card className="p-8 text-center hover:shadow-strong transition-all duration-300 bg-gradient-card group h-full">
-                    <div className="inline-flex p-4 rounded-full mb-6 bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                      <Icon className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-card-foreground mb-4">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </Card>
-                </CarouselItem>
-              );
-            })}
+            {features.map((feature, index) => (
+              <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                <FeatureCard
+                  icon={feature.icon}
+                  title={feature.title}
+                  description={feature.description}
+                />
+              </CarouselItem>
+            ))}
           </CarouselContent>
         </Carousel>
         
