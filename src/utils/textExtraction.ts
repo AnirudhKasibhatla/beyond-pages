@@ -82,8 +82,7 @@ export const extractTextFromImage = async (imageFile: File): Promise<string> => 
             }
           } catch (ocrError) {
             console.error('OCR pipeline error:', ocrError);
-            // For now, return a sample text to show the UI works
-            resolve('Sample extracted text - OCR service temporarily unavailable');
+            reject(new Error(`Text recognition failed: ${ocrError.message || 'Unknown error'}. Please try again with a clearer image.`));
           }
           
         } catch (error) {
