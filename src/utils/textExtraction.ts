@@ -1,20 +1,29 @@
-// Optimized text extraction with reliable OCR
+// Reliable text extraction using Tesseract.js
+import { createWorker } from 'tesseract.js';
+
 let ocrWorker: any = null;
 
-// Initialize OCR with multiple fallback models
+// Initialize OCR with Tesseract.js
 const initializeOCR = async () => {
   if (ocrWorker) return ocrWorker;
   
   try {
-    const { pipeline } = await import('@huggingface/transformers');
-    
-    // Use the most reliable OCR model for printed text
-    ocrWorker = await pipeline('image-to-text', 'Xenova/trocr-base-printed', {
-      device: 'cpu',
-      dtype: 'fp32'
+    console.log('Initializing Tesseract OCR worker...');
+    ocrWorker = await createWorker('eng', 1, {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+        }
+      }
     });
     
-    console.log('OCR initialized successfully');
+    // Configure for better accuracy
+    await ocrWorker.setParameters({
+      tessedit_pageseg_mode: '3', // Fully automatic page segmentation
+      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?:;"\'-() ',
+    });
+    
+    console.log('Tesseract OCR initialized successfully');
     return ocrWorker;
   } catch (error) {
     console.error('Failed to initialize OCR:', error);
@@ -35,64 +44,34 @@ export const extractTextFromImage = async (imageFile: File): Promise<string> => 
       throw new Error('Image too large. Please select an image smaller than 10MB');
     }
 
-    // Create optimized image for OCR
-    const processedImage = await preprocessImage(imageFile);
+    // Initialize Tesseract worker
+    const worker = await initializeOCR();
+    console.log('Processing image with Tesseract OCR...');
     
     try {
-      const ocr = await initializeOCR();
-      console.log('Processing with OCR...');
+      // Recognize text from the image file directly
+      const { data: { text } } = await worker.recognize(imageFile);
+      console.log('Raw OCR result:', text);
       
-      // Convert image to canvas for pipeline compatibility
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      // Clean up the extracted text
+      let cleanedText = text
+        .replace(/\n+/g, ' ') // Replace newlines with spaces
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .replace(/[^\w\s.,!?'"()-]/g, '') // Remove unusual characters
+        .trim();
       
-      if (!ctx) {
-        throw new Error('Canvas not supported');
+      // Check if we have meaningful text
+      if (cleanedText && cleanedText.length >= 3) {
+        console.log('Successfully extracted text:', cleanedText);
+        return cleanedText;
       }
       
-      canvas.width = processedImage.width;
-      canvas.height = processedImage.height;
-      ctx.drawImage(processedImage, 0, 0);
-      
-      const result = await ocr(canvas);
-      console.log('OCR result:', result);
-      
-      // Handle different result formats
-      let extractedText = '';
-      
-      if (Array.isArray(result) && result.length > 0) {
-        const firstResult = result[0] as any;
-        if (firstResult.generated_text) {
-          extractedText = firstResult.generated_text.trim();
-        }
-      } else if (result && typeof result === 'object') {
-        const singleResult = result as any;
-        if (singleResult.generated_text) {
-          extractedText = singleResult.generated_text.trim();
-        }
-      }
-      
-      // If we got text, clean it up and return
-      if (extractedText && extractedText.length > 2) {
-        // Clean up common OCR artifacts
-        extractedText = extractedText
-          .replace(/[^\w\s.,!?'"()-]/g, '') // Remove unusual characters
-          .replace(/\s+/g, ' ') // Normalize whitespace
-          .trim();
-        
-        if (extractedText.length > 2) {
-          console.log('Extracted text:', extractedText);
-          return extractedText;
-        }
-      }
-      
-      // Fallback: try handwritten model
-      return await fallbackTextExtraction(processedImage);
+      // If text is too short, throw a helpful error
+      throw new Error('No readable text found in the image. Please ensure the image contains clear, readable text with good lighting and focus.');
       
     } catch (ocrError) {
-      console.error('OCR error:', ocrError);
-      // Try fallback method
-      return await fallbackTextExtraction(processedImage);
+      console.error('Tesseract OCR error:', ocrError);
+      throw new Error('Could not extract text from this image. Please try with a clearer image with better lighting and contrast.');
     }
     
   } catch (error) {
@@ -101,112 +80,7 @@ export const extractTextFromImage = async (imageFile: File): Promise<string> => 
   }
 };
 
-// Preprocess image for better OCR results
-const preprocessImage = async (file: File): Promise<HTMLImageElement> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) {
-      reject(new Error('Canvas not supported'));
-      return;
-    }
-    
-    img.onload = () => {
-      // Optimize image size for OCR
-      const maxSize = 1024;
-      let { width, height } = img;
-      
-      if (width > maxSize || height > maxSize) {
-        const scale = Math.min(maxSize / width, maxSize / height);
-        width *= scale;
-        height *= scale;
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      
-      // Draw with better contrast for OCR
-      ctx.filter = 'contrast(1.2) brightness(1.1)';
-      ctx.drawImage(img, 0, 0, width, height);
-      
-      // Convert back to image
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          reject(new Error('Failed to process image'));
-          return;
-        }
-        
-        const processedImg = new Image();
-        processedImg.onload = () => resolve(processedImg);
-        processedImg.onerror = () => reject(new Error('Failed to load processed image'));
-        processedImg.src = URL.createObjectURL(blob);
-      }, 'image/jpeg', 0.9);
-    };
-    
-    img.onerror = () => reject(new Error('Failed to load image'));
-    img.src = URL.createObjectURL(file);
-  });
-};
-
-// Fallback text extraction method
-const fallbackTextExtraction = async (image: HTMLImageElement): Promise<string> => {
-  try {
-    // Convert image to canvas for pipeline compatibility
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) {
-      throw new Error('Canvas not supported');
-    }
-    
-    canvas.width = image.width;
-    canvas.height = image.height;
-    ctx.drawImage(image, 0, 0);
-    
-    // Try with handwritten model as fallback
-    const { pipeline } = await import('@huggingface/transformers');
-    const fallbackOCR = await pipeline('image-to-text', 'Xenova/trocr-base-handwritten', {
-      device: 'cpu',
-      dtype: 'fp32'
-    });
-    
-    const result = await fallbackOCR(canvas);
-    
-    // Handle different result formats
-    let extractedText = '';
-    
-    if (Array.isArray(result) && result.length > 0) {
-      const firstResult = result[0] as any;
-      if (firstResult.generated_text) {
-        extractedText = firstResult.generated_text.trim();
-      }
-    } else if (result && typeof result === 'object') {
-      const singleResult = result as any;
-      if (singleResult.generated_text) {
-        extractedText = singleResult.generated_text.trim();
-      }
-    }
-    
-    // Clean up and validate text
-    if (extractedText && extractedText.length > 2) {
-      extractedText = extractedText
-        .replace(/[^\w\s.,!?'"()-]/g, '') // Remove unusual characters
-        .replace(/\s+/g, ' ') // Normalize whitespace
-        .trim();
-      
-      if (extractedText.length > 2) {
-        return extractedText;
-      }
-    }
-  } catch (error) {
-    console.error('Fallback OCR failed:', error);
-  }
-  
-  // If all else fails, return empty string with a suggestion
-  throw new Error('Could not extract text from this image. Please try with a clearer image or better lighting.');
-};
+// No longer needed - Tesseract handles image processing internally
 
 export const captureImageFromCamera = (): Promise<File> => {
   return new Promise((resolve, reject) => {
@@ -246,12 +120,13 @@ export const captureImageFromCamera = (): Promise<File> => {
 };
 
 // Cleanup function to free memory
-export const cleanupOCR = () => {
+export const cleanupOCR = async () => {
   if (ocrWorker) {
     try {
-      ocrWorker.dispose?.();
+      await ocrWorker.terminate();
+      console.log('OCR worker terminated successfully');
     } catch (error) {
-      console.warn('Error disposing OCR worker:', error);
+      console.warn('Error terminating OCR worker:', error);
     }
     ocrWorker = null;
   }
