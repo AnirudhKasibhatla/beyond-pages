@@ -155,7 +155,7 @@ const Index = () => {
                 variant="outline" 
                 size="xl"
                 onClick={handleLearnMore}
-                className="bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/20"
+                className="bg-background/20 text-primary-foreground border-primary-foreground/30 hover:bg-background/30 backdrop-blur-sm"
               >
                 Learn More
               </Button>

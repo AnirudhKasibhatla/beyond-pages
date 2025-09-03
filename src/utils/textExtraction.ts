@@ -1,17 +1,16 @@
-// Optimized text extraction with better error handling and performance
+// Optimized text extraction with reliable OCR
 let ocrWorker: any = null;
 
-// Initialize OCR with a more reliable approach
+// Initialize OCR with multiple fallback models
 const initializeOCR = async () => {
   if (ocrWorker) return ocrWorker;
   
   try {
-    // Try to use a smaller, more reliable model
     const { pipeline } = await import('@huggingface/transformers');
     
-    // Use a lighter, more reliable OCR model
-    ocrWorker = await pipeline('image-to-text', 'Xenova/trocr-base-handwritten', {
-      device: 'cpu', // Start with CPU for reliability
+    // Use the most reliable OCR model for printed text
+    ocrWorker = await pipeline('image-to-text', 'Xenova/trocr-base-printed', {
+      device: 'cpu',
       dtype: 'fp32'
     });
     
@@ -59,27 +58,35 @@ export const extractTextFromImage = async (imageFile: File): Promise<string> => 
       console.log('OCR result:', result);
       
       // Handle different result formats
+      let extractedText = '';
+      
       if (Array.isArray(result) && result.length > 0) {
         const firstResult = result[0] as any;
         if (firstResult.generated_text) {
-          const text = firstResult.generated_text.trim();
-          if (text.length > 0) {
-            console.log('Extracted text:', text);
-            return text;
-          }
+          extractedText = firstResult.generated_text.trim();
         }
       } else if (result && typeof result === 'object') {
         const singleResult = result as any;
         if (singleResult.generated_text) {
-          const text = singleResult.generated_text.trim();
-          if (text.length > 0) {
-            console.log('Extracted text:', text);
-            return text;
-          }
+          extractedText = singleResult.generated_text.trim();
         }
       }
       
-      // Fallback: try basic text detection
+      // If we got text, clean it up and return
+      if (extractedText && extractedText.length > 2) {
+        // Clean up common OCR artifacts
+        extractedText = extractedText
+          .replace(/[^\w\s.,!?'"()-]/g, '') // Remove unusual characters
+          .replace(/\s+/g, ' ') // Normalize whitespace
+          .trim();
+        
+        if (extractedText.length > 2) {
+          console.log('Extracted text:', extractedText);
+          return extractedText;
+        }
+      }
+      
+      // Fallback: try handwritten model
       return await fallbackTextExtraction(processedImage);
       
     } catch (ocrError) {
@@ -158,9 +165,9 @@ const fallbackTextExtraction = async (image: HTMLImageElement): Promise<string> 
     canvas.height = image.height;
     ctx.drawImage(image, 0, 0);
     
-    // Try with a different, lighter model
+    // Try with handwritten model as fallback
     const { pipeline } = await import('@huggingface/transformers');
-    const fallbackOCR = await pipeline('image-to-text', 'Xenova/trocr-base-printed', {
+    const fallbackOCR = await pipeline('image-to-text', 'Xenova/trocr-base-handwritten', {
       device: 'cpu',
       dtype: 'fp32'
     });
@@ -168,15 +175,29 @@ const fallbackTextExtraction = async (image: HTMLImageElement): Promise<string> 
     const result = await fallbackOCR(canvas);
     
     // Handle different result formats
+    let extractedText = '';
+    
     if (Array.isArray(result) && result.length > 0) {
       const firstResult = result[0] as any;
       if (firstResult.generated_text) {
-        return firstResult.generated_text.trim();
+        extractedText = firstResult.generated_text.trim();
       }
     } else if (result && typeof result === 'object') {
       const singleResult = result as any;
       if (singleResult.generated_text) {
-        return singleResult.generated_text.trim();
+        extractedText = singleResult.generated_text.trim();
+      }
+    }
+    
+    // Clean up and validate text
+    if (extractedText && extractedText.length > 2) {
+      extractedText = extractedText
+        .replace(/[^\w\s.,!?'"()-]/g, '') // Remove unusual characters
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+      
+      if (extractedText.length > 2) {
+        return extractedText;
       }
     }
   } catch (error) {
