@@ -98,7 +98,7 @@ const Index = () => {
           <OptimizedImage
             src={heroImage}
             alt="Books and reading"
-            className="w-full h-full object-cover opacity-20"
+            className="w-full h-full object-cover opacity-10"
             loading="eager"
             fetchPriority="high"
           />

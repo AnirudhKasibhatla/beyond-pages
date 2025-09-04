@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { LucideIcon, Home, Microscope, Quote } from "lucide-react";
+import { LucideIcon, Home, Quote } from "lucide-react";
 import UserMenu from "./UserMenu";
-import { GlobalSearch } from "./GlobalSearch";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
@@ -29,7 +27,6 @@ export const Navigation = ({ currentView, setCurrentView, navItems, onProfileCli
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   
   const handleProfileClick = () => {
     if (onProfileClick) {
@@ -57,14 +54,6 @@ export const Navigation = ({ currentView, setCurrentView, navItems, onProfileCli
 
   const handleHighlightsClick = () => {
     setCurrentView('highlights');
-  };
-
-  const handleSearchClick = () => {
-    setIsSearchOpen(true);
-  };
-
-  const handleSearchClose = () => {
-    setIsSearchOpen(false);
   };
   return (
     <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
@@ -135,19 +124,7 @@ export const Navigation = ({ currentView, setCurrentView, navItems, onProfileCli
                   </Button>
                 )}
                 
-                {/* Search Button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSearchClick}
-                  className="flex items-center gap-1 sm:gap-2 hover:shadow-soft text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3"
-                >
-                  <Microscope className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">Search</span>
-                  <span className="sm:hidden text-xs">Find</span>
-                </Button>
-                
-                <UserMenu 
+                <UserMenu
                   onProfileClick={handleProfileClick}
                   onSettingsClick={handleSettingsClick}
                   onChallengesClick={handleChallengesClick}
@@ -157,9 +134,6 @@ export const Navigation = ({ currentView, setCurrentView, navItems, onProfileCli
             
           </div>
         </div>
-        
-        {/* Global Search Modal */}
-        <GlobalSearch isOpen={isSearchOpen} onClose={handleSearchClose} />
       </div>
     );
   };
