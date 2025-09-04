@@ -1,106 +1,78 @@
-// Mistral OCR API integration
-const MISTRAL_OCR_API_URL = 'https://api.aimlapi.com/v1/ocr';
+// Reliable text extraction using Tesseract.js
+import { createWorker } from 'tesseract.js';
 
-// Get API key from environment or prompt user
-const getAPIKey = async (): Promise<string> => {
-  // In a real app, you'd store this securely
-  let apiKey = localStorage.getItem('mistral_api_key');
+let ocrWorker: any = null;
+
+// Initialize OCR with Tesseract.js
+const initializeOCR = async () => {
+  if (ocrWorker) return ocrWorker;
   
-  if (!apiKey) {
-    apiKey = prompt('Please enter your AI/ML API key for Mistral OCR:');
-    if (apiKey) {
-      localStorage.setItem('mistral_api_key', apiKey);
-    } else {
-      throw new Error('API key is required for OCR functionality');
-    }
+  try {
+    console.log('Initializing Tesseract OCR worker...');
+    ocrWorker = await createWorker('eng', 1, {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+        }
+      }
+    });
+    
+    // Configure for better accuracy
+    await ocrWorker.setParameters({
+      tessedit_pageseg_mode: '3', // Fully automatic page segmentation
+      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?:;"\'-() ',
+    });
+    
+    console.log('Tesseract OCR initialized successfully');
+    return ocrWorker;
+  } catch (error) {
+    console.error('Failed to initialize OCR:', error);
+    throw new Error('OCR service is currently unavailable. Please try again later.');
   }
-  
-  return apiKey;
-};
-
-// Convert file to base64 for API
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const result = reader.result as string;
-      // Remove data URL prefix
-      const base64 = result.split(',')[1];
-      resolve(base64);
-    };
-    reader.onerror = reject;
-  });
 };
 
 export const extractTextFromImage = async (imageFile: File): Promise<string> => {
   try {
-    console.log('Starting text extraction with Mistral OCR:', { name: imageFile.name, size: imageFile.size });
+    console.log('Starting text extraction:', { name: imageFile.name, size: imageFile.size });
     
     // Validate file
     if (!imageFile.type.startsWith('image/')) {
       throw new Error('Please select a valid image file');
     }
     
-    if (imageFile.size > 50 * 1024 * 1024) {
-      throw new Error('Image too large. Please select an image smaller than 50MB');
+    if (imageFile.size > 10 * 1024 * 1024) {
+      throw new Error('Image too large. Please select an image smaller than 10MB');
     }
 
-    // Get API key
-    const apiKey = await getAPIKey();
+    // Initialize Tesseract worker
+    const worker = await initializeOCR();
+    console.log('Processing image with Tesseract OCR...');
     
-    // Convert image to base64
-    const base64Image = await fileToBase64(imageFile);
-    
-    console.log('Processing image with Mistral OCR...');
-    
-    // Call Mistral OCR API
-    const response = await fetch(MISTRAL_OCR_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'mistral/mistral-ocr-latest',
-        document: {
-          type: 'document_base64',
-          document_base64: base64Image
-        }
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OCR API error: ${response.status} ${response.statusText}`);
+    try {
+      // Recognize text from the image file directly
+      const { data: { text } } = await worker.recognize(imageFile);
+      console.log('Raw OCR result:', text);
+      
+      // Clean up the extracted text
+      let cleanedText = text
+        .replace(/\n+/g, ' ') // Replace newlines with spaces
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .replace(/[^\w\s.,!?'"()-]/g, '') // Remove unusual characters
+        .trim();
+      
+      // Check if we have meaningful text
+      if (cleanedText && cleanedText.length >= 3) {
+        console.log('Successfully extracted text:', cleanedText);
+        return cleanedText;
+      }
+      
+      // If text is too short, throw a helpful error
+      throw new Error('No readable text found in the image. Please ensure the image contains clear, readable text with good lighting and focus.');
+      
+    } catch (ocrError) {
+      console.error('Tesseract OCR error:', ocrError);
+      throw new Error('Could not extract text from this image. Please try with a clearer image with better lighting and contrast.');
     }
-
-    const result = await response.json();
-    console.log('Mistral OCR result:', result);
-    
-    // Extract text from response
-    let extractedText = '';
-    if (result.choices && result.choices[0] && result.choices[0].message) {
-      extractedText = result.choices[0].message.content || '';
-    } else if (result.text) {
-      extractedText = result.text;
-    } else if (result.content) {
-      extractedText = result.content;
-    }
-    
-    // Clean up the extracted text
-    let cleanedText = extractedText
-      .replace(/\n+/g, ' ') // Replace newlines with spaces
-      .replace(/\s+/g, ' ') // Normalize whitespace
-      .trim();
-    
-    // Check if we have meaningful text
-    if (cleanedText && cleanedText.length >= 3) {
-      console.log('Successfully extracted text:', cleanedText);
-      return cleanedText;
-    }
-    
-    // If text is too short, throw a helpful error
-    throw new Error('No readable text found in the image. Please ensure the image contains clear, readable text.');
     
   } catch (error) {
     console.error('Text extraction failed:', error);
@@ -213,8 +185,15 @@ export const captureImageFromCamera = (): Promise<File> => {
   });
 };
 
-// Cleanup function - no longer needed for Mistral OCR
+// Cleanup function to free memory
 export const cleanupOCR = async () => {
-  // No cleanup needed for API-based OCR
-  console.log('OCR cleanup complete');
+  if (ocrWorker) {
+    try {
+      await ocrWorker.terminate();
+      console.log('OCR worker terminated successfully');
+    } catch (error) {
+      console.warn('Error terminating OCR worker:', error);
+    }
+    ocrWorker = null;
+  }
 };
