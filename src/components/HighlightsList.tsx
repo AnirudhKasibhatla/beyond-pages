@@ -4,13 +4,14 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState } from 'react';
-import { Quote, BookOpen, Trash2, Calendar, Share2, Copy, Users, Plus, Heart } from 'lucide-react';
+import { Quote, BookOpen, Trash2, Calendar, Share2, Copy, Users, Plus, Heart, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { CommunityHighlights } from '@/components/CommunityHighlights';
 import { useHighlights } from '@/hooks/useHighlights';
 import { useHighlightFollows } from '@/hooks/useHighlightFollows';
 import { AddHighlightDialog } from '@/components/AddHighlightDialog';
+import { downloadQuoteAsImage } from '@/utils/textExtraction';
 
 interface Highlight {
   id: string;
@@ -65,6 +66,22 @@ export const HighlightsList = () => {
       toast({
         title: "Error",
         description: "Could not copy quote",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownloadQuote = async (highlight: Highlight) => {
+    try {
+      await downloadQuoteAsImage(highlight.quote_text, highlight.book_title, highlight.book_author);
+      toast({
+        title: "Downloaded!",
+        description: "Quote image has been downloaded",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Could not download quote image",
         variant: "destructive",
       });
     }
@@ -177,6 +194,15 @@ export const HighlightsList = () => {
                           className={`${isFollowing(highlight.id) ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'} h-8 px-2`}
                         >
                           <Heart className={`h-4 w-4 ${isFollowing(highlight.id) ? 'fill-current' : ''}`} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDownloadQuote(highlight)}
+                          className="text-muted-foreground hover:text-primary h-8 px-2"
+                          title="Download as image"
+                        >
+                          <Download className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
