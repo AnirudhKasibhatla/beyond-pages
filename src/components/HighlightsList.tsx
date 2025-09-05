@@ -103,23 +103,6 @@ export const HighlightsList = () => {
     );
   }
 
-  if (highlights.length === 0) {
-    return (
-      <Card className="p-8 text-center bg-gradient-card">
-        <div className="flex flex-col items-center gap-4">
-          <Quote className="h-12 w-12 text-muted-foreground" />
-          <div>
-            <h3 className="text-lg font-semibold text-muted-foreground mb-2">
-              No highlights yet
-            </h3>
-            <p className="text-muted-foreground">
-              When you write reviews with book quotes, you'll be able to add them to your highlights collection.
-            </p>
-          </div>
-        </div>
-      </Card>
-    );
-  }
 
   return (
     <>
@@ -163,7 +146,7 @@ export const HighlightsList = () => {
                       No highlights yet
                     </h3>
                     <p className="text-muted-foreground">
-                      When you write reviews with book quotes, you'll be able to add them to your highlights collection.
+                      Start building your collection of memorable quotes from the books you love. Click "Add Quote" to get started.
                     </p>
                   </div>
                 </div>
