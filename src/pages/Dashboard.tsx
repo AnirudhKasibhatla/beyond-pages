@@ -22,11 +22,13 @@ import { CommunityProvider } from "@/context/CommunityContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
+import { ReadingChallengeModal } from "@/components/ReadingChallengeModal";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges' | 'highlights';
 
 const Dashboard = () => {
   const [currentView, setCurrentView] = useState<ViewType>('community');
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [userLevel, setUserLevel] = useState(1);
   const [userXP, setUserXP] = useState(0);
   const [highlightButtons, setHighlightButtons] = useState(false);
@@ -40,6 +42,11 @@ const Dashboard = () => {
   const handleViewChange = (view: ViewType) => {
     setCurrentView(view);
     setPinnedView(view);
+    
+    // Show reading challenge modal when challenges tab is clicked
+    if (view === 'challenges') {
+      setShowChallengeModal(true);
+    }
   };
 
   const handleStartReading = () => {
@@ -134,6 +141,11 @@ const Dashboard = () => {
         return (
           <Suspense fallback={fallback}>
             <ReadingChallenges />
+            <ReadingChallengeModal 
+              isOpen={showChallengeModal}
+              onClose={() => setShowChallengeModal(false)}
+              onComplete={() => setShowChallengeModal(false)}
+            />
           </Suspense>
         );
       case 'highlights':

@@ -23,52 +23,38 @@ export const CreatePostDialog = ({ open, onOpenChange }: CreatePostDialogProps) 
   const [bookAuthor, setBookAuthor] = useState("");
   const [threadContent, setThreadContent] = useState("");
   const [isThreadMode, setIsThreadMode] = useState(false);
-  const { addPost } = useCommunity();
+  const { createPost } = useCommunity();
   const { toast } = useToast();
 
   const MAX_CHARS = 200;
   const charactersLeft = MAX_CHARS - content.length;
   const progressPercentage = (content.length / MAX_CHARS) * 100;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!content.trim()) return;
 
-    const newPost = {
-      id: `p${Date.now()}`,
-      author: {
-        name: 'You',
-        avatar: '',
-        level: 1,
-        isFollowing: false
-      },
-      content: content.trim(),
-      bookTitle: bookTitle.trim() || undefined,
-      bookAuthor: bookAuthor.trim() || undefined,
-      timestamp: new Date(),
-      likes: 0,
-      isLiked: false,
-      replies: threadContent.trim() ? [{
-        id: `r${Date.now()}`,
-        author: { name: 'You' },
-        content: threadContent.trim(),
-        timestamp: new Date()
-      }] : []
-    };
+    try {
+      await createPost({
+        content: content.trim(),
+        book_title: bookTitle.trim() || undefined,
+        book_author: bookAuthor.trim() || undefined,
+      });
 
-    addPost(newPost);
-    
-    toast({
-      title: "Post created!",
-      description: `Your post has been shared with the community. You earned ${isThreadMode ? 15 : 10} XP!`,
-    });
+      toast({
+        title: "Post created!",
+        description: `Your post has been shared with the community. You earned ${isThreadMode ? 15 : 10} XP!`,
+      });
 
-    // Reset form
-    setContent("");
-    setBookTitle("");
-    setBookAuthor("");
-    setThreadContent("");
-    setIsThreadMode(false);
-    onOpenChange(false);
+      // Reset form
+      setContent("");
+      setBookTitle("");
+      setBookAuthor("");
+      setThreadContent("");
+      setIsThreadMode(false);
+      onOpenChange(false);
+    } catch (error) {
+      // Error already handled in createPost
+    }
   };
 
   const handleThreadToggle = () => {

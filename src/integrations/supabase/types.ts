@@ -188,6 +188,99 @@ export type Database = {
         }
         Relationships: []
       }
+      community_post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_post_replies: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_posts: {
+        Row: {
+          book_author: string | null
+          book_id: string | null
+          book_title: string | null
+          content: string
+          created_at: string
+          id: string
+          is_repost: boolean
+          likes_count: number
+          original_post_id: string | null
+          rating: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          book_author?: string | null
+          book_id?: string | null
+          book_title?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_repost?: boolean
+          likes_count?: number
+          original_post_id?: string | null
+          rating?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          book_author?: string | null
+          book_id?: string | null
+          book_title?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_repost?: boolean
+          likes_count?: number
+          original_post_id?: string | null
+          rating?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_details: {
         Row: {
           additional_details: string | null

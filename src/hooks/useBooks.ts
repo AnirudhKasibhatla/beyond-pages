@@ -119,6 +119,19 @@ export const useBooks = () => {
 
   const deleteBook = async (id: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Delete associated community posts first
+      const { error: postsError } = await supabase
+        .from('community_posts')
+        .delete()
+        .eq('book_id', id)
+        .eq('user_id', user.id);
+
+      if (postsError) console.error('Error deleting community posts:', postsError);
+
+      // Then delete the book
       const { error } = await supabase
         .from('books')
         .delete()
@@ -147,7 +160,52 @@ export const useBooks = () => {
   };
 
   const updateBookReview = async (id: string, reviewText: string, rating?: number) => {
-    await updateBook(id, { review_text: reviewText, rating });
+    const bookData = await updateBook(id, { review_text: reviewText, rating });
+    
+    // Create or update community post when review is added/updated
+    if (bookData && reviewText?.trim()) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Check if there's already a community post for this book review
+        const { data: existingPost } = await supabase
+          .from('community_posts')
+          .select('id')
+          .eq('book_id', id)
+          .eq('user_id', user.id)
+          .single();
+
+        if (existingPost) {
+          // Update existing post
+          const { error } = await supabase
+            .from('community_posts')
+            .update({
+              content: reviewText,
+              rating: rating || null,
+            })
+            .eq('id', existingPost.id);
+
+          if (error) console.error('Error updating community post:', error);
+        } else {
+          // Create new post
+          const { error } = await supabase
+            .from('community_posts')
+            .insert({
+              user_id: user.id,
+              content: reviewText,
+              book_title: bookData.title,
+              book_author: bookData.author,
+              rating: rating || null,
+              book_id: id,
+            });
+
+          if (error) console.error('Error creating community post:', error);
+        }
+      } catch (error) {
+        console.error('Error handling community post for review:', error);
+      }
+    }
   };
 
   useEffect(() => {

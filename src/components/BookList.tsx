@@ -34,7 +34,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
   const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
-  const { addPost } = useCommunity();
+  const { createPost } = useCommunity();
   
   
   // Edit review state
@@ -122,14 +122,18 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
     }
   };
 
-  const maybeCreateCommunityPost = (payload: { title: string; author: string; rating?: number; reviewText?: string }) => {
+  const maybeCreateCommunityPost = async (payload: { title: string; author: string; rating?: number; reviewText?: string }) => {
     if (payload.reviewText?.trim()) {
-      addPost({
-        content: `Review: "${payload.title}" — ${payload.reviewText.slice(0, 200)}${payload.reviewText.length > 200 ? '…' : ''}`,
-        bookTitle: payload.title,
-        bookAuthor: payload.author,
-        rating: payload.rating,
-      });
+      try {
+        await createPost({
+          content: `Review: "${payload.title}" — ${payload.reviewText.slice(0, 200)}${payload.reviewText.length > 200 ? '…' : ''}`,
+          book_title: payload.title,
+          book_author: payload.author,
+          rating: payload.rating,
+        });
+      } catch (error) {
+        console.error('Failed to create community post:', error);
+      }
     }
   };
 

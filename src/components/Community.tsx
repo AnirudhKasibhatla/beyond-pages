@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import type { CommunityPost } from "@/context/CommunityContext";
 
 export const Community = () => {
-  const { posts, setPosts, addPost } = useCommunity();
+  const { posts, loading, createPost, toggleLike, addReply } = useCommunity();
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const [showReplyForm, setShowReplyForm] = useState<{ [key: string]: boolean }>({});
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
@@ -33,28 +33,12 @@ export const Community = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const toggleLike = (postId: string) => {
-    setPosts(prev => prev.map(post => 
-      post.id === postId 
-        ? { 
-            ...post, 
-            isLiked: !post.isLiked,
-            likes: post.isLiked ? post.likes - 1 : post.likes + 1
-          }
-        : post
-    ));
+  const handleToggleLike = (postId: string) => {
+    toggleLike(postId);
   };
 
   const toggleFollow = (postId: string) => {
-    setPosts(prev => prev.map(post => 
-      post.id === postId 
-        ? { 
-            ...post, 
-            author: { ...post.author, isFollowing: !post.author.isFollowing }
-          }
-        : post
-    ));
-    
+    // TODO: Implement following functionality in the future
     const post = posts.find(p => p.id === postId);
     if (post) {
       toast({
@@ -64,30 +48,13 @@ export const Community = () => {
     }
   };
 
-  const addReply = (postId: string) => {
+  const handleAddReply = async (postId: string) => {
     const replyContent = replyInputs[postId];
     if (!replyContent?.trim()) return;
 
-    const newReply = {
-      id: `r${Date.now()}`,
-      author: { name: 'You' },
-      content: replyContent,
-      timestamp: new Date()
-    };
-
-    setPosts(prev => prev.map(post => 
-      post.id === postId 
-        ? { ...post, replies: [...post.replies, newReply] }
-        : post
-    ));
-
+    await addReply(postId, replyContent);
     setReplyInputs(prev => ({ ...prev, [postId]: '' }));
     setShowReplyForm(prev => ({ ...prev, [postId]: false }));
-    
-    toast({
-      title: "Reply added!",
-      description: "Your reply has been posted.",
-    });
   };
 
   const sharePost = (post: CommunityPost) => {
@@ -97,44 +64,38 @@ export const Community = () => {
     });
   };
 
-  const repostPost = (post: CommunityPost) => {
-    const repost = {
-      ...post,
-      id: Math.random().toString(36).substr(2, 9),
-      isRepost: true,
-      originalAuthor: post.author,
-      author: {
-        name: "Current User",
-        avatar: "",
-        level: 1,
-        isFollowing: false
-      },
-      timestamp: new Date(),
-      likes: 0,
-      isLiked: false,
-      replies: []
-    };
-    addPost(repost);
-    toast({
-      title: "Post reposted!",
-      description: "You've successfully reposted this content.",
-    });
-  };
-
-  const handleQuickPost = () => {
-    if (quickPostContent.trim()) {
-      addPost({
-        content: quickPostContent,
+  const repostPost = async (post: CommunityPost) => {
+    try {
+      await createPost({
+        content: post.content,
+        book_title: post.book_title,
+        book_author: post.book_author,
+        rating: post.rating,
       });
-      setQuickPostContent("");
       toast({
-        title: "Post created!",
-        description: "Your reading thoughts have been shared with the community.",
+        title: "Post reposted!",
+        description: "You've successfully reposted this content.",
       });
+    } catch (error) {
+      // Error already handled in createPost
     }
   };
 
-  const formatTimeAgo = (date: Date) => {
+  const handleQuickPost = async () => {
+    if (quickPostContent.trim()) {
+      try {
+        await createPost({
+          content: quickPostContent,
+        });
+        setQuickPostContent("");
+      } catch (error) {
+        // Error already handled in createPost
+      }
+    }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
     
@@ -146,6 +107,24 @@ export const Community = () => {
   const getAuthorInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground">Community</h1>
+        </div>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-card p-6 rounded-lg animate-pulse">
+              <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -180,10 +159,10 @@ export const Community = () => {
       <div className="space-y-6">
         {posts.map((post) => (
           <Card key={post.id} className="p-6 hover:shadow-medium transition-all duration-300 bg-gradient-card">
-            {post.isRepost && (
+            {post.is_repost && (
               <div className="flex items-center gap-2 mb-3 text-sm text-muted-foreground">
                 <Repeat2 className="h-4 w-4" />
-                <span>Reposted from {post.originalAuthor?.name}</span>
+                <span>Reposted</span>
               </div>
             )}
             
@@ -204,7 +183,7 @@ export const Community = () => {
                   )}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {formatTimeAgo(post.timestamp)}
+                  {formatTimeAgo(post.created_at)}
                 </span>
               </div>
               <Button
@@ -219,13 +198,13 @@ export const Community = () => {
             </div>
 
             {/* Book info */}
-            {post.bookTitle && (
+            {post.book_title && (
               <Card className="p-3 mb-4 bg-secondary/30 border-l-4 border-l-primary">
                 <div className="flex items-center gap-2">
                   <Book className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-sm">{post.bookTitle}</span>
-                  {post.bookAuthor && (
-                    <span className="text-sm text-muted-foreground">by {post.bookAuthor}</span>
+                  <span className="font-medium text-sm">{post.book_title}</span>
+                  {post.book_author && (
+                    <span className="text-sm text-muted-foreground">by {post.book_author}</span>
                   )}
                   {post.rating && (
                     <div className="flex items-center gap-1">
@@ -248,11 +227,11 @@ export const Community = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => toggleLike(post.id)}
-                    className={`gap-2 ${post.isLiked ? 'text-destructive' : ''}`}
+                    onClick={() => handleToggleLike(post.id)}
+                    className={`gap-2 ${post.user_liked ? 'text-destructive' : ''}`}
                   >
-                    <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
-                    {post.likes}
+                    <Heart className={`h-4 w-4 ${post.user_liked ? 'fill-current' : ''}`} />
+                    {post.likes_count}
                   </Button>
                   
                   <Button
@@ -300,7 +279,7 @@ export const Community = () => {
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-sm">{reply.author.name}</span>
                           <span className="text-xs text-muted-foreground">
-                            {formatTimeAgo(reply.timestamp)}
+                            {formatTimeAgo(reply.created_at)}
                           </span>
                         </div>
                         <p className="text-sm text-card-foreground">{reply.content}</p>
@@ -321,7 +300,7 @@ export const Community = () => {
                       className="flex-1"
                     />
                     <Button
-                      onClick={() => addReply(post.id)}
+                      onClick={() => handleAddReply(post.id)}
                       disabled={!replyInputs[post.id]?.trim()}
                       size="sm"
                     >
