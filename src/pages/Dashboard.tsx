@@ -22,8 +22,6 @@ import { CommunityProvider } from "@/context/CommunityContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
-import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
-import { ReadingChallengeModal } from "@/components/ReadingChallengeModal";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges' | 'highlights';
 
@@ -37,7 +35,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
-  const { showModal, closeModal } = useFirstTimeUser();
+  
 
   const handleViewChange = (view: ViewType) => {
     setCurrentView(view);
@@ -228,14 +226,6 @@ const Dashboard = () => {
             {renderCurrentView()}
           </div>
           
-          {/* First Time User Modal for Books View */}
-          {!isGuest && (
-            <ReadingChallengeModal 
-              isOpen={showModal}
-              onClose={closeModal}
-              onComplete={closeModal}
-            />
-          )}
         </div>
       </CommunityProvider>
     );

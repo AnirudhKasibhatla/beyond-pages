@@ -5,13 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AddBookForm } from "@/components/AddBookForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { HighlightConfirmation } from "@/components/HighlightConfirmation";
-import { useHighlights } from "@/hooks/useHighlights";
 import { useBooks, type Book } from "@/hooks/useBooks";
 import { ShareReviewDialog } from "@/components/ShareReviewDialog";
 import { GoodreadsImport } from "@/components/GoodreadsImport";
 import { GenreSelector } from "@/components/GenreSelector";
-import { detectPotentialQuote } from "@/utils/textAnalysis";
+
 import { getAIBookRecommendations } from "@/services/aiRecommendations";
 import { Plus, BookOpen, Clock, CheckCircle, Star, Sparkles, RefreshCw, Edit2, Save, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,16 +35,13 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
   const { addPost } = useCommunity();
-  const { addHighlight } = useHighlights();
+  
   
   // Edit review state
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
   const [editReviewText, setEditReviewText] = useState('');
   const [editRating, setEditRating] = useState<number>(0);
   
-  // Highlight detection state
-  const [showHighlightConfirmation, setShowHighlightConfirmation] = useState(false);
-  const [detectedQuote, setDetectedQuote] = useState('');
   
   // Share dialog state
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -56,14 +51,6 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
     setShowShareDialog(true);
   };
 
-  // Quote detection function
-  const checkForQuotes = (reviewText: string, bookTitle: string) => {
-    const potentialQuote = detectPotentialQuote(reviewText);
-    if (potentialQuote) {
-      setDetectedQuote(potentialQuote);
-      setShowHighlightConfirmation(true);
-    }
-  };
 
   const addBook = async (formData: any) => {
     try {
@@ -82,10 +69,6 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
       await addBookToDb(bookData);
       setShowAddForm(false);
       
-      // Check for quotes in review text
-      if (bookData.review_text) {
-        checkForQuotes(bookData.review_text, bookData.title);
-      }
 
       // Open share dialog and create community post if rating and review are provided
       if (bookData.rating && bookData.review_text?.trim()) {
@@ -183,13 +166,6 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
       setEditReviewText('');
       setEditRating(0);
       
-      // Check for quotes in the updated review
-      if (updatedText) {
-        const book = prevBook;
-        if (book) {
-          checkForQuotes(updatedText, book.title);
-        }
-      }
 
       // Open share dialog and create community post if rating and review are provided
       if (prevBook && updatedRating > 0 && updatedText?.trim()) {
@@ -700,13 +676,6 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
         </div>
       )}
       
-      {/* Highlight Confirmation Dialog */}
-      <HighlightConfirmation
-        isOpen={showHighlightConfirmation}
-        onClose={() => setShowHighlightConfirmation(false)}
-        selectedText={detectedQuote}
-        onConfirm={addHighlight}
-      />
 
       {/* Share Review Dialog */}
       <ShareReviewDialog
