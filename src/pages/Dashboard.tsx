@@ -164,10 +164,10 @@ const Dashboard = () => {
   };
 
   const baseNavItems = [
+    { id: 'books' as ViewType, label: 'My Shelf', icon: Book },
     { id: 'community' as ViewType, label: 'Community', icon: Users },
     { id: 'events' as ViewType, label: 'Events', icon: Calendar },
     { id: 'groups' as ViewType, label: 'Groups', icon: Users2 },
-    { id: 'books' as ViewType, label: 'My Shelf', icon: Book },
   ];
 
   const hamburgerItems = [
