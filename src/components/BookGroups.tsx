@@ -10,6 +10,7 @@ import { EditGroupDialog } from "./EditGroupDialog";
 import { GroupMembers } from "./GroupMembers";
 import { UserProfileView } from "./UserProfileView";
 import { GroupChat } from "./GroupChat";
+import { GroupDetails } from "./GroupDetails";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -33,9 +34,11 @@ export const BookGroups = () => {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showMembersDialog, setShowMembersDialog] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [showGroupDetails, setShowGroupDetails] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<BookGroup | null>(null);
   const [selectedGroupForEdit, setSelectedGroupForEdit] = useState<any>(null);
   const [selectedGroupForMembers, setSelectedGroupForMembers] = useState<{ id: string; name: string } | null>(null);
+  const [selectedGroupForDetails, setSelectedGroupForDetails] = useState<string>('');
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [genreFilter, setGenreFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -238,6 +241,11 @@ export const BookGroups = () => {
     setShowMembersDialog(true);
   };
 
+  const handleViewGroupDetails = (groupId: string) => {
+    setSelectedGroupForDetails(groupId);
+    setShowGroupDetails(true);
+  };
+
   const handleViewProfile = (userId: string) => {
     setSelectedUserId(userId);
     setShowUserProfile(true);
@@ -418,11 +426,11 @@ export const BookGroups = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                      <h4 
-                         className="text-lg font-semibold text-card-foreground mb-2 cursor-pointer hover:text-primary transition-colors" 
-                         onClick={() => handleViewMembers(group.id, group.name)}
-                       >
-                         {group.name}
-                       </h4>
+                          className="text-lg font-semibold text-card-foreground mb-2 cursor-pointer hover:text-primary transition-colors" 
+                          onClick={() => handleViewGroupDetails(group.id)}
+                        >
+                          {group.name}
+                        </h4>
                        <p className="text-muted-foreground text-sm">{group.genre} group</p>
                      </div>
                     <Badge className={getActivityColor(group.activityLevel)}>
@@ -668,6 +676,13 @@ export const BookGroups = () => {
         isOpen={showUserProfile}
         onClose={() => setShowUserProfile(false)}
         userId={selectedUserId}
+      />
+      
+      <GroupDetails
+        isOpen={showGroupDetails}
+        onClose={() => setShowGroupDetails(false)}
+        groupId={selectedGroupForDetails}
+        onViewProfile={handleViewProfile}
       />
       
       {/* Group Chat Modal */}

@@ -196,7 +196,7 @@ export const GroupDetails = ({ isOpen, onClose, groupId, onViewProfile }: GroupD
             </TabsContent>
 
             <TabsContent value="chat">
-              <GroupChat groupId={groupId} />
+              <GroupChat groupId={groupId} groupName={group.name} onClose={() => {}} />
             </TabsContent>
 
             <TabsContent value="members">
