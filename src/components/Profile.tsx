@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 
 import { EditUsernameDialog } from "./EditUsernameDialog";
+import { ProfilePictureUpload } from "./ProfilePictureUpload";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import badgeImage from "@/assets/badge-reading.png";
@@ -188,16 +189,12 @@ export const Profile = () => {
             <div className="text-center space-y-4">
               <div className="relative inline-block">
                 <Avatar className="h-24 w-24 mx-auto">
-                  <AvatarImage src={profile.profilePicUrl} />
+                  <AvatarImage src={dbProfile?.profile_picture_url || profile.profilePicUrl} />
                   <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
                     <User className="h-12 w-12" />
                   </AvatarFallback>
                 </Avatar>
-                {isEditing && (
-                  <Button size="sm" variant="outline" className="absolute -bottom-2 -right-2">
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                )}
+                <ProfilePictureUpload isEditing={isEditing} />
               </div>
 
               {isEditing ? (

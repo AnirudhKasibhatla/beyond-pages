@@ -545,6 +545,7 @@ export type Database = {
           last_name: string | null
           name: string | null
           phone: string | null
+          profile_picture_url: string | null
           updated_at: string
           user_id: string
           username: string | null
@@ -560,6 +561,7 @@ export type Database = {
           last_name?: string | null
           name?: string | null
           phone?: string | null
+          profile_picture_url?: string | null
           updated_at?: string
           user_id: string
           username?: string | null
@@ -575,6 +577,7 @@ export type Database = {
           last_name?: string | null
           name?: string | null
           phone?: string | null
+          profile_picture_url?: string | null
           updated_at?: string
           user_id?: string
           username?: string | null
@@ -649,8 +652,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_username_availability: {
+        Args: { username_input: string }
+        Returns: boolean
+      }
       generate_username: {
-        Args: { first_name_input: string; last_name_input: string }
+        Args: { first_name_input?: string; last_name_input?: string }
         Returns: string
       }
     }

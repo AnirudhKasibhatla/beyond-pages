@@ -6,6 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Users, MapPin, Book, MessageCircle, Plus, UserPlus, Check, Filter, Globe, RefreshCw, Star, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CreateGroupDialog } from "./CreateGroupDialog";
+import { EditGroupDialog } from "./EditGroupDialog";
+import { GroupMembers } from "./GroupMembers";
+import { UserProfileView } from "./UserProfileView";
 import { GroupChat } from "./GroupChat";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -27,7 +30,13 @@ interface BookGroup {
 
 export const BookGroups = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showMembersDialog, setShowMembersDialog] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<BookGroup | null>(null);
+  const [selectedGroupForEdit, setSelectedGroupForEdit] = useState<any>(null);
+  const [selectedGroupForMembers, setSelectedGroupForMembers] = useState<{ id: string; name: string } | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [genreFilter, setGenreFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [activityFilter, setActivityFilter] = useState<string>("all");
@@ -200,6 +209,38 @@ export const BookGroups = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleEditGroup = async (groupId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('book_groups')
+        .select('*')
+        .eq('id', groupId)
+        .single();
+
+      if (error) throw error;
+
+      setSelectedGroupForEdit(data);
+      setShowEditDialog(true);
+    } catch (error) {
+      console.error('Error fetching group details:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load group details.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleViewMembers = (groupId: string, groupName: string) => {
+    setSelectedGroupForMembers({ id: groupId, name: groupName });
+    setShowMembersDialog(true);
+  };
+
+  const handleViewProfile = (userId: string) => {
+    setSelectedUserId(userId);
+    setShowUserProfile(true);
   };
 
   const getTypeIcon = (type: BookGroup['type']) => {
@@ -376,9 +417,9 @@ export const BookGroups = () => {
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                       <h4 
+                     <h4 
                          className="text-lg font-semibold text-card-foreground mb-2 cursor-pointer hover:text-primary transition-colors" 
-                         onClick={() => (group.isJoined || group.isCreator) && setSelectedGroup(group)}
+                         onClick={() => handleViewMembers(group.id, group.name)}
                        >
                          {group.name}
                        </h4>
@@ -427,10 +468,7 @@ export const BookGroups = () => {
                         variant="outline"
                         onClick={(e) => {
                           e.stopPropagation();
-                          toast({
-                            title: "Edit Group",
-                            description: "Edit functionality coming soon!",
-                          });
+                          handleEditGroup(group.id);
                         }}
                         className="flex-1 gap-2"
                       >
@@ -604,7 +642,33 @@ export const BookGroups = () => {
       )}
 
       {/* Create Group Dialog */}
-      <CreateGroupDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />
+      <CreateGroupDialog 
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+      />
+
+      <EditGroupDialog
+        isOpen={showEditDialog}
+        onClose={() => setShowEditDialog(false)}
+        group={selectedGroupForEdit}
+        onGroupUpdated={loadGroups}
+      />
+
+      {selectedGroupForMembers && (
+        <GroupMembers
+          isOpen={showMembersDialog}
+          onClose={() => setShowMembersDialog(false)}
+          groupId={selectedGroupForMembers.id}
+          groupName={selectedGroupForMembers.name}
+          onViewProfile={handleViewProfile}
+        />
+      )}
+
+      <UserProfileView
+        isOpen={showUserProfile}
+        onClose={() => setShowUserProfile(false)}
+        userId={selectedUserId}
+      />
       
       {/* Group Chat Modal */}
       {selectedGroup && (

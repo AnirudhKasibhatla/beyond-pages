@@ -16,7 +16,9 @@ export const ReadingChallenges = () => {
   const [selectedChallenge, setSelectedChallenge] = useState<ReadingChallenge | null>(null);
   const [viewMode, setViewMode] = useState<'books' | 'reviews'>('books');
   const [editingChallenge, setEditingChallenge] = useState<ReadingChallenge | null>(null);
+  const [selectedChallengeForEdit, setSelectedChallengeForEdit] = useState<ReadingChallenge | null>(null);
   const [showChallengeModal, setShowChallengeModal] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   
   const { challenges, loading, createChallenge, deleteChallenge } = useReadingChallenges();
   const { books } = useBooks();
@@ -358,6 +360,12 @@ export const ReadingChallenges = () => {
         isOpen={!!editingChallenge}
         onClose={() => setEditingChallenge(null)}
         challenge={editingChallenge}
+      />
+
+      <EditChallengeDialog 
+        isOpen={showEditDialog}
+        onClose={() => setShowEditDialog(false)}
+        challenge={selectedChallengeForEdit}
       />
       
       <ReadingChallengeModal 
