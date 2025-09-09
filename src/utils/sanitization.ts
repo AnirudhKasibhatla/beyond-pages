@@ -1,5 +1,13 @@
 import DOMPurify from 'dompurify';
 
+// Configure DOMPurify for browser environment
+if (typeof window !== 'undefined') {
+  DOMPurify.setConfig({
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
+    ALLOWED_ATTR: []
+  });
+}
+
 // Input sanitization utility functions
 export const sanitizeInput = {
   // Sanitize HTML content to prevent XSS
@@ -139,6 +147,11 @@ export const sanitizeInput = {
 export const guestRateLimit = {
   // Generate a pseudo-unique guest ID based on browser fingerprint
   getGuestId: (): string => {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return `guest_${Math.random().toString(36).substr(2, 9)}`;
+    }
+    
     const fingerprint = [
       navigator.userAgent,
       navigator.language,
@@ -159,19 +172,25 @@ export const guestRateLimit = {
 
   // Check if action is allowed for guest user
   checkLimit: (actionType: string, maxActions: number = 10): boolean => {
-    const guestId = guestRateLimit.getGuestId();
-    const key = `rate_limit_${guestId}_${actionType}`;
-    const now = Date.now();
-    const windowMs = 60 * 60 * 1000; // 1 hour window
-    
-    const stored = localStorage.getItem(key);
-    const data = stored ? JSON.parse(stored) : { count: 0, windowStart: now };
-    
-    // Reset if window expired
-    if (now - data.windowStart > windowMs) {
-      data.count = 0;
-      data.windowStart = now;
+    // Check if we're in browser environment
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return true; // Allow on server-side
     }
+    
+    try {
+      const guestId = guestRateLimit.getGuestId();
+      const key = `rate_limit_${guestId}_${actionType}`;
+      const now = Date.now();
+      const windowMs = 60 * 60 * 1000; // 1 hour window
+      
+      const stored = localStorage.getItem(key);
+      const data = stored ? JSON.parse(stored) : { count: 0, windowStart: now };
+      
+      // Reset if window expired
+      if (now - data.windowStart > windowMs) {
+        data.count = 0;
+        data.windowStart = now;
+      }
     
     // Check if limit exceeded
     if (data.count >= maxActions) {
@@ -183,5 +202,9 @@ export const guestRateLimit = {
     localStorage.setItem(key, JSON.stringify(data));
     
     return true;
+    } catch (error) {
+      console.error('Rate limit check failed:', error);
+      return true; // Allow on error
+    }
   }
 };
