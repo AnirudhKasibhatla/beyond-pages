@@ -23,6 +23,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
 import { ReadingChallengeModal } from "@/components/ReadingChallengeModal";
+import SecurityNotice from "@/components/SecurityNotice";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges' | 'highlights';
 
@@ -233,6 +234,11 @@ const Dashboard = () => {
           dynamicTab={(['profile', 'challenges'] as ViewType[]).includes(currentView) ? currentView : undefined}
           />
 
+          {/* Security Notice for guest users */}
+          <div className="max-w-6xl mx-auto px-3 sm:px-6">
+            <SecurityNotice />
+          </div>
+
           {/* Main Content */}
           <div ref={libraryRef} className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
             {renderCurrentView()}
@@ -255,6 +261,11 @@ const Dashboard = () => {
           onChallengesClick={() => setCurrentView('challenges')}
           dynamicTab={(['profile', 'challenges'] as ViewType[]).includes(currentView) ? currentView : undefined}
         />
+        
+        {/* Security Notice for guest users */}
+        <div className="max-w-6xl mx-auto px-3 sm:px-6">
+          <SecurityNotice />
+        </div>
         <div className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8 justify-center">
           {renderCurrentView()}
         </div>

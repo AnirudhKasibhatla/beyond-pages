@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from './useAuth';
+import { sanitizeInput } from '@/utils/sanitization';
 
 interface Profile {
   id: string;
@@ -64,9 +65,40 @@ export const useProfile = (userId?: string) => {
     if (!user || !profile) return;
 
     try {
+      // Sanitize all text inputs
+      const sanitizedUpdates = { ...updates };
+      
+      if (sanitizedUpdates.username) {
+        sanitizedUpdates.username = sanitizeInput.username(sanitizedUpdates.username);
+      }
+      
+      if (sanitizedUpdates.bio) {
+        sanitizedUpdates.bio = sanitizeInput.bio(sanitizedUpdates.bio);
+      }
+      
+      if (sanitizedUpdates.first_name) {
+        sanitizedUpdates.first_name = sanitizeInput.text(sanitizedUpdates.first_name);
+      }
+      
+      if (sanitizedUpdates.last_name) {
+        sanitizedUpdates.last_name = sanitizeInput.text(sanitizedUpdates.last_name);
+      }
+      
+      if (sanitizedUpdates.display_name) {
+        sanitizedUpdates.display_name = sanitizeInput.text(sanitizedUpdates.display_name);
+      }
+
+      // If updating username, check availability first
+      if (sanitizedUpdates.username && sanitizedUpdates.username !== profile?.username) {
+        const isAvailable = await checkUsernameAvailability(sanitizedUpdates.username);
+        if (!isAvailable) {
+          throw new Error('Username is already taken');
+        }
+      }
+
       const { data, error } = await supabase
         .from('profiles')
-        .update(updates)
+        .update(sanitizedUpdates)
         .eq('user_id', user.id)
         .select()
         .single();

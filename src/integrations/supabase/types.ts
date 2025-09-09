@@ -535,6 +535,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
           country: string | null
           created_at: string
           date_of_birth: string | null
@@ -546,11 +547,13 @@ export type Database = {
           name: string | null
           phone: string | null
           profile_picture_url: string | null
+          public_profile: boolean | null
           updated_at: string
           user_id: string
           username: string | null
         }
         Insert: {
+          bio?: string | null
           country?: string | null
           created_at?: string
           date_of_birth?: string | null
@@ -562,11 +565,13 @@ export type Database = {
           name?: string | null
           phone?: string | null
           profile_picture_url?: string | null
+          public_profile?: boolean | null
           updated_at?: string
           user_id: string
           username?: string | null
         }
         Update: {
+          bio?: string | null
           country?: string | null
           created_at?: string
           date_of_birth?: string | null
@@ -578,6 +583,7 @@ export type Database = {
           name?: string | null
           phone?: string | null
           profile_picture_url?: string | null
+          public_profile?: boolean | null
           updated_at?: string
           user_id?: string
           username?: string | null

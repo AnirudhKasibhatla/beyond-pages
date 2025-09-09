@@ -11,7 +11,15 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
-  const { isGuest } = useGuestAuth();
+  const { isGuest, validateGuestSession } = useGuestAuth();
+
+  // Validate guest session on route access
+  React.useEffect(() => {
+    if (isGuest && !validateGuestSession()) {
+      // Guest session invalid, redirect to auth
+      window.location.href = '/auth';
+    }
+  }, [isGuest, validateGuestSession]);
 
   if (loading) {
     return (

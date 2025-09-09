@@ -38,8 +38,18 @@ export const useAuth = () => {
   }, []);
 
   const signOut = async () => {
-    // Clear guest status when signing out
+    // Clear all auth-related data when signing out
     localStorage.removeItem('isGuest');
+    localStorage.removeItem('guestSession');
+    
+    // Clear any cached user data
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith('rate_limit_') || key.startsWith('user_')) {
+        localStorage.removeItem(key);
+      }
+    });
+    
     await supabase.auth.signOut();
   };
 
