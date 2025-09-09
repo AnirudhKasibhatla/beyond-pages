@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useGuestAuth } from '@/hooks/useGuestAuth';
@@ -14,7 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isGuest, validateGuestSession } = useGuestAuth();
 
   // Validate guest session on route access
-  React.useEffect(() => {
+  useEffect(() => {
     if (isGuest && !validateGuestSession()) {
       // Guest session invalid, redirect to auth
       window.location.href = '/auth';

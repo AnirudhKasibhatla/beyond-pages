@@ -4,15 +4,27 @@ import DOMPurify from 'dompurify';
 export const sanitizeInput = {
   // Sanitize HTML content to prevent XSS
   html: (input: string): string => {
-    return DOMPurify.sanitize(input, {
-      ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
-      ALLOWED_ATTR: []
-    });
+    if (!input) return '';
+    try {
+      return DOMPurify.sanitize(input, {
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
+        ALLOWED_ATTR: []
+      });
+    } catch (error) {
+      console.error('Error sanitizing HTML:', error);
+      return '';
+    }
   },
 
   // Sanitize plain text, removing any HTML tags
   text: (input: string): string => {
-    return DOMPurify.sanitize(input, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+    if (!input) return '';
+    try {
+      return DOMPurify.sanitize(input, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+    } catch (error) {
+      console.error('Error sanitizing text:', error);
+      return '';
+    }
   },
 
   // Validate and sanitize username
@@ -44,58 +56,82 @@ export const sanitizeInput = {
 
   // Sanitize and validate bio/description text
   bio: (input: string): string => {
-    const sanitized = DOMPurify.sanitize(input.trim(), { 
-      ALLOWED_TAGS: [], 
-      ALLOWED_ATTR: [] 
-    });
-    
-    if (sanitized.length > 500) {
-      throw new Error('Bio must be 500 characters or less');
+    if (!input) return '';
+    try {
+      const sanitized = DOMPurify.sanitize(input.trim(), { 
+        ALLOWED_TAGS: [], 
+        ALLOWED_ATTR: [] 
+      });
+      
+      if (sanitized.length > 500) {
+        throw new Error('Bio must be 500 characters or less');
+      }
+      
+      return sanitized;
+    } catch (error) {
+      console.error('Error sanitizing bio:', error);
+      return '';
     }
-    
-    return sanitized;
   },
 
   // Sanitize post content with basic formatting
   postContent: (input: string): string => {
-    const sanitized = DOMPurify.sanitize(input.trim(), {
-      ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
-      ALLOWED_ATTR: []
-    });
-    
-    if (sanitized.length > 2000) {
-      throw new Error('Post content must be 2000 characters or less');
+    if (!input) return '';
+    try {
+      const sanitized = DOMPurify.sanitize(input.trim(), {
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
+        ALLOWED_ATTR: []
+      });
+      
+      if (sanitized.length > 2000) {
+        throw new Error('Post content must be 2000 characters or less');
+      }
+      
+      return sanitized;
+    } catch (error) {
+      console.error('Error sanitizing post content:', error);
+      return '';
     }
-    
-    return sanitized;
   },
 
   // Sanitize reply content
   replyContent: (input: string): string => {
-    const sanitized = DOMPurify.sanitize(input.trim(), {
-      ALLOWED_TAGS: ['b', 'i', 'em', 'strong'],
-      ALLOWED_ATTR: []
-    });
-    
-    if (sanitized.length > 1000) {
-      throw new Error('Reply content must be 1000 characters or less');
+    if (!input) return '';
+    try {
+      const sanitized = DOMPurify.sanitize(input.trim(), {
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong'],
+        ALLOWED_ATTR: []
+      });
+      
+      if (sanitized.length > 1000) {
+        throw new Error('Reply content must be 1000 characters or less');
+      }
+      
+      return sanitized;
+    } catch (error) {
+      console.error('Error sanitizing reply content:', error);
+      return '';
     }
-    
-    return sanitized;
   },
 
   // Sanitize highlight text
   highlightText: (input: string): string => {
-    const sanitized = DOMPurify.sanitize(input.trim(), { 
-      ALLOWED_TAGS: [], 
-      ALLOWED_ATTR: [] 
-    });
-    
-    if (sanitized.length > 1000) {
-      throw new Error('Highlight text must be 1000 characters or less');
+    if (!input) return '';
+    try {
+      const sanitized = DOMPurify.sanitize(input.trim(), { 
+        ALLOWED_TAGS: [], 
+        ALLOWED_ATTR: [] 
+      });
+      
+      if (sanitized.length > 1000) {
+        throw new Error('Highlight text must be 1000 characters or less');
+      }
+      
+      return sanitized;
+    } catch (error) {
+      console.error('Error sanitizing highlight text:', error);
+      return '';
     }
-    
-    return sanitized;
   }
 };
 
