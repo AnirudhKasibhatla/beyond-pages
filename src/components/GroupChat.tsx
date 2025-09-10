@@ -141,18 +141,10 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
   const chatMessages = messages.filter(m => m.message_type === 'message');
 
   return (
-    <Card className="w-full h-[60vh] flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-foreground">Group Discussion</h3>
-            <p className="text-sm text-muted-foreground">{groupName}</p>
-          </div>
-        </div>
-        
-        {/* Tabs */}
-        <div className="flex gap-2 mt-3">
+    <div className="w-full h-[60vh] flex flex-col overflow-hidden">
+      {/* Header with Tabs */}
+      <div className="border-b border-border">
+        <div className="flex gap-2 p-4">
           <Button 
             variant={activeTab === 'posts' ? 'default' : 'outline'}
             onClick={() => setActiveTab('posts')}
@@ -261,6 +253,6 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
             </div>
           )}
       </div>
-    </Card>
+    </div>
   );
 };

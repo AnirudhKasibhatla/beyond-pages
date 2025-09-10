@@ -253,15 +253,13 @@ export const GroupDetails = ({ isOpen, onClose, groupId, onViewProfile }: GroupD
         ) : activeTab === 'chat' ? (
           <GroupChat groupId={groupId} groupName={group.name} onClose={() => {}} />
         ) : (
-          <div className="bg-background">
-            <GroupMembers 
-              isOpen={true}
-              onClose={() => {}}
-              groupId={groupId}
-              groupName={group.name}
-              onViewProfile={onViewProfile}
-            />
-          </div>
+          <GroupMembers 
+            isOpen={true}
+            onClose={() => {}}
+            groupId={groupId}
+            groupName={group.name}
+            onViewProfile={onViewProfile}
+          />
         )}
       </DialogContent>
     </Dialog>
