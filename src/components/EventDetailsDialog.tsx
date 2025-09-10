@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Calendar, Clock, MapPin, Users, MessageSquare, User, Repeat } from "lucide-react";
+import { EventChat } from "./EventChat";
 
 interface BookEvent {
   id: string;
@@ -219,21 +220,7 @@ export const EventDetailsDialog = ({ event, isOpen, onClose, onRSVP }: EventDeta
             </Card>
           </div>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Event Chat</CardTitle>
-              <CardDescription>
-                Connect with other attendees and discuss the event
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Chat feature coming soon!</p>
-                <p className="text-sm">You'll be able to chat with other attendees here.</p>
-              </div>
-            </CardContent>
-          </Card>
+          <EventChat eventId={event.id} eventTitle={event.title} onClose={() => {}} />
         )}
       </DialogContent>
     </Dialog>

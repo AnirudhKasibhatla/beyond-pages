@@ -141,43 +141,41 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
   const chatMessages = messages.filter(m => m.message_type === 'message');
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="p-6 border-b border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">{groupName}</h2>
-              <p className="text-muted-foreground">Group Discussion</p>
-            </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {/* Tabs */}
-          <div className="flex gap-4 mt-4">
-            <Button 
-              variant={activeTab === 'posts' ? 'default' : 'ghost'}
-              onClick={() => setActiveTab('posts')}
-              className="gap-2"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Posts & Thoughts
-            </Button>
-            <Button 
-              variant={activeTab === 'chat' ? 'default' : 'ghost'}
-              onClick={() => setActiveTab('chat')}
-              className="gap-2"
-            >
-              <Users className="h-4 w-4" />
-              Group Chat
-            </Button>
+    <Card className="w-full h-[60vh] flex flex-col overflow-hidden">
+      {/* Header */}
+      <div className="p-4 border-b border-border">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">Group Discussion</h3>
+            <p className="text-sm text-muted-foreground">{groupName}</p>
           </div>
         </div>
+        
+        {/* Tabs */}
+        <div className="flex gap-2 mt-3">
+          <Button 
+            variant={activeTab === 'posts' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('posts')}
+            size="sm"
+            className="gap-2"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Posts & Thoughts
+          </Button>
+          <Button 
+            variant={activeTab === 'chat' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('chat')}
+            size="sm"
+            className="gap-2"
+          >
+            <Users className="h-4 w-4" />
+            Group Chat
+          </Button>
+        </div>
+      </div>
 
-        {/* Content */}
-        <div className="flex-1 p-6 overflow-hidden">
+      {/* Content */}
+      <div className="flex-1 p-4 overflow-hidden">
           {activeTab === 'posts' ? (
             <div className="h-full flex flex-col space-y-4">
               {/* New Post Input */}
@@ -262,8 +260,7 @@ export const GroupChat = ({ groupId, groupName, onClose }: GroupChatProps) => {
               </Card>
             </div>
           )}
-        </div>
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 };
