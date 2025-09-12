@@ -1,4 +1,5 @@
-import { useState, useRef, lazy, Suspense } from "react";
+import { useState, useRef, lazy, Suspense, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 
@@ -28,6 +29,7 @@ import SecurityNotice from "@/components/SecurityNotice";
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges' | 'highlights';
 
 const Dashboard = () => {
+  const [searchParams] = useSearchParams();
   const [currentView, setCurrentView] = useState<ViewType>('community');
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [userLevel, setUserLevel] = useState(1);
@@ -38,6 +40,14 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
+  
+  // Check for tab parameter in URL and set initial view
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['books', 'community', 'profile', 'tournament', 'events', 'groups', 'settings', 'challenges', 'highlights'].includes(tabParam)) {
+      setCurrentView(tabParam as ViewType);
+    }
+  }, [searchParams]);
   
 
   const handleViewChange = (view: ViewType) => {
