@@ -145,7 +145,7 @@ const Index = () => {
               <Button 
                 variant="hero" 
                 size="xl"
-                onClick={() => navigate('/dashboard?tab=books')}
+                onClick={() => navigate('/dashboard')}
                 className="hover-scale gap-3 transition-all duration-300 hover:shadow-glow"
               >
                 Start Your Journey
@@ -222,7 +222,7 @@ const Index = () => {
           <Button 
             variant="hero" 
             size="xl"
-            onClick={() => navigate('/dashboard?tab=books')}
+            onClick={() => navigate('/dashboard')}
             className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 gap-3 shadow-glow"
           >
             Get Started Now
