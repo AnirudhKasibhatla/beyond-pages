@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, User, Crown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { ClickableUserName } from "./ClickableUserName";
 
 interface GroupMember {
   id: string;
@@ -149,10 +150,15 @@ export const GroupMembers = ({ isOpen, onClose, groupId, groupName, onViewProfil
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h5 className="font-medium">{creator.name}</h5>
-                      <Crown className="h-4 w-4 text-yellow-500" />
-                    </div>
+                     <div className="flex items-center gap-2">
+                       <ClickableUserName
+                         name={creator.name}
+                         userId={creator.user_id}
+                         onUserClick={onViewProfile}
+                         className="font-medium"
+                       />
+                       <Crown className="h-4 w-4 text-yellow-500" />
+                     </div>
                     <p className="text-sm text-muted-foreground">@{creator.username}</p>
                     {creator.bio && (
                       <p className="text-xs text-muted-foreground mt-1">{creator.bio}</p>
@@ -186,9 +192,14 @@ export const GroupMembers = ({ isOpen, onClose, groupId, groupName, onViewProfil
                           <User className="h-5 w-5" />
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h5 className="font-medium">{member.profile.name}</h5>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <ClickableUserName
+                              name={member.profile.name}
+                              userId={member.user_id}
+                              onUserClick={onViewProfile}
+                              className="font-medium"
+                            />
                           {member.role === 'admin' && (
                             <Badge variant="secondary" className="text-xs">
                               Admin

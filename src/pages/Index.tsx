@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User, ChevronDown } from "lucide-react";
+import { Book, Users, Trophy, Star, ArrowRight, BookOpen, Target, Award, User, ChevronDown, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,7 @@ import heroImage from "@/assets/hero-books.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -29,8 +30,9 @@ const Index = () => {
   const [highlightedFeature, setHighlightedFeature] = useState<number | null>(null);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { profile } = useProfile();
+  const { toast } = useToast();
 
   const handleLearnMore = () => {
     featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -38,6 +40,23 @@ const Index = () => {
       setHighlightedFeature(0);
       setTimeout(() => setHighlightedFeature(null), 3000);
     }, 500);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+      // Page will stay on home page as requested
+    } catch (error) {
+      toast({
+        title: "Sign out failed",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Track current slide for dots
@@ -129,6 +148,13 @@ const Index = () => {
                     >
                       <ArrowRight className="h-4 w-4" />
                       Go to Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={handleSignOut}
+                      className="cursor-pointer gap-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { Quote, BookOpen, Calendar, Share2, Heart, MessageCircle, Copy } from 'lucide-react';
 import { format } from 'date-fns';
+import { ClickableUserName } from './ClickableUserName';
+import { UserProfileView } from './UserProfileView';
 
 interface CommunityHighlight {
   id: string;
@@ -79,7 +81,15 @@ const mockHighlights: CommunityHighlight[] = [
 export const CommunityHighlights = () => {
   const [highlights, setHighlights] = useState<CommunityHighlight[]>(mockHighlights);
   const [loading, setLoading] = useState(false);
+  const [userProfileView, setUserProfileView] = useState<{ isOpen: boolean; userId: string | null }>({
+    isOpen: false,
+    userId: null,
+  });
   const { toast } = useToast();
+
+  const handleUserClick = (userId: string) => {
+    setUserProfileView({ isOpen: true, userId });
+  };
 
   const handleLike = async (highlightId: string) => {
     setHighlights(prev => prev.map(highlight => 
@@ -188,7 +198,12 @@ export const CommunityHighlights = () => {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium text-card-foreground">{highlight.user.display_name}</p>
+                <ClickableUserName
+                  name={highlight.user.display_name}
+                  userId={highlight.user.id}
+                  onUserClick={handleUserClick}
+                  className="font-medium text-card-foreground"
+                />
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Calendar className="h-3 w-3" />
                   {format(new Date(highlight.created_at), 'MMM d, yyyy')}
@@ -269,6 +284,12 @@ export const CommunityHighlights = () => {
           </div>
         </Card>
       ))}
+
+      <UserProfileView
+        isOpen={userProfileView.isOpen}
+        onClose={() => setUserProfileView({ isOpen: false, userId: null })}
+        userId={userProfileView.userId}
+      />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { GroupChat } from "./GroupChat";
 import { GroupMembers } from "./GroupMembers";
+import { ClickableUserName } from "./ClickableUserName";
 
 interface GroupDetailsProps {
   isOpen: boolean;
@@ -233,7 +234,12 @@ export const GroupDetails = ({ isOpen, onClose, groupId, onViewProfile }: GroupD
                             </Avatar>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium text-sm">{post.profile.name}</span>
+                                <ClickableUserName
+                                  name={post.profile.name}
+                                  userId={post.user_id}
+                                  onUserClick={onViewProfile}
+                                  className="font-medium text-sm"
+                                />
                                 <span className="text-xs text-muted-foreground">@{post.profile.username}</span>
                                 <span className="text-xs text-muted-foreground">
                                   {new Date(post.created_at).toLocaleDateString()}

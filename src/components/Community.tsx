@@ -20,6 +20,8 @@ import {
   Home
 } from "lucide-react";
 import { CreatePostDialog } from "./CreatePostDialog";
+import { ClickableUserName } from "./ClickableUserName";
+import { UserProfileView } from "./UserProfileView";
 import { useNavigate } from "react-router-dom";
 
 import type { CommunityPost } from "@/context/CommunityContext";
@@ -30,6 +32,10 @@ export const Community = () => {
   const [showReplyForm, setShowReplyForm] = useState<{ [key: string]: boolean }>({});
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [quickPostContent, setQuickPostContent] = useState("");
+  const [userProfileView, setUserProfileView] = useState<{ isOpen: boolean; userId: string | null }>({
+    isOpen: false,
+    userId: null,
+  });
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -108,6 +114,10 @@ export const Community = () => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const handleUserClick = (userId: string) => {
+    setUserProfileView({ isOpen: true, userId });
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -174,7 +184,12 @@ export const Community = () => {
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-card-foreground">{post.author.name}</span>
+                  <ClickableUserName
+                    name={post.author.name}
+                    userId={post.user_id}
+                    onUserClick={handleUserClick}
+                    className="font-semibold text-card-foreground"
+                  />
                   <Badge variant="secondary" className="text-xs">
                     Level {post.author.level}
                   </Badge>
@@ -277,7 +292,12 @@ export const Community = () => {
                       </Avatar>
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">{reply.author.name}</span>
+                          <ClickableUserName
+                            name={reply.author.name}
+                            userId={reply.user_id}
+                            onUserClick={handleUserClick}
+                            className="font-medium text-sm"
+                          />
                           <span className="text-xs text-muted-foreground">
                             {formatTimeAgo(reply.created_at)}
                           </span>
@@ -327,6 +347,12 @@ export const Community = () => {
       <CreatePostDialog
         open={isCreatePostOpen}
         onOpenChange={setIsCreatePostOpen}
+      />
+
+      <UserProfileView
+        isOpen={userProfileView.isOpen}
+        onClose={() => setUserProfileView({ isOpen: false, userId: null })}
+        userId={userProfileView.userId}
       />
     </div>
   );
