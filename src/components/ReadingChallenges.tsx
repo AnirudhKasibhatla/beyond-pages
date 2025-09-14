@@ -264,115 +264,21 @@ export const ReadingChallenges = () => {
 
       <Separator />
 
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => (
-            <LoadingSkeleton key={i} className="h-48" />
-          ))}
+      {/* Coming Soon Section */}
+      <Card className="p-8 text-center bg-gradient-card shadow-medium">
+        <div className="space-y-4">
+          <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+            <Trophy className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">Coming Soon!</h3>
+          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            Reading challenges are coming soon. Sign up for all the updates and be the first to know when they're available!
+          </p>
+          <Button variant="default" size="lg" className="mt-4">
+            Sign Up for Updates
+          </Button>
         </div>
-      ) : (
-        <>
-          <div className="flex justify-between items-center">
-            <p className="text-muted-foreground">
-              {challenges.length === 0 ? 'No challenges yet. Create your first one!' : `You have ${challenges.length} reading challenge${challenges.length !== 1 ? 's' : ''}`}
-            </p>
-            <Button onClick={handleCreateChallenge} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              New Challenge
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {challenges.map((challenge) => (
-          <Card 
-            key={challenge.year}
-            className={`p-6 cursor-pointer transition-all duration-300 hover:shadow-medium ${
-              challenge.status === 'in-progress' ? 'bg-gradient-primary text-primary-foreground' :
-              challenge.status === 'completed' ? 'bg-gradient-card' : 'bg-muted/50'
-            }`}
-            onClick={() => handleChallengeClick(challenge)}
-          >
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold">{challenge.year}</h3>
-                <Badge 
-                  variant={challenge.status === 'completed' ? 'default' : 
-                          challenge.status === 'in-progress' ? 'secondary' : 'outline'}
-                  className={challenge.status === 'in-progress' ? 'bg-white/20 text-white' : ''}
-                >
-                  {challenge.status === 'completed' && <Trophy className="h-3 w-3 mr-1" />}
-                  {challenge.status === 'in-progress' && <Calendar className="h-3 w-3 mr-1" />}
-                  {challenge.status.charAt(0).toUpperCase() + challenge.status.slice(1)}
-                </Badge>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className={challenge.status === 'in-progress' ? 'text-white/90' : 'text-muted-foreground'}>
-                    Progress
-                  </span>
-                  <span className="font-semibold">
-                    {challenge.completed}/{challenge.goal} books
-                  </span>
-                </div>
-                <Progress 
-                  value={(challenge.completed / challenge.goal) * 100} 
-                  className="h-2"
-                />
-              </div>
-
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className={challenge.status === 'in-progress' ? 'text-white/90' : 'text-muted-foreground'}>
-                    Achievement Rate
-                  </span>
-                  <span className="font-medium">
-                    {Math.round((challenge.completed / challenge.goal) * 100)}%
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={challenge.status === 'in-progress' ? 'text-white/90' : 'text-muted-foreground'}>
-                    Best Month
-                  </span>
-                  <span className="font-medium">{challenge.best_month}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={challenge.status === 'in-progress' ? 'text-white/90' : 'text-muted-foreground'}>
-                    Favorite Genre
-                  </span>
-                  <span className="font-medium">{challenge.favorite_genre}</span>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-current/20">
-                <p className={`text-xs ${challenge.status === 'in-progress' ? 'text-white/80' : 'text-muted-foreground'}`}>
-                  Click to view books and reviews
-                </p>
-              </div>
-            </div>
-          </Card>
-            ))}
-          </div>
-        </>
-      )}
-
-      <EditChallengeDialog 
-        isOpen={!!editingChallenge}
-        onClose={() => setEditingChallenge(null)}
-        challenge={editingChallenge}
-      />
-
-      <EditChallengeDialog 
-        isOpen={showEditDialog}
-        onClose={() => setShowEditDialog(false)}
-        challenge={selectedChallengeForEdit}
-      />
-      
-      <ReadingChallengeModal 
-        isOpen={showChallengeModal}
-        onClose={() => setShowChallengeModal(false)}
-        onComplete={() => setShowChallengeModal(false)}
-      />
+      </Card>
     </div>
   );
 };

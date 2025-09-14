@@ -235,30 +235,6 @@ export const Profile = () => {
                 </>
               )}
 
-              <div className="flex justify-center gap-2">
-                <Badge variant="default" className="gap-1">
-                  <Trophy className="h-3 w-3" />
-                  Level {profile.level}
-                </Badge>
-                <Badge 
-                  variant="outline" 
-                  className={`gap-1 ${currentLeague.color} text-white border-none`}
-                >
-                  {currentLeague.name} League
-                </Badge>
-              </div>
-
-              {/* XP Progress */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>{profile.xp} XP</span>
-                  <span>{xpForNextLevel} XP</span>
-                </div>
-                <Progress value={xpProgress} className="h-2" />
-                <p className="text-xs text-muted-foreground">
-                  {xpForNextLevel - profile.xp} XP to next level
-                </p>
-              </div>
 
               {/* Privacy Toggle */}
               {isEditing && (
@@ -320,10 +296,9 @@ export const Profile = () => {
         {/* Stats and Achievements */}
         <div className="lg:col-span-2 space-y-6">
           {/* Reading Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {renderStatCard("Books Read", profile.booksRead, <Book className="h-6 w-6 text-primary" />)}
             {renderStatCard("Current Streak", `${profile.currentStreak} days`, <Star className="h-6 w-6 text-accent" />)}
-            {renderStatCard("Total XP", profile.xp, <Trophy className="h-6 w-6 text-success" />)}
             {renderStatCard("Badges Earned", profile.badges.length, <Star className="h-6 w-6 text-accent" />)}
           </div>
 
