@@ -202,14 +202,6 @@ const Dashboard = () => {
                 <p className="text-lg sm:text-xl md:text-2xl text-primary-foreground/90 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
                   Track your reading journey, connect with fellow readers, and discover your next favorite book
                 </p>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center items-center mb-6 sm:mb-8">
-                  <Badge variant="secondary" className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2">
-                    Level {userLevel}
-                  </Badge>
-                  <Badge variant="outline" className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2 bg-white/10 text-primary-foreground border-white/20">
-                    {userXP} XP
-                  </Badge>
-                </div>
                 <Button 
                   variant="hero" 
                   size="xl"

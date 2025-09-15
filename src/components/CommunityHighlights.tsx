@@ -9,6 +9,7 @@ import { Quote, BookOpen, Calendar, Share2, Heart, MessageCircle, Copy } from 'l
 import { format } from 'date-fns';
 import { ClickableUserName } from './ClickableUserName';
 import { UserProfileView } from './UserProfileView';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CommunityHighlight {
   id: string;
@@ -79,13 +80,91 @@ const mockHighlights: CommunityHighlight[] = [
 ];
 
 export const CommunityHighlights = () => {
-  const [highlights, setHighlights] = useState<CommunityHighlight[]>(mockHighlights);
-  const [loading, setLoading] = useState(false);
+  const [highlights, setHighlights] = useState<CommunityHighlight[]>([]);
+  const [loading, setLoading] = useState(true);
   const [userProfileView, setUserProfileView] = useState<{ isOpen: boolean; userId: string | null }>({
     isOpen: false,
     userId: null,
   });
   const { toast } = useToast();
+
+  useEffect(() => {
+    fetchCommunityHighlights();
+  }, []);
+
+  const fetchCommunityHighlights = async () => {
+    try {
+      // First fetch highlights
+      const { data: highlightsData, error: highlightsError } = await supabase
+        .from('highlights')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (highlightsError) {
+        console.error('Error fetching highlights:', highlightsError);
+        setHighlights(mockHighlights); // Fallback to mock data
+        setLoading(false);
+        return;
+      }
+
+      if (!highlightsData || highlightsData.length === 0) {
+        setHighlights(mockHighlights); // Fallback to mock data if no highlights
+        setLoading(false);
+        return;
+      }
+
+      // Get unique user IDs
+      const userIds = [...new Set(highlightsData.map(h => h.user_id))];
+
+      // Fetch user profiles
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, first_name, last_name, display_name, profile_picture_url')
+        .in('user_id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+      }
+
+      // Create profile lookup map
+      const profilesMap = new Map();
+      if (profilesData) {
+        profilesData.forEach(profile => {
+          profilesMap.set(profile.user_id, profile);
+        });
+      }
+
+      const formattedHighlights: CommunityHighlight[] = highlightsData.map(highlight => {
+        const profile = profilesMap.get(highlight.user_id);
+        return {
+          id: highlight.id,
+          quote_text: highlight.quote_text,
+          book_title: highlight.book_title,
+          book_author: highlight.book_author,
+          page_number: highlight.page_number,
+          created_at: highlight.created_at,
+          user: {
+            id: highlight.user_id,
+            display_name: profile?.display_name || 
+                         `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() ||
+                         'Anonymous Reader',
+            avatar_url: profile?.profile_picture_url || undefined
+          },
+          likes_count: Math.floor(Math.random() * 50), // Mock data for likes
+          comments_count: Math.floor(Math.random() * 10), // Mock data for comments
+          is_liked: false
+        };
+      });
+
+      setHighlights(formattedHighlights);
+    } catch (error) {
+      console.error('Error fetching highlights:', error);
+      setHighlights(mockHighlights); // Fallback to mock data
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleUserClick = (userId: string) => {
     setUserProfileView({ isOpen: true, userId });
