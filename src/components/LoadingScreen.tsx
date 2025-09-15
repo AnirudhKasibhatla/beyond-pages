@@ -11,7 +11,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
     const timer = setTimeout(() => {
       setIsVisible(false);
       setTimeout(onComplete, 500); // Allow fade out to complete
-    }, 3000); // Show for 3 seconds
+    }, 4000); // Show for 3 seconds
 
     return () => clearTimeout(timer);
   }, [onComplete]);
