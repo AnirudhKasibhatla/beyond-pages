@@ -644,7 +644,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
 
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-2">
-                    {book.status !== 'reading' && (
+                    {book.status !== 'reading' && book.status !== 'finished' && (
                       <Button
                         variant="ghost"
                         size="sm"
