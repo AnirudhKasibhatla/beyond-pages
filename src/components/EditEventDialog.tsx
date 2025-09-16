@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,16 +13,39 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
+import { Edit, Save, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-interface CreateEventDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onEventCreated?: () => void;
+interface BookEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: Date;
+  time: string;
+  location: string;
+  type: 'virtual' | 'in-person' | 'hybrid';
+  category: 'book-club' | 'author-talk' | 'workshop' | 'social';
+  attendees: number;
+  maxAttendees?: number;
+  isRsvped: boolean;
+  hostXP: number;
+  host: string;
+  featured?: boolean;
+  creatorId: string;
+  isHost: boolean;
+  recurring?: boolean;
+  recurringDays?: string[];
+  recurringDuration?: number;
 }
 
-export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: CreateEventDialogProps) => {
+interface EditEventDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  event: BookEvent | null;
+  onEventUpdated: () => void;
+}
+
+export const EditEventDialog = ({ open, onOpenChange, event, onEventUpdated }: EditEventDialogProps) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -40,10 +63,29 @@ export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: Create
 
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (event) {
+      setFormData({
+        title: event.title,
+        description: event.description || "",
+        eventDate: event.date.toISOString().split('T')[0],
+        eventTime: event.time,
+        location: event.location,
+        type: event.type,
+        category: event.category,
+        maxAttendees: event.maxAttendees?.toString() || "",
+        featured: event.featured || false,
+        recurring: event.recurring || false,
+        recurringDays: event.recurringDays || [],
+        recurringDuration: event.recurringDuration?.toString() || ""
+      });
+    }
+  }, [event]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.eventDate || !formData.eventTime || !formData.location) {
+    if (!event || !formData.title || !formData.eventDate || !formData.eventTime || !formData.location) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -53,16 +95,10 @@ export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: Create
     }
 
     try {
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !userData.user) {
-        throw new Error('User not authenticated');
-      }
-
-      // Create the event
-      const { data: eventData, error } = await supabase
+      // Update the event
+      const { error } = await supabase
         .from('book_events')
-        .insert({
+        .update({
           title: formData.title,
           description: formData.description,
           event_date: formData.eventDate,
@@ -72,57 +108,26 @@ export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: Create
           category: formData.category,
           max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
           featured: formData.featured,
-          creator_id: userData.user.id,
           recurring: formData.recurring,
           recurring_days: formData.recurring ? formData.recurringDays : null,
           recurring_duration: formData.recurring && formData.recurringDuration ? parseInt(formData.recurringDuration) : null
         })
-        .select()
-        .single();
+        .eq('id', event.id);
 
       if (error) throw error;
 
-      // Automatically add creator as an attendee (host)
-      const { error: rsvpError } = await supabase
-        .from('event_rsvps')
-        .insert({
-          event_id: eventData.id,
-          user_id: userData.user.id
-        });
-
-      if (rsvpError) throw rsvpError;
-
       toast({
-        title: "Event Created!",
-        description: `"${formData.title}" has been created successfully.`,
+        title: "Event Updated!",
+        description: `"${formData.title}" has been updated successfully.`,
       });
 
-      // Reset form and close dialog
-      setFormData({
-        title: "",
-        description: "",
-        eventDate: "",
-        eventTime: "",
-        location: "",
-        type: "",
-        category: "",
-        maxAttendees: "",
-        featured: false,
-        recurring: false,
-        recurringDays: [],
-        recurringDuration: ""
-      });
+      onEventUpdated();
       onOpenChange(false);
-      
-      // Trigger callback to refresh events list
-      if (onEventCreated) {
-        onEventCreated();
-      }
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('Error updating event:', error);
       toast({
         title: "Error",
-        description: "Failed to create event. Please try again.",
+        description: "Failed to update event. Please try again.",
         variant: "destructive",
       });
     }
@@ -149,16 +154,22 @@ export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: Create
     }
   };
 
+  const handleCancel = () => {
+    onOpenChange(false);
+  };
+
+  if (!event) return null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5 text-primary" />
-            Create New Event
+            <Edit className="h-5 w-5 text-primary" />
+            Edit Event
           </DialogTitle>
           <DialogDescription>
-            Host a book event and connect with fellow readers in your community.
+            Update your event details and save changes.
           </DialogDescription>
         </DialogHeader>
         
@@ -222,7 +233,7 @@ export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: Create
 
           <div className="space-y-2">
             <Label htmlFor="type">Event Type *</Label>
-            <Select onValueChange={(value) => handleInputChange("type", value)} required>
+            <Select value={formData.type} onValueChange={(value) => handleInputChange("type", value)} required>
               <SelectTrigger>
                 <SelectValue placeholder="Select event type" />
               </SelectTrigger>
@@ -236,7 +247,7 @@ export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: Create
 
           <div className="space-y-2">
             <Label htmlFor="category">Category *</Label>
-            <Select onValueChange={(value) => handleInputChange("category", value)} required>
+            <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)} required>
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -310,14 +321,15 @@ export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: Create
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="flex-1"
+              onClick={handleCancel}
+              className="flex-1 gap-2"
             >
+              <X className="h-4 w-4" />
               Cancel
             </Button>
             <Button type="submit" className="flex-1 gap-2">
-              <Plus className="h-4 w-4" />
-              Create Event
+              <Save className="h-4 w-4" />
+              Save Changes
             </Button>
           </div>
         </form>

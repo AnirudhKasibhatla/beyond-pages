@@ -10,6 +10,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { CreateEventDialog } from "./CreateEventDialog";
 import { EventDetailsDialog } from "./EventDetailsDialog";
 import { EventChat } from "./EventChat";
+import { EditEventDialog } from "./EditEventDialog";
+import { ShareEventDialog } from "./ShareEventDialog";
 
 interface BookEvent {
   id: string;
@@ -41,6 +43,10 @@ export const Events = () => {
   const [selectedEvent, setSelectedEvent] = useState<BookEvent | null>(null);
   const [selectedChatEvent, setSelectedChatEvent] = useState<BookEvent | null>(null);
   const [showEventDetails, setShowEventDetails] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<BookEvent | null>(null);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [sharingEvent, setSharingEvent] = useState<BookEvent | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -197,11 +203,27 @@ export const Events = () => {
     }
   };
 
-  const [claimedHostEvents, setClaimedHostEvents] = useState<string[]>([]);
-
   const handleEventClick = (event: BookEvent) => {
     setSelectedEvent(event);
     setShowEventDetails(true);
+  };
+
+  const handleEditEvent = (event: BookEvent) => {
+    setEditingEvent(event);
+    setShowEditDialog(true);
+  };
+
+  const handleShareEvent = (event: BookEvent) => {
+    setSharingEvent(event);
+    setShowShareDialog(true);
+  };
+
+  const handleEventCreated = () => {
+    loadEvents(); // Refresh events list when new event is created
+  };
+
+  const handleEventUpdated = () => {
+    loadEvents(); // Refresh events list when event is updated
   };
 
   const deleteEvent = async (eventId: string) => {
@@ -228,16 +250,6 @@ export const Events = () => {
     }
   };
 
-  const claimHostXP = (eventId: string) => {
-    const event = events.find(e => e.id === eventId);
-    if (event && !claimedHostEvents.includes(eventId)) {
-      setClaimedHostEvents(prev => [...prev, eventId]);
-      toast({
-        title: "XP Claimed!",
-        description: `You earned ${event.hostXP} XP for hosting "${event.title}"`,
-      });
-    }
-  };
 
   const getTypeIcon = (type: BookEvent['type']) => {
     switch (type) {
@@ -547,6 +559,19 @@ export const Events = () => {
                   </Button>
                 )}
 
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleShareEvent(event);
+                  }}
+                  className="gap-2"
+                  title="Share Event"
+                >
+                  <Globe className="h-4 w-4" />
+                </Button>
+
                 {event.isHost && (
                   <>
                     <Button 
@@ -554,13 +579,10 @@ export const Events = () => {
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Edit functionality - could open edit dialog
-                        toast({
-                          title: "Edit Event",
-                          description: "Edit functionality coming soon!",
-                        });
+                        handleEditEvent(event);
                       }}
                       className="gap-2"
+                      title="Edit Event"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -572,25 +594,11 @@ export const Events = () => {
                         deleteEvent(event.id);
                       }}
                       className="gap-2"
+                      title="Delete Event"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </>
-                )}
-
-                {event.isHost && !claimedHostEvents.includes(event.id) && (
-                  <Button 
-                    variant="accent"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      claimHostXP(event.id);
-                    }}
-                    className="gap-2"
-                  >
-                    <Star className="h-4 w-4" />
-                    Claim {event.hostXP} XP
-                  </Button>
                 )}
               </div>
             </div>
@@ -613,13 +621,38 @@ export const Events = () => {
         </Button>
 
       {/* Create Event Dialog */}
-      <CreateEventDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />
+      <CreateEventDialog 
+        open={showCreateDialog} 
+        onOpenChange={setShowCreateDialog}
+        onEventCreated={handleEventCreated}
+      />
       
       <EventDetailsDialog 
         event={selectedEvent}
         isOpen={showEventDetails}
         onClose={() => setShowEventDetails(false)}
         onRSVP={toggleRSVP}
+      />
+
+      <EditEventDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        event={editingEvent}
+        onEventUpdated={handleEventUpdated}
+      />
+
+      <ShareEventDialog
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        data={sharingEvent ? {
+          title: sharingEvent.title,
+          description: sharingEvent.description,
+          date: sharingEvent.date,
+          time: sharingEvent.time,
+          location: sharingEvent.location,
+          type: sharingEvent.type,
+          category: sharingEvent.category
+        } : null}
       />
 
       {selectedChatEvent && (

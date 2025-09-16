@@ -81,7 +81,7 @@ export const CreateGroupDialog = ({ open, onOpenChange }: CreateGroupDialogProps
 
       toast({
         title: "Group Created!",
-        description: `"${formData.name}" has been created successfully. You earned 25 XP!`,
+        description: `"${formData.name}" has been created successfully.`,
       });
 
       // Reset form and close dialog
