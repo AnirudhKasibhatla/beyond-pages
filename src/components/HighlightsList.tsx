@@ -12,6 +12,8 @@ import { useHighlights } from '@/hooks/useHighlights';
 import { useHighlightFollows } from '@/hooks/useHighlightFollows';
 import { AddHighlightDialog } from '@/components/AddHighlightDialog';
 import { downloadQuoteAsImage } from '@/utils/textExtraction';
+import { SignUpPromptDialog } from '@/components/SignUpPromptDialog';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Highlight {
   id: string;
@@ -26,6 +28,8 @@ export const HighlightsList = () => {
   const { highlights, loading, addHighlight, deleteHighlight } = useHighlights();
   const { follows, toggleFollow, isFollowing } = useHighlightFollows();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showSignUpDialog, setShowSignUpDialog] = useState(false);
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const handleShare = async (highlight: Highlight) => {
@@ -130,7 +134,7 @@ export const HighlightsList = () => {
                   {highlights.length}
                 </Badge>
               </div>
-              <Button onClick={() => setShowAddDialog(true)} className="gap-2 w-full sm:w-auto">
+              <Button onClick={() => user ? setShowAddDialog(true) : setShowSignUpDialog(true)} className="gap-2 w-full sm:w-auto">
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Add Quote</span>
                 <span className="sm:hidden">Add</span>
@@ -249,6 +253,11 @@ export const HighlightsList = () => {
         isOpen={showAddDialog}
         onClose={() => setShowAddDialog(false)}
         onConfirm={addHighlight}
+      />
+
+      <SignUpPromptDialog
+        open={showSignUpDialog}
+        onOpenChange={setShowSignUpDialog}
       />
     </>
   );

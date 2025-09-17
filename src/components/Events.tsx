@@ -12,6 +12,7 @@ import { EventDetailsDialog } from "./EventDetailsDialog";
 import { EventChat } from "./EventChat";
 import { EditEventDialog } from "./EditEventDialog";
 import { ShareEventDialog } from "./ShareEventDialog";
+import { SignUpPromptDialog } from "./SignUpPromptDialog";
 
 interface BookEvent {
   id: string;
@@ -47,6 +48,7 @@ export const Events = () => {
   const [editingEvent, setEditingEvent] = useState<BookEvent | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [sharingEvent, setSharingEvent] = useState<BookEvent | null>(null);
+  const [showSignUpDialog, setShowSignUpDialog] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -314,7 +316,7 @@ export const Events = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-foreground">Book Events</h2>
-        <Button variant="hero" className="gap-2" onClick={() => setShowCreateDialog(true)}>
+        <Button variant="hero" className="gap-2" onClick={() => user ? setShowCreateDialog(true) : setShowSignUpDialog(true)}>
           <Plus className="h-4 w-4" />
           Host Event
         </Button>
@@ -615,10 +617,11 @@ export const Events = () => {
           Share your passion for books with the community! Host a book club, organize a reading session, 
           or create a discussion group. Earn XP and connect with fellow readers.
         </p>
-        <Button variant="hero" size="lg" className="gap-2" onClick={() => setShowCreateDialog(true)}>
+        <Button variant="hero" size="lg" className="gap-2" onClick={() => user ? setShowCreateDialog(true) : setShowSignUpDialog(true)}>
           <Plus className="h-5 w-5" />
           Start Hosting
         </Button>
+      </Card>
 
       {/* Create Event Dialog */}
       <CreateEventDialog 
@@ -662,7 +665,11 @@ export const Events = () => {
           onClose={() => setSelectedChatEvent(null)}
         />
       )}
-      </Card>
+
+      <SignUpPromptDialog
+        open={showSignUpDialog}
+        onOpenChange={setShowSignUpDialog}
+      />
     </div>
   );
 };

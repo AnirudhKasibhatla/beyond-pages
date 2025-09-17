@@ -13,6 +13,7 @@ import { GroupChat } from "./GroupChat";
 import { GroupDetails } from "./GroupDetails";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { SignUpPromptDialog } from "./SignUpPromptDialog";
 
 interface BookGroup {
   id: string;
@@ -46,6 +47,7 @@ export const BookGroups = () => {
   const [groups, setGroups] = useState<BookGroup[]>([]);
   const [userMemberships, setUserMemberships] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSignUpDialog, setShowSignUpDialog] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -304,7 +306,7 @@ export const BookGroups = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-foreground">Book Groups</h2>
-        <Button variant="hero" className="gap-2" onClick={() => setShowCreateDialog(true)}>
+        <Button variant="hero" className="gap-2" onClick={() => user ? setShowCreateDialog(true) : setShowSignUpDialog(true)}>
           <Plus className="h-4 w-4" />
           Create Group
         </Button>
@@ -693,6 +695,11 @@ export const BookGroups = () => {
           onClose={() => setSelectedGroup(null)}
         />
       )}
+
+      <SignUpPromptDialog
+        open={showSignUpDialog}
+        onOpenChange={setShowSignUpDialog}
+      />
     </div>
   );
 };
