@@ -1,1 +1,10 @@
 project_id = "ljwbdafyqjxlidgvmpzx"
+
+[auth]
+enabled = true
+
+[db]
+major_version = 15
+
+[functions.generate-event-image]
+verify_jwt = true

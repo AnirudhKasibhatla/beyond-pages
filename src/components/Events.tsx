@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter, Globe, RefreshCw, Edit, Trash2, MessageCircle } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Plus, Check, Star, Filter, Globe, RefreshCw, Edit, Trash2, MessageCircle, FileImage } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,6 +13,7 @@ import { EventChat } from "./EventChat";
 import { EditEventDialog } from "./EditEventDialog";
 import { ShareEventDialog } from "./ShareEventDialog";
 import { SignUpPromptDialog } from "./SignUpPromptDialog";
+import { EventFiles } from "./EventFiles";
 
 interface BookEvent {
   id: string;
@@ -49,6 +50,8 @@ export const Events = () => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [sharingEvent, setSharingEvent] = useState<BookEvent | null>(null);
   const [showSignUpDialog, setShowSignUpDialog] = useState(false);
+  const [showFilesDialog, setShowFilesDialog] = useState(false);
+  const [filesEvent, setFilesEvent] = useState<BookEvent | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -218,6 +221,11 @@ export const Events = () => {
   const handleShareEvent = (event: BookEvent) => {
     setSharingEvent(event);
     setShowShareDialog(true);
+  };
+
+  const handleFilesEvent = (event: BookEvent) => {
+    setFilesEvent(event);
+    setShowFilesDialog(true);
   };
 
   const handleEventCreated = () => {
@@ -561,6 +569,19 @@ export const Events = () => {
                   </Button>
                 )}
 
+                 <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleFilesEvent(event);
+                  }}
+                  className="gap-2"
+                  title="View Files"
+                >
+                  <FileImage className="h-4 w-4" />
+                </Button>
+
                 <Button 
                   variant="outline"
                   size="sm"
@@ -670,6 +691,19 @@ export const Events = () => {
         open={showSignUpDialog}
         onOpenChange={setShowSignUpDialog}
       />
+
+      {filesEvent && (
+        <EventFiles
+          eventId={filesEvent.id}
+          eventTitle={filesEvent.title}
+          isOpen={showFilesDialog}
+          onClose={() => {
+            setShowFilesDialog(false);
+            setFilesEvent(null);
+          }}
+          isHost={filesEvent.isHost}
+        />
+      )}
     </div>
   );
 };
