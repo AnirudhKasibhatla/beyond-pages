@@ -10,7 +10,7 @@ const SplashScreen: React.FC = () => {
       setTimeout(() => {
         navigate('/', { replace: true });
       }, 500);
-    }, 3000); // Show for 3 seconds
+    }, 4000); // Show for 3 seconds
 
     return () => clearTimeout(timer);
   }, [navigate]);
