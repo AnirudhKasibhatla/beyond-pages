@@ -141,7 +141,7 @@ const Index = () => {
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-muted/95 backdrop-blur-sm border-border">
+                  <DropdownMenuContent align="end" side="bottom" className="w-56 bg-background/95 backdrop-blur-sm border-border z-50">
                     <DropdownMenuItem 
                       onClick={() => navigate('/dashboard')}
                       className="cursor-pointer gap-2"
@@ -171,7 +171,7 @@ const Index = () => {
               <Button 
                 variant="hero" 
                 size="xl"
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate(user ? '/dashboard' : '/auth')}
                 className="hover-scale gap-3 transition-all duration-300 hover:shadow-glow"
               >
                 Start Your Journey
@@ -248,7 +248,7 @@ const Index = () => {
           <Button 
             variant="hero" 
             size="xl"
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate(user ? '/dashboard' : '/auth')}
             className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 gap-3 shadow-glow"
           >
             Get Started Now
