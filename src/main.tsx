@@ -4,11 +4,6 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
 
-// Check if we should show splash screen on first load
-const shouldShowSplash = !sessionStorage.getItem('splashShown');
-if (shouldShowSplash) {
-  sessionStorage.setItem('splashShown', 'true');
-  // Keep the main URL, don't redirect to /splash
-}
+// Splash screen logic is handled in App.tsx
 
 createRoot(document.getElementById("root")!).render(<App />);

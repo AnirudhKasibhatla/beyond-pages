@@ -18,10 +18,22 @@ const queryClient = new QueryClient();
 
 const App = () => {
   // Check if we should show splash screen on first load
-  const shouldShowSplash = !sessionStorage.getItem('splashShown');
+  const [showSplash, setShowSplash] = React.useState(() => {
+    return !sessionStorage.getItem('splashShown');
+  });
+
+  React.useEffect(() => {
+    if (showSplash) {
+      const timer = setTimeout(() => {
+        sessionStorage.setItem('splashShown', 'true');
+        setShowSplash(false);
+      }, 4500); // Show splash for 4.5 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash]);
   
-  if (shouldShowSplash) {
-    sessionStorage.setItem('splashShown', 'true');
+  if (showSplash) {
     return <SplashScreen />;
   }
 
