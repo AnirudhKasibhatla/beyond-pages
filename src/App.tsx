@@ -17,21 +17,21 @@ const SplashScreen = lazy(() => import("./pages/SplashScreen"));
 const queryClient = new QueryClient();
 
 const App = () => {
+  // Clear splash shown flag to ensure splash screen shows on every visit
+  React.useEffect(() => {
+    sessionStorage.removeItem('splashShown');
+  }, []);
+
   // Check if we should show splash screen on first load
-  const [showSplash, setShowSplash] = React.useState(() => {
-    return !sessionStorage.getItem('splashShown');
-  });
+  const [showSplash, setShowSplash] = React.useState(true);
 
   React.useEffect(() => {
-    if (showSplash) {
-      const timer = setTimeout(() => {
-        sessionStorage.setItem('splashShown', 'true');
-        setShowSplash(false);
-      }, 4500); // Show splash for 4.5 seconds
-      
-      return () => clearTimeout(timer);
-    }
-  }, [showSplash]);
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 4500); // Show splash for 4.5 seconds
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   if (showSplash) {
     return <SplashScreen />;
