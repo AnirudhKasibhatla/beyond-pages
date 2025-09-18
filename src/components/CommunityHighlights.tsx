@@ -295,14 +295,6 @@ export const CommunityHighlights = () => {
               <blockquote className="border-l-4 border-primary pl-4 italic text-card-foreground text-lg leading-relaxed">
                 "{highlight.quote_text}"
               </blockquote>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleCopyQuote(highlight.quote_text)}
-                className="absolute top-0 right-0 text-muted-foreground hover:text-primary"
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
             </div>
             
             <Separator />
@@ -350,15 +342,25 @@ export const CommunityHighlights = () => {
                 </Button>
               </div>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleShare(highlight)}
-                className="flex items-center gap-2 text-muted-foreground hover:text-primary"
-              >
-                <Share2 className="h-4 w-4" />
-                <span className="text-sm">Share</span>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleCopyQuote(highlight.quote_text)}
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleShare(highlight)}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary"
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span className="text-sm">Share</span>
+                </Button>
+              </div>
             </div>
           </div>
         </Card>

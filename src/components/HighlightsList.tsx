@@ -164,14 +164,6 @@ export const HighlightsList = () => {
                         <blockquote className="border-l-4 border-primary pl-4 italic text-card-foreground pr-10">
                           "{highlight.quote_text}"
                         </blockquote>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleCopyQuote(highlight.quote_text)}
-                          className="absolute top-0 right-0 z-20 text-muted-foreground hover:text-primary bg-background/80 hover:bg-background/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
                       </div>
                       <div className="flex flex-wrap gap-2 justify-end">
                         <Button
@@ -190,6 +182,14 @@ export const HighlightsList = () => {
                           title="Download as image"
                         >
                           <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCopyQuote(highlight.quote_text)}
+                          className="text-muted-foreground hover:text-primary h-8 px-2"
+                        >
+                          <Copy className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"

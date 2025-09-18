@@ -117,10 +117,11 @@ const Index = () => {
           <OptimizedImage
             src={heroImage}
             alt="Books and reading"
-            className="w-full h-full object-cover opacity-10"
+            className="w-full h-full object-cover opacity-20"
             loading="eager"
             fetchPriority="high"
           />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-primary/40"></div>
         </div>
         <div className="relative max-w-6xl mx-auto px-6 py-24">
           <div className="text-center">
@@ -171,7 +172,7 @@ const Index = () => {
               <Button 
                 variant="hero" 
                 size="xl"
-                onClick={() => navigate(user ? '/dashboard' : '/auth')}
+                onClick={() => navigate('/dashboard')}
                 className="hover-scale gap-3 transition-all duration-300 hover:shadow-glow"
               >
                 Start Your Journey
@@ -245,10 +246,10 @@ const Index = () => {
             Join thousands of readers who have already discovered the joy of gamified reading. 
             Start tracking, connecting, and achieving your reading goals today!
           </p>
-          <Button 
+            <Button 
             variant="hero" 
             size="xl"
-            onClick={() => navigate(user ? '/dashboard' : '/auth')}
+            onClick={() => navigate('/dashboard')}
             className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 gap-3 shadow-glow"
           >
             Get Started Now
