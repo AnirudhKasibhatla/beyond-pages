@@ -8,7 +8,7 @@ import './index.css'
 const shouldShowSplash = !sessionStorage.getItem('splashShown');
 if (shouldShowSplash) {
   sessionStorage.setItem('splashShown', 'true');
-  window.history.replaceState(null, '', '/splash');
+  // Keep the main URL, don't redirect to /splash
 }
 
 createRoot(document.getElementById("root")!).render(<App />);

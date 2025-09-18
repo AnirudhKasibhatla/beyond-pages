@@ -17,6 +17,14 @@ const SplashScreen = lazy(() => import("./pages/SplashScreen"));
 const queryClient = new QueryClient();
 
 const App = () => {
+  // Check if we should show splash screen on first load
+  const shouldShowSplash = !sessionStorage.getItem('splashShown');
+  
+  if (shouldShowSplash) {
+    sessionStorage.setItem('splashShown', 'true');
+    return <SplashScreen />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -25,7 +33,6 @@ const App = () => {
         <BrowserRouter>
           <Suspense fallback={<LoadingSkeleton type="shelf" className="min-h-screen" />}>
             <Routes>
-              <Route path="/splash" element={<SplashScreen />} />
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route 
