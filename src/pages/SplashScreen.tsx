@@ -1,19 +1,6 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
 const SplashScreen: React.FC = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Add 0.5 second gap before navigating
-      setTimeout(() => {
-        navigate('/', { replace: true });
-      }, 500);
-    }, 4000); // Show for 3 seconds
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-sky-200 via-emerald-100 to-orange-100 transition-opacity duration-500">
