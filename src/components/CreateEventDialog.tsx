@@ -94,32 +94,8 @@ export const CreateEventDialog = ({ open, onOpenChange, onEventCreated }: Create
 
       toast({
         title: "Event Created!",
-        description: `"${formData.title}" has been created successfully. Generating event image...`,
+        description: `"${formData.title}" has been created successfully.`,
       });
-
-      // Generate event image asynchronously
-      try {
-        const { data: imageResult } = await supabase.functions.invoke('generate-event-image', {
-          body: {
-            eventId: eventData.id,
-            title: formData.title,
-            description: formData.description,
-            date: formData.eventDate,
-            time: formData.eventTime,
-            location: formData.location
-          }
-        });
-
-        if (imageResult?.success) {
-          toast({
-            title: "Image Generated!",
-            description: "Event image has been created and added to your event files.",
-          });
-        }
-      } catch (imageError) {
-        console.error('Image generation failed:', imageError);
-        // Don't show error to user as event was created successfully
-      }
 
       // Reset form and close dialog
       setFormData({
