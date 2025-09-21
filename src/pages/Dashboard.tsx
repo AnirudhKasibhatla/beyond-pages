@@ -44,8 +44,19 @@ const Dashboard = () => {
   // Initialize view from URL params
   useEffect(() => {
     const tab = searchParams.get('tab') as ViewType;
+    const eventParam = searchParams.get('event');
+    
     if (tab && ['books', 'community', 'profile', 'tournament', 'events', 'groups', 'settings', 'challenges', 'highlights'].includes(tab)) {
       setCurrentView(tab);
+    }
+    
+    // If there's an event parameter, switch to events tab and show event details
+    if (eventParam && tab === 'events') {
+      setCurrentView('events');
+      // Trigger event details dialog after a short delay to ensure Events component is mounted
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('showEventDetails', { detail: { eventId: eventParam } }));
+      }, 100);
     }
   }, [searchParams]);
   

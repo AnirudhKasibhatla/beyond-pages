@@ -30,7 +30,7 @@ const Index = () => {
   const [highlightedFeature, setHighlightedFeature] = useState<number | null>(null);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
 
@@ -175,7 +175,7 @@ const Index = () => {
                 onClick={() => navigate('/dashboard')}
                 className="hover-scale gap-3 transition-all duration-300 hover:shadow-glow"
               >
-                Start Your Journey
+                {user && !loading ? 'Go to Dashboard' : 'Start Your Journey'}
                 <ArrowRight className="h-5 w-5" />
               </Button>
               <Button 

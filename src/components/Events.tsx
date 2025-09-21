@@ -66,6 +66,23 @@ export const Events = () => {
     }
   }, [user]);
 
+  // Listen for deep linking to specific events
+  useEffect(() => {
+    const handleShowEventDetails = (event: CustomEvent) => {
+      const eventId = event.detail?.eventId;
+      if (eventId) {
+        const foundEvent = events.find(e => e.id === eventId);
+        if (foundEvent) {
+          setSelectedEvent(foundEvent);
+          setShowEventDetails(true);
+        }
+      }
+    };
+
+    window.addEventListener('showEventDetails', handleShowEventDetails as EventListener);
+    return () => window.removeEventListener('showEventDetails', handleShowEventDetails as EventListener);
+  }, [events]);
+
   const loadEvents = async () => {
     try {
       const { data, error } = await supabase
@@ -678,6 +695,7 @@ export const Events = () => {
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
         data={sharingEvent ? {
+          id: sharingEvent.id,
           title: sharingEvent.title,
           description: sharingEvent.description,
           date: sharingEvent.date,

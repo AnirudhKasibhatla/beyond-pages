@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import * as React from "react";
 
 interface ShareEventData {
+  id: string;
   title: string;
   description?: string;
   date: Date;
@@ -25,7 +26,7 @@ interface ShareEventDialogProps {
 export function ShareEventDialog({ open, onOpenChange, data }: ShareEventDialogProps) {
   const { toast } = useToast();
 
-  const appUrl = typeof window !== "undefined" ? `${window.location.origin}/dashboard` : "";
+  const appUrl = typeof window !== "undefined" ? `${window.location.origin}/dashboard?tab=events&event=${data?.id}` : "";
   const shareText = React.useMemo(() => {
     if (!data) return "";
     const formatDate = (date: Date) => {
