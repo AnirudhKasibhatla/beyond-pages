@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Calendar, Clock, MapPin, Users, MessageSquare, User, Repeat } from "lucide-react";
 import { EventChat } from "./EventChat";
+import { ClickableUserName } from "./ClickableUserName";
 
 interface BookEvent {
   id: string;
@@ -38,9 +39,10 @@ interface EventDetailsDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onRSVP: (eventId: string) => void;
+  onViewProfile?: (userId: string) => void;
 }
 
-export const EventDetailsDialog = ({ event, isOpen, onClose, onRSVP }: EventDetailsDialogProps) => {
+export const EventDetailsDialog = ({ event, isOpen, onClose, onRSVP, onViewProfile }: EventDetailsDialogProps) => {
   const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
 
   if (!event) return null;
@@ -209,7 +211,17 @@ export const EventDetailsDialog = ({ event, isOpen, onClose, onRSVP }: EventDeta
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h4 className="font-semibold">{event.host}</h4>
+                    {onViewProfile ? (
+                      <ClickableUserName
+                        name={event.host}
+                        userId={event.creatorId}
+                        onUserClick={onViewProfile}
+                        className="font-semibold text-base"
+                        variant="link"
+                      />
+                    ) : (
+                      <h4 className="font-semibold">{event.host}</h4>
+                    )}
                     <p className="text-sm text-muted-foreground">Event Host</p>
                     <Badge variant="outline" className="mt-2">
                       {event.hostXP} Host XP

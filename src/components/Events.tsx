@@ -14,6 +14,7 @@ import { EditEventDialog } from "./EditEventDialog";
 import { ShareEventDialog } from "./ShareEventDialog";
 import { SignUpPromptDialog } from "./SignUpPromptDialog";
 import { EventFiles } from "./EventFiles";
+import { UserProfileView } from "./UserProfileView";
 
 interface BookEvent {
   id: string;
@@ -52,6 +53,8 @@ export const Events = () => {
   const [showSignUpDialog, setShowSignUpDialog] = useState(false);
   const [showFilesDialog, setShowFilesDialog] = useState(false);
   const [filesEvent, setFilesEvent] = useState<BookEvent | null>(null);
+  const [showUserProfile, setShowUserProfile] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -226,6 +229,11 @@ export const Events = () => {
   const handleFilesEvent = (event: BookEvent) => {
     setFilesEvent(event);
     setShowFilesDialog(true);
+  };
+
+  const handleViewProfile = (userId: string) => {
+    setSelectedUserId(userId);
+    setShowUserProfile(true);
   };
 
   const handleEventCreated = () => {
@@ -656,6 +664,7 @@ export const Events = () => {
         isOpen={showEventDetails}
         onClose={() => setShowEventDetails(false)}
         onRSVP={toggleRSVP}
+        onViewProfile={handleViewProfile}
       />
 
       <EditEventDialog
@@ -704,6 +713,12 @@ export const Events = () => {
           isHost={filesEvent.isHost}
         />
       )}
+
+      <UserProfileView
+        isOpen={showUserProfile}
+        onClose={() => setShowUserProfile(false)}
+        userId={selectedUserId}
+      />
     </div>
   );
 };

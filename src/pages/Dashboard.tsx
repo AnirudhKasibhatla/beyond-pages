@@ -1,4 +1,5 @@
-import { useState, useRef, lazy, Suspense } from "react";
+import { useState, useRef, lazy, Suspense, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 
@@ -28,6 +29,7 @@ import SecurityNotice from "@/components/SecurityNotice";
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges' | 'highlights';
 
 const Dashboard = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [currentView, setCurrentView] = useState<ViewType>('books');
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [userLevel, setUserLevel] = useState(1);
@@ -38,11 +40,22 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { isGuest } = useGuestAuth();
+
+  // Initialize view from URL params
+  useEffect(() => {
+    const tab = searchParams.get('tab') as ViewType;
+    if (tab && ['books', 'community', 'profile', 'tournament', 'events', 'groups', 'settings', 'challenges', 'highlights'].includes(tab)) {
+      setCurrentView(tab);
+    }
+  }, [searchParams]);
   
 
   const handleViewChange = (view: ViewType) => {
     setCurrentView(view);
     setPinnedView(view);
+    
+    // Update URL parameter to reflect current tab
+    setSearchParams({ tab: view });
     
     // Show reading challenge modal when challenges tab is clicked
     if (view === 'challenges') {
