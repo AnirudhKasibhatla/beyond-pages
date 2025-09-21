@@ -175,7 +175,7 @@ const Index = () => {
                 onClick={() => navigate('/dashboard')}
                 className="hover-scale gap-3 transition-all duration-300 hover:shadow-glow"
               >
-                Start Your Journey
+                {user ? "Go to Dashboard" : "Start Your Journey"}
                 <ArrowRight className="h-5 w-5" />
               </Button>
               <Button 
