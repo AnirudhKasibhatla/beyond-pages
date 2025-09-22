@@ -23,6 +23,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { useToast } from "@/hooks/use-toast";
+import { TimedSignUpModal } from "@/components/TimedSignUpModal";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -271,6 +272,9 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Timed Sign Up Modal */}
+      <TimedSignUpModal />
     </div>
   );
 };

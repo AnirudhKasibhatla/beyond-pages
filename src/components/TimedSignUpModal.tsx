@@ -16,32 +16,23 @@ export const TimedSignUpModal: React.FC = () => {
   const { isGuest } = useGuestAuth();
 
   useEffect(() => {
-    // Only show modal for unauthenticated users (including guests)
-    if (user) {
-      setTimerActive(false);
-      setOpen(false);
+    // Only show modal for unauthenticated users
+    if (user || sessionStorage.getItem('signUpModalDismissed')) {
       return;
     }
 
+    // Start timer only once
     if (!timerActive && !open) {
       setTimerActive(true);
-      setTimeLeft(20);
       
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            setOpen(true);
-            setTimerActive(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      const timer = setTimeout(() => {
+        setOpen(true);
+        setTimerActive(false);
+      }, 20000); // 20 seconds
 
-      return () => clearInterval(timer);
+      return () => clearTimeout(timer);
     }
-  }, [user, timerActive, open]);
+  }, [user]);
 
   const handleSignUp = () => {
     setOpen(false);
