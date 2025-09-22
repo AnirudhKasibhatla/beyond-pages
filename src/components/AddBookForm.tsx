@@ -13,6 +13,8 @@ import { Search, Camera, X, StopCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BrowserMultiFormatReader } from "@zxing/library";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { SignUpPromptDialog } from "@/components/SignUpPromptDialog";
 
 interface Book {
   title: string;
@@ -54,7 +56,9 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
   const [showManualForm, setShowManualForm] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
   const codeReader = useRef<BrowserMultiFormatReader | null>(null);
 
@@ -249,6 +253,12 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      setShowSignUpPrompt(true);
+      return;
+    }
+    
     if (!formData.title || !formData.author) {
       toast({
         title: "Missing information",
@@ -524,6 +534,11 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
           </div>
         </form>
       )}
+
+      <SignUpPromptDialog 
+        open={showSignUpPrompt} 
+        onOpenChange={setShowSignUpPrompt} 
+      />
     </div>
   );
 };

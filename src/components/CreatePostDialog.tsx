@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Send, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunity } from "@/context/CommunityContext";
+import { useAuth } from "@/hooks/useAuth";
+import { SignUpPromptDialog } from "@/components/SignUpPromptDialog";
 
 interface CreatePostDialogProps {
   open: boolean;
@@ -23,8 +25,10 @@ export const CreatePostDialog = ({ open, onOpenChange }: CreatePostDialogProps) 
   const [bookAuthor, setBookAuthor] = useState("");
   const [threadContent, setThreadContent] = useState("");
   const [isThreadMode, setIsThreadMode] = useState(false);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
   const { createPost } = useCommunity();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const MAX_CHARS = 200;
   const charactersLeft = MAX_CHARS - content.length;
@@ -32,6 +36,11 @@ export const CreatePostDialog = ({ open, onOpenChange }: CreatePostDialogProps) 
 
   const handleSubmit = async () => {
     if (!content.trim()) return;
+
+    if (!user) {
+      setShowSignUpPrompt(true);
+      return;
+    }
 
     try {
       await createPost({
@@ -171,6 +180,11 @@ export const CreatePostDialog = ({ open, onOpenChange }: CreatePostDialogProps) 
           </div>
         </div>
       </DialogContent>
+
+      <SignUpPromptDialog 
+        open={showSignUpPrompt} 
+        onOpenChange={setShowSignUpPrompt} 
+      />
     </Dialog>
   );
 };
