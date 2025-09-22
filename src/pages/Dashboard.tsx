@@ -25,6 +25,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
 import { ReadingChallengeModal } from "@/components/ReadingChallengeModal";
 import SecurityNotice from "@/components/SecurityNotice";
+import { TimedSignUpModal } from "@/components/TimedSignUpModal";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges' | 'highlights';
 
@@ -260,6 +261,8 @@ const Dashboard = () => {
             {renderCurrentView()}
           </div>
           
+          {/* Timed Sign Up Modal */}
+          <TimedSignUpModal />
         </div>
       </CommunityProvider>
     );
@@ -285,6 +288,9 @@ const Dashboard = () => {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8 justify-center">
           {renderCurrentView()}
         </div>
+        
+        {/* Timed Sign Up Modal */}
+        <TimedSignUpModal />
       </div>
     </CommunityProvider>
   );
