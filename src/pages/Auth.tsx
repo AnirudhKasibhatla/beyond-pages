@@ -52,23 +52,23 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-600 to-amber-600">
       {/* Desktop Layout */}
-      <div className="hidden lg:grid grid-cols-2 min-h-screen">
+      <div className="hidden lg:grid lg:grid-cols-2 min-h-screen">
         {/* Left Side - Authentication */}
         <div className="flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <BookOpen className="h-8 w-8 text-primary-foreground" />
-                <h1 className="text-3xl font-bold text-primary-foreground">Beyond Pages</h1>
+                <BookOpen className="h-8 w-8 text-white" />
+                <h1 className="text-3xl font-bold text-white">Beyond Pages</h1>
               </div>
-              <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground flex items-center gap-1">
+              <Badge variant="secondary" className="bg-white/20 text-white flex items-center gap-1">
                 <BookOpen className="h-4 w-4" /> Join the Reading Community
               </Badge>
             </div>
 
-            <Card className="shadow-strong bg-card/95 backdrop-blur-sm">
+            <Card className="shadow-lg bg-white/95 backdrop-blur-sm">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Welcome Back</CardTitle>
                 <CardDescription>
@@ -98,7 +98,7 @@ const Auth = () => {
               <Button 
                 variant="ghost" 
                 onClick={() => navigate('/')}
-                className="text-primary-foreground/80 hover:text-primary-foreground"
+                className="text-white/80 hover:text-white"
               >
                 ← Back to Home
               </Button>
@@ -109,9 +109,9 @@ const Auth = () => {
         {/* Right Side - Logo */}
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
-            <BookOpen className="h-32 w-32 text-primary-foreground mx-auto mb-6 opacity-80" />
-            <h2 className="text-4xl font-bold text-primary-foreground mb-4">Beyond Pages</h2>
-            <p className="text-xl text-primary-foreground/70">Your reading journey starts here</p>
+            <BookOpen className="h-32 w-32 text-white mx-auto mb-6 opacity-80" />
+            <h2 className="text-4xl font-bold text-white mb-4">Beyond Pages</h2>
+            <p className="text-xl text-white/70">Your reading journey starts here</p>
           </div>
         </div>
       </div>
@@ -121,15 +121,15 @@ const Auth = () => {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <BookOpen className="h-8 w-8 text-primary-foreground" />
-              <h1 className="text-3xl font-bold text-primary-foreground">Beyond Pages</h1>
+              <BookOpen className="h-8 w-8 text-white" />
+              <h1 className="text-3xl font-bold text-white">Beyond Pages</h1>
             </div>
-            <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground flex items-center gap-1">
+            <Badge variant="secondary" className="bg-white/20 text-white flex items-center gap-1">
               <BookOpen className="h-4 w-4" /> Join the Reading Community
             </Badge>
           </div>
 
-          <Card className="shadow-strong bg-card/95 backdrop-blur-sm">
+          <Card className="shadow-lg bg-white/95 backdrop-blur-sm">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Welcome Back</CardTitle>
               <CardDescription>
@@ -159,7 +159,7 @@ const Auth = () => {
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="text-primary-foreground/80 hover:text-primary-foreground"
+              className="text-white/80 hover:text-white"
             >
               ← Back to Home
             </Button>
