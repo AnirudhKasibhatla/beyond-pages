@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Quote, BookOpen, Camera, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { captureImageFromCamera, extractTextFromImage } from '@/utils/textExtraction';
+import { ImageCrop } from '@/components/ui/image-crop';
 
 interface AddHighlightDialogProps {
   isOpen: boolean;
@@ -29,6 +30,8 @@ export const AddHighlightDialog = ({
   const [bookAuthor, setBookAuthor] = useState('');
   const [pageNumber, setPageNumber] = useState('');
   const [isScanning, setIsScanning] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<File | null>(null);
+  const [showCropDialog, setShowCropDialog] = useState(false);
   const { toast } = useToast();
 
   const handleAddHighlight = () => {
@@ -58,12 +61,31 @@ export const AddHighlightDialog = ({
       });
       
       const imageFile = await captureImageFromCamera();
+      setCapturedImage(imageFile);
+      setShowCropDialog(true);
+      
+    } catch (error) {
+      console.error('Error capturing image:', error);
+      toast({
+        title: "Scan Failed", 
+        description: error instanceof Error ? error.message : "Unable to capture image. Please try again.",
+        variant: "destructive",
+      });
+      setIsScanning(false);
+    }
+  }, [toast]);
+
+  const handleCropComplete = useCallback(async (croppedFile: File) => {
+    setShowCropDialog(false);
+    setCapturedImage(null);
+    
+    try {
       toast({
         title: "Processing",
         description: "Extracting text from image...",
       });
       
-      const extractedText = await extractTextFromImage(imageFile);
+      const extractedText = await extractTextFromImage(croppedFile);
       
       if (extractedText && extractedText.trim()) {
         setQuoteText(extractedText);
@@ -81,7 +103,7 @@ export const AddHighlightDialog = ({
     } catch (error) {
       console.error('Error during text extraction:', error);
       toast({
-        title: "Scan Failed", 
+        title: "Extraction Failed", 
         description: error instanceof Error ? error.message : "Unable to extract text from the image. Please try again.",
         variant: "destructive",
       });
@@ -89,6 +111,12 @@ export const AddHighlightDialog = ({
       setIsScanning(false);
     }
   }, [toast]);
+
+  const handleCropDialogClose = () => {
+    setShowCropDialog(false);
+    setCapturedImage(null);
+    setIsScanning(false);
+  };
 
   const handleCancel = () => {
     setQuoteText('');
@@ -187,6 +215,16 @@ export const AddHighlightDialog = ({
           </Button>
         </div>
       </DialogContent>
+
+      {/* Image Crop Dialog */}
+      {capturedImage && (
+        <ImageCrop
+          isOpen={showCropDialog}
+          onClose={handleCropDialogClose}
+          imageFile={capturedImage}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </Dialog>
   );
 };
