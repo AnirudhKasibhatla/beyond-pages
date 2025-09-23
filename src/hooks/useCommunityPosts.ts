@@ -47,7 +47,6 @@ export const useCommunityPosts = () => {
   const fetchPosts = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
       // Fetch posts with user profiles using simple join
       const { data: postsData, error: postsError } = await supabase
@@ -66,15 +65,17 @@ export const useCommunityPosts = () => {
 
       const profilesMap = new Map(profilesData?.map(profile => [profile.user_id, profile]) || []);
 
-      // Get likes for current user
-      const { data: likesData, error: likesError } = await supabase
-        .from('community_post_likes')
-        .select('post_id')
-        .eq('user_id', user.id);
+      // Get likes for current user (only if authenticated)
+      let userLikedPosts = new Set<string>();
+      if (user) {
+        const { data: likesData, error: likesError } = await supabase
+          .from('community_post_likes')
+          .select('post_id')
+          .eq('user_id', user.id);
 
-      if (likesError) throw likesError;
-
-      const userLikedPosts = new Set(likesData?.map(like => like.post_id) || []);
+        if (likesError) throw likesError;
+        userLikedPosts = new Set(likesData?.map(like => like.post_id) || []);
+      }
 
       // Get replies for all posts
       const { data: repliesData, error: repliesError } = await supabase
@@ -135,7 +136,7 @@ export const useCommunityPosts = () => {
             level: 1, // Default level for now
             isFollowing: false, // Default for now
           },
-          user_liked: userLikedPosts.has(post.id),
+          user_liked: user ? userLikedPosts.has(post.id) : false,
           replies: repliesByPost[post.id] || [],
         };
       });
@@ -162,7 +163,14 @@ export const useCommunityPosts = () => {
   }) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to create posts",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { data, error } = await supabase
         .from('community_posts')
@@ -202,7 +210,14 @@ export const useCommunityPosts = () => {
   const toggleLike = async (postId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to like posts",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const post = posts.find(p => p.id === postId);
       if (!post) return;
@@ -251,7 +266,14 @@ export const useCommunityPosts = () => {
   const addReply = async (postId: string, content: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to reply to posts",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { data, error } = await supabase
         .from('community_post_replies')
@@ -308,7 +330,14 @@ export const useCommunityPosts = () => {
   const updatePost = async (postId: string, updates: Partial<Pick<CommunityPost, 'content'>>) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to edit posts",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { error } = await supabase
         .from('community_posts')
@@ -340,7 +369,14 @@ export const useCommunityPosts = () => {
   const deletePost = async (postId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to delete posts",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { error } = await supabase
         .from('community_posts')
