@@ -47,7 +47,7 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
 
   // Draw the crop overlay
   useEffect(() => {
-    if (imageLoaded && canvasRef.current && imageRef.current) {
+    if (imageLoaded && canvasRef.current && imageRef.current && imageDimensions.width && imageDimensions.height) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       const img = imageRef.current;
@@ -56,16 +56,21 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
 
       // Set canvas size to match displayed image
       const rect = img.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
+      const pixelRatio = window.devicePixelRatio || 1;
+      
+      canvas.width = rect.width * pixelRatio;
+      canvas.height = rect.height * pixelRatio;
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${rect.height}px`;
+      
+      // Scale context to account for device pixel ratio
+      ctx.scale(pixelRatio, pixelRatio);
 
       // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
       // Draw crop area if exists
-      if (cropArea) {
+      if (cropArea && cropArea.width > 0 && cropArea.height > 0) {
         const scaleX = rect.width / imageDimensions.width;
         const scaleY = rect.height / imageDimensions.height;
         
@@ -76,7 +81,7 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
 
         // Draw dark overlay
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, rect.width, rect.height);
 
         // Clear crop area
         ctx.clearRect(displayX, displayY, displayWidth, displayHeight);
@@ -92,21 +97,21 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     const img = imageRef.current;
-    if (!canvas || !img) return;
+    if (!canvas || !img || !imageDimensions.width || !imageDimensions.height) return;
 
     const rect = canvas.getBoundingClientRect();
     const scaleX = imageDimensions.width / rect.width;
     const scaleY = imageDimensions.height / rect.height;
     
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
+    const x = Math.max(0, Math.min((e.clientX - rect.left) * scaleX, imageDimensions.width));
+    const y = Math.max(0, Math.min((e.clientY - rect.top) * scaleY, imageDimensions.height));
 
     setCropArea({ x, y, width: 0, height: 0 });
     setIsDrawing(true);
   }, [imageDimensions]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !cropArea) return;
+    if (!isDrawing || !cropArea || !imageDimensions.width || !imageDimensions.height) return;
     
     const canvas = canvasRef.current;
     const img = imageRef.current;
@@ -116,15 +121,15 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
     const scaleX = imageDimensions.width / rect.width;
     const scaleY = imageDimensions.height / rect.height;
     
-    const currentX = (e.clientX - rect.left) * scaleX;
-    const currentY = (e.clientY - rect.top) * scaleY;
+    const currentX = Math.max(0, Math.min((e.clientX - rect.left) * scaleX, imageDimensions.width));
+    const currentY = Math.max(0, Math.min((e.clientY - rect.top) * scaleY, imageDimensions.height));
 
     setCropArea(prev => {
       if (!prev) return null;
       return {
         ...prev,
-        width: Math.max(0, currentX - prev.x),
-        height: Math.max(0, currentY - prev.y)
+        width: Math.max(10, currentX - prev.x),
+        height: Math.max(10, currentY - prev.y)
       };
     });
   }, [isDrawing, cropArea, imageDimensions]);
