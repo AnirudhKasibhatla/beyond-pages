@@ -197,8 +197,8 @@ const Auth = () => {
       </div>
 
       {/* Mobile Layout */}
-      <div className="lg:hidden min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
+      <div className="lg:hidden min-h-screen p-4">
+        <div className="w-full max-w-md mx-auto">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-4">
               <BookOpen className="h-8 w-8 text-slate-800" />
@@ -209,7 +209,7 @@ const Auth = () => {
             </Badge>
           </div>
 
-          <Card className="shadow-lg bg-white/90 backdrop-blur-sm border-slate-200/50">
+          <Card className="shadow-lg bg-white/90 backdrop-blur-sm border-slate-200/50 mb-8">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Welcome Back</CardTitle>
               <CardDescription>
@@ -235,7 +235,91 @@ const Auth = () => {
             </CardContent>
           </Card>
 
-          <div className="text-center mt-6">
+          {/* Features Section - Mobile */}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-slate-800 mb-6">Discover Amazing Features</h2>
+            
+            <div className="grid grid-cols-1 gap-6 mb-6">
+              {/* Reading Feature */}
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
+                    <img 
+                      src={readingCharacter} 
+                      alt="Reading character" 
+                      className="w-12 h-12 rounded-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <BookOpen className="h-6 w-6 text-slate-600 hidden" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-sky-400 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">📚</span>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-1">Smart Reading Tracker</h3>
+                  <p className="text-sm text-slate-600">Track your reading progress and discover new books with AI-powered recommendations</p>
+                </div>
+              </div>
+
+              {/* Community Feature */}
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
+                    <img 
+                      src={communityCharacter} 
+                      alt="Community character" 
+                      className="w-12 h-12 rounded-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <span className="text-xl hidden">👥</span>
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-400 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">💬</span>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-1">Reading Community</h3>
+                  <p className="text-sm text-slate-600">Connect with fellow readers, share reviews, and join book discussions</p>
+                </div>
+              </div>
+
+              {/* Challenges Feature */}
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
+                    <img 
+                      src={challengeCharacter} 
+                      alt="Challenge character" 
+                      className="w-12 h-12 rounded-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <span className="text-xl hidden">🎯</span>
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-400 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">🏆</span>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-1">Reading Challenges</h3>
+                  <p className="text-sm text-slate-600">Set goals, join challenges, and earn achievements for your reading milestones</p>
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-base text-slate-600 font-medium mb-6">Your reading journey starts here</p>
+          </div>
+
+          <div className="text-center">
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
