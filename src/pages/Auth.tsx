@@ -164,7 +164,6 @@ const Auth = () => {
                   <p className="text-slate-600"> Connect, share reviews, and join book discussions</p>
                 </div>
               </div>
-              <br/>
               {/* Challenges Feature */}
               <div className="flex items-center space-x-6">
                 <div className="relative">
@@ -184,7 +183,6 @@ const Auth = () => {
                     <span className="text-xs font-bold text-white">🏆</span>
                   </div>
                 </div>
-                <br/>
                 <div className="text-left">
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Challenges</h3>
                   <p className="text-slate-600"> Set goals, join challenges, and earn achievements for your reading milestones</p>
