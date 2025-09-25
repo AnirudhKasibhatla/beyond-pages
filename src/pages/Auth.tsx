@@ -1,22 +1,102 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Trophy, Users, Target, Award } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselApi,
+} from "@/components/ui/carousel";
+import { CarouselDots } from "@/components/CarouselDots";
 import readingCharacter from "@/assets/reading-character.png";
 import communityCharacter from "@/assets/community-character.png";
 import challengeCharacter from "@/assets/challenge-character.png";
+import gamifiedCharacter from "@/assets/gamified-character.png";
+import aiAssistantCharacter from "@/assets/ai-assistant-character.png";
+import eventsCharacter from "@/assets/events-character.png";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const { setGuestUser } = useGuestAuth();
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // All 6 features from the home page
+  const features = [
+    {
+      icon: BookOpen,
+      title: "Track Your Reading",
+      description: "Track your reading progress and discover new books with AI-powered recommendations",
+      image: readingCharacter,
+      colorClass: "bg-sky-400",
+      emoji: "📚"
+    },
+    {
+      icon: Trophy,
+      title: "Gamified Experience", 
+      description: "Earn XP, level up, compete in tournaments, and unlock badges for your reading achievements",
+      image: gamifiedCharacter,
+      colorClass: "bg-yellow-400",
+      emoji: "🏆"
+    },
+    {
+      icon: Users,
+      title: "Join the Community",
+      description: "Connect with fellow readers, share reviews, and join book discussions",
+      image: communityCharacter,
+      colorClass: "bg-emerald-400",
+      emoji: "💬"
+    },
+    {
+      icon: Target,
+      title: "Set Reading Goals",
+      description: "Challenge yourself with annual reading goals and track your progress throughout the year",
+      image: challengeCharacter,
+      colorClass: "bg-orange-400",
+      emoji: "🎯"
+    },
+    {
+      icon: BookOpen,
+      title: "AI Book Assistant",
+      description: "Get AI-powered answers about your current reads and discover insights about your favorite books",
+      image: aiAssistantCharacter,
+      colorClass: "bg-purple-400",
+      emoji: "🤖"
+    },
+    {
+      icon: Award,
+      title: "Events & Groups",
+      description: "Participate in book events, join discussion groups, and host your own literary gatherings",
+      image: eventsCharacter,
+      colorClass: "bg-pink-400",
+      emoji: "🎉"
+    }
+  ];
+
+  // Track current slide for dots
+  React.useEffect(() => {
+    if (!carouselApi) return;
+
+    const updateCurrent = () => {
+      setCurrentSlide(carouselApi.selectedScrollSnap());
+    };
+
+    carouselApi.on('select', updateCurrent);
+    updateCurrent();
+
+    return () => {
+      carouselApi?.off('select', updateCurrent);
+    };
+  }, [carouselApi]);
 
   useEffect(() => {
     if (user) {
@@ -114,83 +194,56 @@ const Auth = () => {
           <div className="text-center max-w-lg">
             <h2 className="text-4xl font-bold text-slate-800 mb-8">Why Beyond Pages?</h2>
             
-            <div className="grid grid-cols-1 gap-8 mb-8">
-              {/* Reading Feature */}
-              <div className="flex items-center space-x-6">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
-                    <img 
-                      src={readingCharacter} 
-                      alt="Reading character" 
-                      className="w-16 h-16 rounded-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                    <BookOpen className="h-8 w-8 text-slate-600 hidden" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-sky-400 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">📚</span>
-                  </div>
-                </div>
-                <div className="text-left">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Reading Tracker</h3>
-                  <p className="text-slate-600"> Track your reading progress and discover new books with AI-powered recommendations</p>
-                </div>
-              </div>
-
-              {/* Community Feature */}
-              <div className="flex items-center space-x-6">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
-                    <img 
-                      src={communityCharacter} 
-                      alt="Community character" 
-                      className="w-16 h-16 rounded-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                    <span className="text-2xl hidden">👥</span>
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-400 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">💬</span>
-                  </div>
-                </div>
-                <div className="text-left">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Community</h3>
-                  <p className="text-slate-600"> Connect, share reviews, and join book discussions</p>
-                </div>
-              </div>
-              {/* Challenges Feature */}
-              <div className="flex items-center space-x-6">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
-                    <img 
-                      src={challengeCharacter} 
-                      alt="Challenge character" 
-                      className="w-16 h-16 rounded-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                    <span className="text-2xl hidden">🎯</span>
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">🏆</span>
-                  </div>
-                </div>
-                <div className="text-left">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Challenges</h3>
-                  <p className="text-slate-600"> Set goals, join challenges, and earn achievements for your reading milestones</p>
-                </div>
-              </div>
-            </div>
+            <Carousel 
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full max-w-2xl mx-auto"
+              setApi={setCarouselApi}
+            >
+              <CarouselContent className="-ml-4">
+                {features.map((feature, index) => (
+                  <CarouselItem key={index} className="pl-4 basis-full">
+                    <div className="grid grid-cols-3 gap-4">
+                      {features.slice(index * 3, (index + 1) * 3).map((slideFeature, slideIndex) => (
+                        <div key={slideIndex} className="flex flex-col items-center text-center">
+                          <div className="relative mb-4">
+                            <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
+                              <img 
+                                src={slideFeature.image} 
+                                alt={`${slideFeature.title} character`} 
+                                className="w-16 h-16 rounded-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                              <slideFeature.icon className="h-8 w-8 text-slate-600 hidden" />
+                            </div>
+                            <div className={`absolute -top-1 -right-1 w-6 h-6 ${slideFeature.colorClass} rounded-full flex items-center justify-center`}>
+                              <span className="text-xs font-bold text-white">{slideFeature.emoji}</span>
+                            </div>
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-slate-800 mb-2">{slideFeature.title}</h3>
+                            <p className="text-sm text-slate-600">{slideFeature.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
             
-            <p className="text-lg text-slate-600 font-medium"> And many more... </p>
+            <CarouselDots 
+              totalSlides={Math.ceil(features.length / 3)} 
+              currentSlide={currentSlide}
+              onDotClick={(index) => carouselApi?.scrollTo(index)}
+            />
+            
+            <p className="text-lg text-slate-600 font-medium mt-6">Experience the future of reading</p>
           </div>
         </div>
       </div>
@@ -238,84 +291,56 @@ const Auth = () => {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-slate-800 mb-6">Discover Amazing Features</h2>
             
-            <div className="grid grid-cols-1 gap-6 mb-6">
-              {/* Reading Feature */}
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
-                    <img 
-                      src={readingCharacter} 
-                      alt="Reading character" 
-                      className="w-12 h-12 rounded-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                    <BookOpen className="h-6 w-6 text-slate-600 hidden" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-sky-400 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">📚</span>
-                  </div>
-                </div>
-                <div className="text-left">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-1">Smart Reading Tracker</h3>
-                  <p className="text-sm text-slate-600">Track your reading progress and discover new books with AI-powered recommendations</p>
-                </div>
-              </div>
-
-              {/* Community Feature */}
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
-                    <img 
-                      src={communityCharacter} 
-                      alt="Community character" 
-                      className="w-12 h-12 rounded-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                    <span className="text-xl hidden">👥</span>
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-400 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">💬</span>
-                  </div>
-                </div>
-                <div className="text-left">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-1">Reading Community</h3>
-                  <p className="text-sm text-slate-600">Connect with fellow readers, share reviews, and join book discussions</p>
-                </div>
-              </div>
-
-              {/* Challenges Feature */}
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
-                    <img 
-                      src={challengeCharacter} 
-                      alt="Challenge character" 
-                      className="w-12 h-12 rounded-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                    <span className="text-xl hidden">🎯</span>
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-400 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">🏆</span>
-                  </div>
-                </div>
-                <div className="text-left">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-1">Reading Challenges</h3>
-                  <p className="text-sm text-slate-600">Set goals, join challenges, and earn achievements for your reading milestones</p>
-                </div>
-              </div>
-            </div>
+            <Carousel 
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full max-w-sm mx-auto"
+              setApi={setCarouselApi}
+            >
+              <CarouselContent className="-ml-4">
+                {Array.from({ length: Math.ceil(features.length / 3) }, (_, slideIndex) => (
+                  <CarouselItem key={slideIndex} className="pl-4 basis-full">
+                    <div className="grid grid-cols-1 gap-4">
+                      {features.slice(slideIndex * 3, (slideIndex + 1) * 3).map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-center space-x-4">
+                          <div className="relative">
+                            <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
+                              <img 
+                                src={feature.image} 
+                                alt={`${feature.title} character`} 
+                                className="w-12 h-12 rounded-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                              <feature.icon className="h-6 w-6 text-slate-600 hidden" />
+                            </div>
+                            <div className={`absolute -top-1 -right-1 w-5 h-5 ${feature.colorClass} rounded-full flex items-center justify-center`}>
+                              <span className="text-xs font-bold text-white">{feature.emoji}</span>
+                            </div>
+                          </div>
+                          <div className="text-left">
+                            <h3 className="text-lg font-semibold text-slate-800 mb-1">{feature.title}</h3>
+                            <p className="text-sm text-slate-600">{feature.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
             
-            <p className="text-base text-slate-600 font-medium mb-6">Your reading journey starts here</p>
+            <CarouselDots 
+              totalSlides={Math.ceil(features.length / 3)} 
+              currentSlide={currentSlide}
+              onDotClick={(index) => carouselApi?.scrollTo(index)}
+            />
+            
+            <p className="text-base text-slate-600 font-medium mb-6 mt-4">Your reading journey starts here</p>
           </div>
 
           <div className="text-center">
