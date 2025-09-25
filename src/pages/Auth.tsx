@@ -112,7 +112,7 @@ const Auth = () => {
         {/* Right Side - Features */}
         <div className="flex items-center justify-center p-8">
           <div className="text-center max-w-lg">
-            <h2 className="text-4xl font-bold text-slate-800 mb-8">Discover Amazing Features</h2>
+            <h2 className="text-4xl font-bold text-slate-800 mb-8">Why Beyond Pages</h2>
             
             <div className="grid grid-cols-1 gap-8 mb-8">
               {/* Reading Feature */}
@@ -136,7 +136,7 @@ const Auth = () => {
                 </div>
                 <div className="text-left">
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Smart Reading Tracker</h3>
-                  <p className="text-slate-600">Track your reading progress and discover new books with AI-powered recommendations</p>
+                  <p className="text-slate-600"> Track your reading progress and discover new books with AI-powered recommendations</p>
                 </div>
               </div>
 
@@ -161,9 +161,10 @@ const Auth = () => {
                 </div>
                 <div className="text-left">
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Reading Community</h3>
-                  <p className="text-slate-600">Connect with fellow readers, share reviews, and join book discussions</p>
+                  <p className="text-slate-600"> Connect, share reviews, and join book discussions</p>
                 </div>
               </div>
+              <br/>
 
               {/* Challenges Feature */}
               <div className="flex items-center space-x-6">
@@ -184,14 +185,15 @@ const Auth = () => {
                     <span className="text-xs font-bold text-white">🏆</span>
                   </div>
                 </div>
+                <br/>
                 <div className="text-left">
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Reading Challenges</h3>
-                  <p className="text-slate-600">Set goals, join challenges, and earn achievements for your reading milestones</p>
+                  <p className="text-slate-600"> Set goals, join challenges, and earn achievements for your reading milestones</p>
                 </div>
               </div>
             </div>
             
-            <p className="text-lg text-slate-600 font-medium">Your reading journey starts here</p>
+            <p className="text-lg text-slate-600 font-medium"> And many more... </p>
           </div>
         </div>
       </div>
