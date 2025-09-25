@@ -8,13 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselApi,
-} from "@/components/ui/carousel";
-import { CarouselDots } from "@/components/CarouselDots";
 import readingCharacter from "@/assets/reading-character.png";
 import communityCharacter from "@/assets/community-character.png";
 import challengeCharacter from "@/assets/challenge-character.png";
@@ -27,8 +20,6 @@ const Auth = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { setGuestUser } = useGuestAuth();
-  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
-  const [currentSlide, setCurrentSlide] = useState(0);
 
   // All 6 features from the home page
   const features = [
@@ -82,21 +73,6 @@ const Auth = () => {
     }
   ];
 
-  // Track current slide for dots
-  React.useEffect(() => {
-    if (!carouselApi) return;
-
-    const updateCurrent = () => {
-      setCurrentSlide(carouselApi.selectedScrollSnap());
-    };
-
-    carouselApi.on('select', updateCurrent);
-    updateCurrent();
-
-    return () => {
-      carouselApi?.off('select', updateCurrent);
-    };
-  }, [carouselApi]);
 
   useEffect(() => {
     if (user) {
@@ -194,54 +170,33 @@ const Auth = () => {
           <div className="text-center max-w-lg">
             <h2 className="text-4xl font-bold text-slate-800 mb-8">Why Beyond Pages?</h2>
             
-            <Carousel 
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full max-w-2xl mx-auto"
-              setApi={setCarouselApi}
-            >
-              <CarouselContent className="-ml-4">
-                {features.map((feature, index) => (
-                  <CarouselItem key={index} className="pl-4 basis-full">
-                    <div className="grid grid-cols-3 gap-4">
-                      {features.slice(index * 3, (index + 1) * 3).map((slideFeature, slideIndex) => (
-                        <div key={slideIndex} className="flex flex-col items-center text-center">
-                          <div className="relative mb-4">
-                            <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
-                              <img 
-                                src={slideFeature.image} 
-                                alt={`${slideFeature.title} character`} 
-                                className="w-16 h-16 rounded-full object-cover"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                                }}
-                              />
-                              <slideFeature.icon className="h-8 w-8 text-slate-600 hidden" />
-                            </div>
-                            <div className={`absolute -top-1 -right-1 w-6 h-6 ${slideFeature.colorClass} rounded-full flex items-center justify-center`}>
-                              <span className="text-xs font-bold text-white">{slideFeature.emoji}</span>
-                            </div>
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-semibold text-slate-800 mb-2">{slideFeature.title}</h3>
-                            <p className="text-sm text-slate-600">{slideFeature.description}</p>
-                          </div>
-                        </div>
-                      ))}
+            <div className="grid grid-cols-2 gap-6 max-w-2xl mx-auto">
+              {features.map((feature, index) => (
+                <div key={index} className="flex flex-col items-center text-center">
+                  <div className="relative mb-4">
+                    <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-amber-300/50">
+                      <img 
+                        src={feature.image} 
+                        alt={`${feature.title} character`} 
+                        className="w-16 h-16 rounded-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                      <feature.icon className="h-8 w-8 text-sky-600 hidden" />
                     </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-            
-            <CarouselDots 
-              totalSlides={Math.ceil(features.length / 3)} 
-              currentSlide={currentSlide}
-              onDotClick={(index) => carouselApi?.scrollTo(index)}
-            />
+                    <div className={`absolute -top-1 -right-1 w-6 h-6 ${feature.colorClass} rounded-full flex items-center justify-center`}>
+                      <span className="text-xs font-bold text-white">{feature.emoji}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-sky-900 mb-2">{feature.title}</h3>
+                    <p className="text-sm text-sky-700">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
             
             <p className="text-lg text-slate-600 font-medium mt-6">Experience the future of reading</p>
           </div>
@@ -291,54 +246,33 @@ const Auth = () => {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-slate-800 mb-6">Discover Amazing Features</h2>
             
-            <Carousel 
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full max-w-sm mx-auto"
-              setApi={setCarouselApi}
-            >
-              <CarouselContent className="-ml-4">
-                {Array.from({ length: Math.ceil(features.length / 3) }, (_, slideIndex) => (
-                  <CarouselItem key={slideIndex} className="pl-4 basis-full">
-                    <div className="grid grid-cols-1 gap-4">
-                      {features.slice(slideIndex * 3, (slideIndex + 1) * 3).map((feature, featureIndex) => (
-                        <div key={featureIndex} className="flex items-center space-x-4">
-                          <div className="relative">
-                            <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
-                              <img 
-                                src={feature.image} 
-                                alt={`${feature.title} character`} 
-                                className="w-12 h-12 rounded-full object-cover"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                                }}
-                              />
-                              <feature.icon className="h-6 w-6 text-slate-600 hidden" />
-                            </div>
-                            <div className={`absolute -top-1 -right-1 w-5 h-5 ${feature.colorClass} rounded-full flex items-center justify-center`}>
-                              <span className="text-xs font-bold text-white">{feature.emoji}</span>
-                            </div>
-                          </div>
-                          <div className="text-left">
-                            <h3 className="text-lg font-semibold text-slate-800 mb-1">{feature.title}</h3>
-                            <p className="text-sm text-slate-600">{feature.description}</p>
-                          </div>
-                        </div>
-                      ))}
+            <div className="grid grid-cols-1 gap-4 max-w-sm mx-auto">
+              {features.map((feature, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <div className="relative">
+                    <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-amber-300/50">
+                      <img 
+                        src={feature.image} 
+                        alt={`${feature.title} character`} 
+                        className="w-12 h-12 rounded-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                      <feature.icon className="h-6 w-6 text-sky-600 hidden" />
                     </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-            
-            <CarouselDots 
-              totalSlides={Math.ceil(features.length / 3)} 
-              currentSlide={currentSlide}
-              onDotClick={(index) => carouselApi?.scrollTo(index)}
-            />
+                    <div className={`absolute -top-1 -right-1 w-5 h-5 ${feature.colorClass} rounded-full flex items-center justify-center`}>
+                      <span className="text-xs font-bold text-white">{feature.emoji}</span>
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-lg font-semibold text-sky-900 mb-1">{feature.title}</h3>
+                    <p className="text-sm text-sky-700">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
             
             <p className="text-base text-slate-600 font-medium mb-6 mt-4">Your reading journey starts here</p>
           </div>
