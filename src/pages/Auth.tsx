@@ -55,7 +55,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-600 to-amber-600">
+    <div className="min-h-screen bg-gradient-to-br from-sky-200 via-emerald-100 to-orange-100">
       {/* Desktop Layout */}
       <div className="hidden lg:grid lg:grid-cols-2 min-h-screen">
         {/* Left Side - Authentication */}
@@ -63,15 +63,15 @@ const Auth = () => {
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <BookOpen className="h-8 w-8 text-white" />
-                <h1 className="text-3xl font-bold text-white">Beyond Pages</h1>
+                <BookOpen className="h-8 w-8 text-slate-800" />
+                <h1 className="text-3xl font-bold text-slate-800">Beyond Pages</h1>
               </div>
-              <Badge variant="secondary" className="bg-white/20 text-white flex items-center gap-1">
+              <Badge variant="secondary" className="bg-slate-800/10 text-slate-800 flex items-center gap-1">
                 <BookOpen className="h-4 w-4" /> Join the Reading Community
               </Badge>
             </div>
 
-            <Card className="shadow-lg bg-white/95 backdrop-blur-sm">
+            <Card className="shadow-lg bg-white/90 backdrop-blur-sm border-slate-200/50">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Welcome Back</CardTitle>
                 <CardDescription>
@@ -101,7 +101,7 @@ const Auth = () => {
               <Button 
                 variant="ghost" 
                 onClick={() => navigate('/')}
-                className="text-white/80 hover:text-white"
+                className="text-slate-700 hover:text-slate-800"
               >
                 ← Back to Home
               </Button>
@@ -112,13 +112,13 @@ const Auth = () => {
         {/* Right Side - Features */}
         <div className="flex items-center justify-center p-8">
           <div className="text-center max-w-lg">
-            <h2 className="text-4xl font-bold text-white mb-8">Discover Amazing Features</h2>
+            <h2 className="text-4xl font-bold text-slate-800 mb-8">Discover Amazing Features</h2>
             
             <div className="grid grid-cols-1 gap-8 mb-8">
               {/* Reading Feature */}
               <div className="flex items-center space-x-6">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
+                  <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
                     <img 
                       src={readingCharacter} 
                       alt="Reading character" 
@@ -128,22 +128,22 @@ const Auth = () => {
                         e.currentTarget.nextElementSibling?.classList.remove('hidden');
                       }}
                     />
-                    <BookOpen className="h-8 w-8 text-white hidden" />
+                    <BookOpen className="h-8 w-8 text-slate-600 hidden" />
                   </div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-400 rounded-full flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-sky-400 rounded-full flex items-center justify-center">
                     <span className="text-xs font-bold text-white">📚</span>
                   </div>
                 </div>
                 <div className="text-left">
-                  <h3 className="text-xl font-semibold text-white mb-2">Smart Reading Tracker</h3>
-                  <p className="text-white/70">Track your reading progress and discover new books with AI-powered recommendations</p>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Smart Reading Tracker</h3>
+                  <p className="text-slate-600">Track your reading progress and discover new books with AI-powered recommendations</p>
                 </div>
               </div>
 
               {/* Community Feature */}
               <div className="flex items-center space-x-6">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
+                  <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
                     <img 
                       src={communityCharacter} 
                       alt="Community character" 
@@ -155,20 +155,20 @@ const Auth = () => {
                     />
                     <span className="text-2xl hidden">👥</span>
                   </div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-400 rounded-full flex items-center justify-center">
                     <span className="text-xs font-bold text-white">💬</span>
                   </div>
                 </div>
                 <div className="text-left">
-                  <h3 className="text-xl font-semibold text-white mb-2">Reading Community</h3>
-                  <p className="text-white/70">Connect with fellow readers, share reviews, and join book discussions</p>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Reading Community</h3>
+                  <p className="text-slate-600">Connect with fellow readers, share reviews, and join book discussions</p>
                 </div>
               </div>
 
               {/* Challenges Feature */}
               <div className="flex items-center space-x-6">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
+                  <div className="w-20 h-20 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-300/50">
                     <img 
                       src={challengeCharacter} 
                       alt="Challenge character" 
@@ -185,13 +185,13 @@ const Auth = () => {
                   </div>
                 </div>
                 <div className="text-left">
-                  <h3 className="text-xl font-semibold text-white mb-2">Reading Challenges</h3>
-                  <p className="text-white/70">Set goals, join challenges, and earn achievements for your reading milestones</p>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Reading Challenges</h3>
+                  <p className="text-slate-600">Set goals, join challenges, and earn achievements for your reading milestones</p>
                 </div>
               </div>
             </div>
             
-            <p className="text-lg text-white/80 font-medium">Your reading journey starts here</p>
+            <p className="text-lg text-slate-600 font-medium">Your reading journey starts here</p>
           </div>
         </div>
       </div>
@@ -201,15 +201,15 @@ const Auth = () => {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <BookOpen className="h-8 w-8 text-white" />
-              <h1 className="text-3xl font-bold text-white">Beyond Pages</h1>
+              <BookOpen className="h-8 w-8 text-slate-800" />
+              <h1 className="text-3xl font-bold text-slate-800">Beyond Pages</h1>
             </div>
-            <Badge variant="secondary" className="bg-white/20 text-white flex items-center gap-1">
+            <Badge variant="secondary" className="bg-slate-800/10 text-slate-800 flex items-center gap-1">
               <BookOpen className="h-4 w-4" /> Join the Reading Community
             </Badge>
           </div>
 
-          <Card className="shadow-lg bg-white/95 backdrop-blur-sm">
+          <Card className="shadow-lg bg-white/90 backdrop-blur-sm border-slate-200/50">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Welcome Back</CardTitle>
               <CardDescription>
@@ -239,7 +239,7 @@ const Auth = () => {
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="text-white/80 hover:text-white"
+              className="text-slate-700 hover:text-slate-800"
             >
               ← Back to Home
             </Button>
