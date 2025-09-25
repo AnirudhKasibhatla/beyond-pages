@@ -17,6 +17,12 @@ interface CropArea {
   height: number;
 }
 
+interface ResizeHandle {
+  position: 'nw' | 'ne' | 'sw' | 'se' | 'n' | 'e' | 's' | 'w';
+  x: number;
+  y: number;
+}
+
 export const ImageCrop: React.FC<ImageCropProps> = ({
   isOpen,
   onClose,
@@ -29,6 +35,9 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
   const [cropArea, setCropArea] = useState<CropArea | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeHandle, setResizeHandle] = useState<string | null>(null);
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
 
   // Load image when dialog opens
   useEffect(() => {
@@ -90,9 +99,61 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
         ctx.strokeStyle = '#3b82f6';
         ctx.lineWidth = 2;
         ctx.strokeRect(displayX, displayY, displayWidth, displayHeight);
+
+        // Draw resize handles
+        const handleSize = 8;
+        const handles = [
+          { pos: 'nw', x: displayX - handleSize/2, y: displayY - handleSize/2 },
+          { pos: 'ne', x: displayX + displayWidth - handleSize/2, y: displayY - handleSize/2 },
+          { pos: 'sw', x: displayX - handleSize/2, y: displayY + displayHeight - handleSize/2 },
+          { pos: 'se', x: displayX + displayWidth - handleSize/2, y: displayY + displayHeight - handleSize/2 },
+          { pos: 'n', x: displayX + displayWidth/2 - handleSize/2, y: displayY - handleSize/2 },
+          { pos: 'e', x: displayX + displayWidth - handleSize/2, y: displayY + displayHeight/2 - handleSize/2 },
+          { pos: 's', x: displayX + displayWidth/2 - handleSize/2, y: displayY + displayHeight - handleSize/2 },
+          { pos: 'w', x: displayX - handleSize/2, y: displayY + displayHeight/2 - handleSize/2 }
+        ];
+
+        ctx.fillStyle = '#3b82f6';
+        handles.forEach(handle => {
+          ctx.fillRect(handle.x, handle.y, handleSize, handleSize);
+        });
+
+        // Draw white border for handles
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        handles.forEach(handle => {
+          ctx.strokeRect(handle.x, handle.y, handleSize, handleSize);
+        });
       }
     }
   }, [cropArea, imageLoaded, imageDimensions]);
+
+  const getResizeHandle = useCallback((mouseX: number, mouseY: number, displayCrop: any) => {
+    if (!displayCrop) return null;
+    
+    const handleSize = 8;
+    const tolerance = 6;
+    
+    const handles = [
+      { pos: 'nw', x: displayCrop.x - handleSize/2, y: displayCrop.y - handleSize/2 },
+      { pos: 'ne', x: displayCrop.x + displayCrop.width - handleSize/2, y: displayCrop.y - handleSize/2 },
+      { pos: 'sw', x: displayCrop.x - handleSize/2, y: displayCrop.y + displayCrop.height - handleSize/2 },
+      { pos: 'se', x: displayCrop.x + displayCrop.width - handleSize/2, y: displayCrop.y + displayCrop.height - handleSize/2 },
+      { pos: 'n', x: displayCrop.x + displayCrop.width/2 - handleSize/2, y: displayCrop.y - handleSize/2 },
+      { pos: 'e', x: displayCrop.x + displayCrop.width - handleSize/2, y: displayCrop.y + displayCrop.height/2 - handleSize/2 },
+      { pos: 's', x: displayCrop.x + displayCrop.width/2 - handleSize/2, y: displayCrop.y + displayCrop.height - handleSize/2 },
+      { pos: 'w', x: displayCrop.x - handleSize/2, y: displayCrop.y + displayCrop.height/2 - handleSize/2 }
+    ];
+    
+    for (const handle of handles) {
+      if (mouseX >= handle.x - tolerance && mouseX <= handle.x + handleSize + tolerance &&
+          mouseY >= handle.y - tolerance && mouseY <= handle.y + handleSize + tolerance) {
+        return handle.pos;
+      }
+    }
+    
+    return null;
+  }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -103,39 +164,159 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
     const scaleX = imageDimensions.width / rect.width;
     const scaleY = imageDimensions.height / rect.height;
     
-    const x = Math.max(0, Math.min((e.clientX - rect.left) * scaleX, imageDimensions.width));
-    const y = Math.max(0, Math.min((e.clientY - rect.top) * scaleY, imageDimensions.height));
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Check if we're clicking on a resize handle
+    if (cropArea) {
+      const displayX = cropArea.x / scaleX;
+      const displayY = cropArea.y / scaleY;
+      const displayWidth = cropArea.width / scaleX;
+      const displayHeight = cropArea.height / scaleY;
+      
+      const handle = getResizeHandle(mouseX, mouseY, {
+        x: displayX,
+        y: displayY,
+        width: displayWidth,
+        height: displayHeight
+      });
+      
+      if (handle) {
+        setIsResizing(true);
+        setResizeHandle(handle);
+        setStartPosition({ x: mouseX, y: mouseY });
+        return;
+      }
+    }
+    
+    // Start new crop area
+    const x = Math.max(0, Math.min((mouseX) * scaleX, imageDimensions.width));
+    const y = Math.max(0, Math.min((mouseY) * scaleY, imageDimensions.height));
 
     setCropArea({ x, y, width: 0, height: 0 });
     setIsDrawing(true);
-  }, [imageDimensions]);
+  }, [imageDimensions, cropArea, getResizeHandle]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !cropArea || !imageDimensions.width || !imageDimensions.height) return;
-    
     const canvas = canvasRef.current;
     const img = imageRef.current;
-    if (!canvas || !img) return;
+    if (!canvas || !img || !imageDimensions.width || !imageDimensions.height) return;
 
     const rect = canvas.getBoundingClientRect();
     const scaleX = imageDimensions.width / rect.width;
     const scaleY = imageDimensions.height / rect.height;
     
-    const currentX = Math.max(0, Math.min((e.clientX - rect.left) * scaleX, imageDimensions.width));
-    const currentY = Math.max(0, Math.min((e.clientY - rect.top) * scaleY, imageDimensions.height));
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Handle resizing
+    if (isResizing && resizeHandle && cropArea) {
+      const deltaX = (mouseX - startPosition.x) * scaleX;
+      const deltaY = (mouseY - startPosition.y) * scaleY;
+      
+      setCropArea(prev => {
+        if (!prev) return null;
+        
+        let newArea = { ...prev };
+        
+        switch (resizeHandle) {
+          case 'nw':
+            newArea.x = Math.max(0, prev.x + deltaX);
+            newArea.y = Math.max(0, prev.y + deltaY);
+            newArea.width = Math.max(10, prev.width - deltaX);
+            newArea.height = Math.max(10, prev.height - deltaY);
+            break;
+          case 'ne':
+            newArea.y = Math.max(0, prev.y + deltaY);
+            newArea.width = Math.max(10, prev.width + deltaX);
+            newArea.height = Math.max(10, prev.height - deltaY);
+            break;
+          case 'sw':
+            newArea.x = Math.max(0, prev.x + deltaX);
+            newArea.width = Math.max(10, prev.width - deltaX);
+            newArea.height = Math.max(10, prev.height + deltaY);
+            break;
+          case 'se':
+            newArea.width = Math.max(10, prev.width + deltaX);
+            newArea.height = Math.max(10, prev.height + deltaY);
+            break;
+          case 'n':
+            newArea.y = Math.max(0, prev.y + deltaY);
+            newArea.height = Math.max(10, prev.height - deltaY);
+            break;
+          case 's':
+            newArea.height = Math.max(10, prev.height + deltaY);
+            break;
+          case 'e':
+            newArea.width = Math.max(10, prev.width + deltaX);
+            break;
+          case 'w':
+            newArea.x = Math.max(0, prev.x + deltaX);
+            newArea.width = Math.max(10, prev.width - deltaX);
+            break;
+        }
+        
+        // Ensure crop area stays within image bounds
+        newArea.x = Math.max(0, Math.min(newArea.x, imageDimensions.width - newArea.width));
+        newArea.y = Math.max(0, Math.min(newArea.y, imageDimensions.height - newArea.height));
+        newArea.width = Math.min(newArea.width, imageDimensions.width - newArea.x);
+        newArea.height = Math.min(newArea.height, imageDimensions.height - newArea.y);
+        
+        return newArea;
+      });
+      
+      setStartPosition({ x: mouseX, y: mouseY });
+      return;
+    }
+    
+    // Handle drawing new crop area
+    if (isDrawing && cropArea) {
+      const currentX = Math.max(0, Math.min(mouseX * scaleX, imageDimensions.width));
+      const currentY = Math.max(0, Math.min(mouseY * scaleY, imageDimensions.height));
 
-    setCropArea(prev => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        width: Math.max(10, currentX - prev.x),
-        height: Math.max(10, currentY - prev.y)
+      setCropArea(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          width: Math.max(10, currentX - prev.x),
+          height: Math.max(10, currentY - prev.y)
+        };
+      });
+    }
+    
+    // Update cursor based on what we're hovering over
+    if (cropArea && !isDrawing && !isResizing) {
+      const displayX = cropArea.x / scaleX;
+      const displayY = cropArea.y / scaleY;
+      const displayWidth = cropArea.width / scaleX;
+      const displayHeight = cropArea.height / scaleY;
+      
+      const handle = getResizeHandle(mouseX, mouseY, {
+        x: displayX,
+        y: displayY,
+        width: displayWidth,
+        height: displayHeight
+      });
+      
+      const cursors: Record<string, string> = {
+        'nw': 'nw-resize',
+        'ne': 'ne-resize',
+        'sw': 'sw-resize',
+        'se': 'se-resize',
+        'n': 'n-resize',
+        's': 's-resize',
+        'e': 'e-resize',
+        'w': 'w-resize'
       };
-    });
-  }, [isDrawing, cropArea, imageDimensions]);
+      
+      canvas.style.cursor = handle ? cursors[handle] : 'crosshair';
+    }
+  }, [isDrawing, isResizing, resizeHandle, cropArea, imageDimensions, startPosition, getResizeHandle]);
 
   const handleMouseUp = useCallback(() => {
     setIsDrawing(false);
+    setIsResizing(false);
+    setResizeHandle(null);
   }, []);
 
   const handleCrop = async () => {

@@ -8,6 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
+import readingCharacter from "@/assets/reading-character.png";
+import communityCharacter from "@/assets/community-character.png";
+import challengeCharacter from "@/assets/challenge-character.png";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -106,12 +109,89 @@ const Auth = () => {
           </div>
         </div>
 
-        {/* Right Side - Logo */}
+        {/* Right Side - Features */}
         <div className="flex items-center justify-center p-8">
-          <div className="text-center">
-            <BookOpen className="h-32 w-32 text-white mx-auto mb-6 opacity-80" />
-            <h2 className="text-4xl font-bold text-white mb-4">Beyond Pages</h2>
-            <p className="text-xl text-white/70">Your reading journey starts here</p>
+          <div className="text-center max-w-lg">
+            <h2 className="text-4xl font-bold text-white mb-8">Discover Amazing Features</h2>
+            
+            <div className="grid grid-cols-1 gap-8 mb-8">
+              {/* Reading Feature */}
+              <div className="flex items-center space-x-6">
+                <div className="relative">
+                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
+                    <img 
+                      src={readingCharacter} 
+                      alt="Reading character" 
+                      className="w-16 h-16 rounded-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <BookOpen className="h-8 w-8 text-white hidden" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-400 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">📚</span>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-xl font-semibold text-white mb-2">Smart Reading Tracker</h3>
+                  <p className="text-white/70">Track your reading progress and discover new books with AI-powered recommendations</p>
+                </div>
+              </div>
+
+              {/* Community Feature */}
+              <div className="flex items-center space-x-6">
+                <div className="relative">
+                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
+                    <img 
+                      src={communityCharacter} 
+                      alt="Community character" 
+                      className="w-16 h-16 rounded-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <span className="text-2xl hidden">👥</span>
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">💬</span>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-xl font-semibold text-white mb-2">Reading Community</h3>
+                  <p className="text-white/70">Connect with fellow readers, share reviews, and join book discussions</p>
+                </div>
+              </div>
+
+              {/* Challenges Feature */}
+              <div className="flex items-center space-x-6">
+                <div className="relative">
+                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
+                    <img 
+                      src={challengeCharacter} 
+                      alt="Challenge character" 
+                      className="w-16 h-16 rounded-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <span className="text-2xl hidden">🎯</span>
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">🏆</span>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-xl font-semibold text-white mb-2">Reading Challenges</h3>
+                  <p className="text-white/70">Set goals, join challenges, and earn achievements for your reading milestones</p>
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-lg text-white/80 font-medium">Your reading journey starts here</p>
           </div>
         </div>
       </div>
