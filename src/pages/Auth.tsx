@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { BookOpen, Trophy, Users, Target, Award } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
+import AuthHeader from "@/components/AuthHeader";
+import AuthCard from "@/components/AuthCard";
 import readingCharacter from "@/assets/reading-character.png";
 import communityCharacter from "@/assets/community-character.png";
 import challengeCharacter from "@/assets/challenge-character.png";
@@ -117,41 +117,8 @@ const Auth = () => {
         {/* Left Side - Authentication */}
         <div className="flex items-center justify-center p-8">
           <div className="w-full max-w-md">
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <BookOpen className="h-8 w-8 text-slate-800" />
-                <h1 className="text-3xl font-bold text-slate-800">Beyond Pages</h1>
-              </div>
-              <Badge variant="secondary" className="bg-slate-800/10 text-slate-800 flex items-center gap-1">
-                <BookOpen className="h-4 w-4" /> Join the Reading Community
-              </Badge>
-            </div>
-
-            <Card className="shadow-lg bg-white/90 backdrop-blur-sm border-slate-200/50">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Welcome Back</CardTitle>
-                <CardDescription>
-                  Sign in to continue your reading journey
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button 
-                  onClick={handleGoogleAuth}
-                  className="w-full"
-                  size="lg"
-                >
-                  Continue with Google
-                </Button>
-                <Button 
-                  onClick={handleSkipAuth}
-                  variant="outline"
-                  className="w-full"
-                  size="lg"
-                >
-                  Skip Authentication (Guest)
-                </Button>
-              </CardContent>
-            </Card>
+            <AuthHeader />
+            <AuthCard onGoogleAuth={handleGoogleAuth} onSkipAuth={handleSkipAuth} />
 
             <div className="text-center mt-6">
               <Button 
@@ -206,41 +173,10 @@ const Auth = () => {
       {/* Mobile Layout */}
       <div className="lg:hidden min-h-screen p-4">
         <div className="w-full max-w-md mx-auto">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <BookOpen className="h-8 w-8 text-slate-800" />
-              <h1 className="text-3xl font-bold text-slate-800">Beyond Pages</h1>
-            </div>
-            <Badge variant="secondary" className="bg-slate-800/10 text-slate-800 flex items-center gap-1">
-              <BookOpen className="h-4 w-4" /> Join the Reading Community
-            </Badge>
+          <AuthHeader />
+          <div className="mb-8">
+            <AuthCard onGoogleAuth={handleGoogleAuth} onSkipAuth={handleSkipAuth} />
           </div>
-
-          <Card className="shadow-lg bg-white/90 backdrop-blur-sm border-slate-200/50 mb-8">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Welcome Back</CardTitle>
-              <CardDescription>
-                Sign in to continue your reading journey
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button 
-                onClick={handleGoogleAuth}
-                className="w-full"
-                size="lg"
-              >
-                Continue with Google
-              </Button>
-              <Button 
-                onClick={handleSkipAuth}
-                variant="outline"
-                className="w-full"
-                size="lg"
-              >
-                Skip Authentication (Guest)
-              </Button>
-            </CardContent>
-          </Card>
 
           {/* Features Section - Mobile Circular Layout */}
           <div className="text-center mb-8">
