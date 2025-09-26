@@ -243,6 +243,7 @@ const Auth = () => {
           </Card>
 
           {/* Features Section - Mobile Circular Layout */}
+          <br/>
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-slate-800 mb-6">Discover Amazing Features</h2>
             
@@ -293,7 +294,7 @@ const Auth = () => {
               })}
             </div>
             
-            <p className="text-base text-slate-600 font-medium mb-6 mt-4">Your reading journey starts here</p>
+            {/* <p className="text-base text-slate-600 font-medium mb-6 mt-4">Your reading journey starts here</p> */}
           </div>
 
           <div className="text-center">
