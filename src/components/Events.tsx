@@ -99,7 +99,7 @@ export const Events = () => {
             .select('id')
             .eq('event_id', event.id);
 
-          // Get host name from profiles
+          // Get host name from profiles (safe fields only)
           const { data: hostProfile } = await supabase
             .from('profiles')
             .select('name, username')

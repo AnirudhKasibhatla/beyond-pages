@@ -56,7 +56,7 @@ export const useCommunityPosts = () => {
 
       if (postsError) throw postsError;
 
-      // Get profiles separately to avoid complex joins
+      // Get profiles separately to avoid complex joins (safe fields only)
       const userIds = [...new Set(postsData?.map(post => post.user_id) || [])];
       const { data: profilesData } = await supabase
         .from('profiles')
@@ -85,7 +85,7 @@ export const useCommunityPosts = () => {
 
       if (repliesError) throw repliesError;
 
-      // Get profiles for reply authors
+      // Get profiles for reply authors (safe fields only)
       const replyUserIds = [...new Set(repliesData?.map(reply => reply.user_id) || [])];
       const { data: replyProfilesData } = await supabase
         .from('profiles')
@@ -287,7 +287,7 @@ export const useCommunityPosts = () => {
 
       if (error) throw error;
 
-      // Get user profile
+      // Get user profile (own profile, so all safe)
       const { data: profileData } = await supabase
         .from('profiles')
         .select('name, username')

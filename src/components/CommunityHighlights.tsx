@@ -117,10 +117,10 @@ export const CommunityHighlights = () => {
       // Get unique user IDs
       const userIds = [...new Set(highlightsData.map(h => h.user_id))];
 
-      // Fetch user profiles
+      // Fetch user profiles (only safe fields for public access)
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name, display_name, profile_picture_url')
+        .select('user_id, username, display_name, name, profile_picture_url')
         .in('user_id', userIds);
 
       if (profilesError) {
@@ -147,7 +147,7 @@ export const CommunityHighlights = () => {
           user: {
             id: highlight.user_id,
             display_name: profile?.display_name || 
-                         `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() ||
+                         profile?.name ||
                          'Anonymous Reader',
             avatar_url: profile?.profile_picture_url || undefined
           },

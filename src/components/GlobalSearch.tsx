@@ -96,17 +96,18 @@ export const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
         });
       }
 
-      // Search readers (profiles)
+      // Search readers (profiles) - only safe fields for public access
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, display_name, user_id')
-        .or(`first_name.ilike.%${searchQuery}%, last_name.ilike.%${searchQuery}%, display_name.ilike.%${searchQuery}%`)
+        .select('id, username, display_name, name, user_id')
+        .or(`username.ilike.%${searchQuery}%, display_name.ilike.%${searchQuery}%, name.ilike.%${searchQuery}%`)
         .limit(10);
 
       if (profiles) {
         profiles.forEach(profile => {
           const name = profile.display_name || 
-                      `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 
+                      profile.name || 
+                      profile.username ||
                       'Anonymous Reader';
           
           searchResults.push({

@@ -37,19 +37,47 @@ export const useProfile = (userId?: string) => {
 
     const fetchProfile = async () => {
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', targetUserId)
-          .single();
-
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching profile:', error);
-        } else if (data) {
-          setProfile({
-            ...data,
-            bio: (data as any).bio || null
-          });
+        // Determine if we're fetching own profile or someone else's
+        const isOwnProfile = user?.id === targetUserId;
+        
+        if (isOwnProfile) {
+          // For own profile, fetch all fields
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', targetUserId)
+            .single();
+            
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching profile:', error);
+          } else if (data) {
+            setProfile({
+              ...data as any,
+              bio: data.bio || null
+            });
+          }
+        } else {
+          // For other users' profiles, only fetch safe fields
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('id, user_id, username, display_name, name, bio, profile_picture_url, created_at, updated_at, country')
+            .eq('user_id', targetUserId)
+            .single();
+            
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching profile:', error);
+          } else if (data) {
+            // Create profile object with safe fields only
+            const safeProfile: Profile = {
+              ...data as any,
+              first_name: null,
+              last_name: null,
+              email: null,
+              phone: null,
+              date_of_birth: null,
+            };
+            setProfile(safeProfile);
+          }
         }
       } catch (error) {
         console.error('Error fetching profile:', error);

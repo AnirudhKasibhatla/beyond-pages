@@ -91,7 +91,7 @@ export const GroupMembers = ({ isOpen, onClose, groupId, groupName, onViewProfil
 
       const { data: creatorData, error: creatorError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('name, username, profile_picture_url, bio')
         .eq('user_id', groupData.creator_id)
         .single();
 
