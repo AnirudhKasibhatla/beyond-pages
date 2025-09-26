@@ -28,7 +28,7 @@ export const TimedSignUpModal: React.FC = () => {
       const timer = setTimeout(() => {
         setOpen(true);
         setTimerActive(false);
-      }, 20000); // 20 seconds
+      }, 25000); // 25 seconds
 
       return () => clearTimeout(timer);
     }
