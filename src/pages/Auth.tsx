@@ -242,36 +242,55 @@ const Auth = () => {
             </CardContent>
           </Card>
 
-          {/* Features Section - Mobile */}
+          {/* Features Section - Mobile Circular Layout */}
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-slate-800 mb-6">Discover Amazing Features</h2>
             
-            <div className="grid grid-cols-1 gap-4 max-w-sm mx-auto">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="relative">
-                    <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-amber-300/50">
-                      <img 
-                        src={feature.image} 
-                        alt={`${feature.title} character`} 
-                        className="w-12 h-12 rounded-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                        }}
-                      />
-                      <feature.icon className="h-6 w-6 text-sky-600 hidden" />
+            <div className="relative w-80 h-80 mx-auto">
+              {/* Central circle */}
+              <div className="absolute inset-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white/60 rounded-full backdrop-blur-sm border-2 border-amber-300/30 flex items-center justify-center">
+                <BookOpen className="h-8 w-8 text-sky-600" />
+              </div>
+              
+              {/* Feature items positioned around the circle */}
+              {features.map((feature, index) => {
+                // Calculate position around circle (6 items, starting from top)
+                const angle = (index * 60) - 90; // -90 to start from top
+                const radian = (angle * Math.PI) / 180;
+                const radius = 140; // Distance from center
+                const x = Math.cos(radian) * radius;
+                const y = Math.sin(radian) * radius;
+                
+                return (
+                  <div 
+                    key={index} 
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                    style={{
+                      left: `calc(50% + ${x}px)`,
+                      top: `calc(50% + ${y}px)`
+                    }}
+                  >
+                    <div className="relative mb-2">
+                      <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-amber-300/50">
+                        <img 
+                          src={feature.image} 
+                          alt={`${feature.title} character`} 
+                          className="w-12 h-12 rounded-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <feature.icon className="h-6 w-6 text-sky-600 hidden" />
+                      </div>
+                      <div className={`absolute -top-1 -right-1 w-5 h-5 ${feature.colorClass} rounded-full flex items-center justify-center`}>
+                        <span className="text-xs font-bold text-white">{feature.emoji}</span>
+                      </div>
                     </div>
-                    <div className={`absolute -top-1 -right-1 w-5 h-5 ${feature.colorClass} rounded-full flex items-center justify-center`}>
-                      <span className="text-xs font-bold text-white">{feature.emoji}</span>
-                    </div>
+                    <h3 className="text-sm font-semibold text-sky-900 text-center max-w-[80px] leading-tight">{feature.title}</h3>
                   </div>
-                  <div className="text-left">
-                    <h3 className="text-lg font-semibold text-sky-900 mb-1">{feature.title}</h3>
-                    <p className="text-sm text-sky-700">{feature.description}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
             <p className="text-base text-slate-600 font-medium mb-6 mt-4">Your reading journey starts here</p>
