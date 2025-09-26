@@ -244,7 +244,7 @@ const Auth = () => {
 
           {/* Features Section - Mobile Circular Layout */}
           <div className="text-center mb-8">
-         {/*   <h2 className="text-2xl font-bold text-slate-800 mb-6">Discover Amazing Features</h2> */}
+            <h2 className="text-2xl font-bold text-slate-800 mb-6">Discover Amazing Features</h2>
             
             <div className="relative w-80 h-80 mx-auto">
               {/* Central circle */}
