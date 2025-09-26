@@ -247,7 +247,6 @@ const Auth = () => {
             <h2 className="text-2xl font-bold text-slate-800 mb-6">Discover Amazing Features</h2>
             
             <div className="relative w-80 h-80 mx-auto">
-              <br/>
               {/* Central circle */}
               <div className="absolute inset-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white/60 rounded-full backdrop-blur-sm border-2 border-amber-300/30 flex items-center justify-center">
                 <BookOpen className="h-8 w-8 text-sky-600" />
