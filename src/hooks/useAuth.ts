@@ -18,6 +18,11 @@ export const useAuth = () => {
         // Clear guest status when user signs in
         if (session?.user) {
           localStorage.removeItem('isGuest');
+          
+          // Mark authentication timestamp for post-auth splash
+          if (event === 'SIGNED_IN') {
+            sessionStorage.setItem('lastAuthTime', Date.now().toString());
+          }
         }
       }
     );

@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoadingSkeleton } from "./components/ui/loading-skeleton";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "@/hooks/useAuth";
+import { useGuestAuth } from "@/hooks/useGuestAuth";
+import PostAuthSplash from "@/components/PostAuthSplash";
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -16,12 +19,54 @@ const SplashScreen = lazy(() => import("./pages/SplashScreen"));
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  // Clear splash shown flag to ensure splash screen shows on every visit
-  React.useEffect(() => {
-    sessionStorage.removeItem('splashShown');
-  }, []);
+const AppContent = () => {
+  const { user, loading } = useAuth();
+  const { isGuest } = useGuestAuth();
+  const [showPostAuthSplash, setShowPostAuthSplash] = React.useState(false);
+  const [hasShownPostAuth, setHasShownPostAuth] = React.useState(false);
 
+  // Track when user authenticates (not guest) and show post-auth splash
+  React.useEffect(() => {
+    if (!loading && user && !isGuest && !hasShownPostAuth) {
+      // Only show if this is a fresh authentication, not on app refresh
+      const lastAuth = sessionStorage.getItem('lastAuthTime');
+      const currentTime = Date.now();
+      
+      if (!lastAuth || currentTime - parseInt(lastAuth) < 5000) {
+        setShowPostAuthSplash(true);
+        setHasShownPostAuth(true);
+        sessionStorage.setItem('lastAuthTime', currentTime.toString());
+      }
+    }
+  }, [user, loading, isGuest, hasShownPostAuth]);
+
+  const handlePostAuthSplashComplete = () => {
+    setShowPostAuthSplash(false);
+  };
+
+  if (showPostAuthSplash) {
+    return <PostAuthSplash onComplete={handlePostAuthSplashComplete} />;
+  }
+
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<LoadingSkeleton type="shelf" className="min-h-screen" />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route 
+            path="/dashboard" 
+            element={<Dashboard />} 
+          />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  );
+};
+
+const App = () => {
   // Check if we should show splash screen on first load
   const [showSplash, setShowSplash] = React.useState(true);
 
@@ -42,20 +87,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<LoadingSkeleton type="shelf" className="min-h-screen" />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route 
-                path="/dashboard" 
-                element={<Dashboard />} 
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
+        <AppContent />
       </TooltipProvider>
     </QueryClientProvider>
   );
