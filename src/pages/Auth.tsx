@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { BookOpen, Trophy, Users, Target, Award } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
 import AuthHeader from "@/components/AuthHeader";
 import AuthCard from "@/components/AuthCard";
+import PostAuthSplash from "@/components/PostAuthSplash";
 import readingCharacter from "@/assets/reading-character.png";
 import communityCharacter from "@/assets/community-character.png";
 import challengeCharacter from "@/assets/challenge-character.png";
@@ -20,6 +21,7 @@ const Auth = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { setGuestUser } = useGuestAuth();
+  const [showPostAuthSplash, setShowPostAuthSplash] = useState(false);
 
   // All 6 features from the home page
   const features = [
@@ -75,10 +77,10 @@ const Auth = () => {
 
 
   useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
+    if (user && !showPostAuthSplash) {
+      setShowPostAuthSplash(true);
     }
-  }, [user, navigate]);
+  }, [user, showPostAuthSplash]);
 
   const handleGoogleAuth = async () => {
     try {
@@ -107,8 +109,17 @@ const Auth = () => {
 
   const handleSkipAuth = () => {
     setGuestUser();
+    setShowPostAuthSplash(true);
+  };
+
+  const handlePostAuthSplashComplete = () => {
+    setShowPostAuthSplash(false);
     navigate('/dashboard');
   };
+
+  if (showPostAuthSplash) {
+    return <PostAuthSplash onComplete={handlePostAuthSplashComplete} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-emerald-100 to-orange-100">
