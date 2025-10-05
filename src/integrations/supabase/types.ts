@@ -20,6 +20,7 @@ export type Database = {
           category: string
           created_at: string
           creator_id: string
+          creator_name: string | null
           description: string | null
           event_date: string
           event_time: string
@@ -42,6 +43,7 @@ export type Database = {
           category: string
           created_at?: string
           creator_id: string
+          creator_name?: string | null
           description?: string | null
           event_date: string
           event_time: string
@@ -64,6 +66,7 @@ export type Database = {
           category?: string
           created_at?: string
           creator_id?: string
+          creator_name?: string | null
           description?: string | null
           event_date?: string
           event_time?: string
@@ -90,6 +93,7 @@ export type Database = {
           book_cover_url: string | null
           created_at: string
           creator_id: string
+          creator_name: string | null
           current_book: string | null
           current_members: number
           description: string | null
@@ -109,6 +113,7 @@ export type Database = {
           book_cover_url?: string | null
           created_at?: string
           creator_id: string
+          creator_name?: string | null
           current_book?: string | null
           current_members?: number
           description?: string | null
@@ -128,6 +133,7 @@ export type Database = {
           book_cover_url?: string | null
           created_at?: string
           creator_id?: string
+          creator_name?: string | null
           current_book?: string | null
           current_members?: number
           description?: string | null
@@ -157,6 +163,7 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           author: string
@@ -171,6 +178,7 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           author?: string
@@ -185,6 +193,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          user_name?: string | null
         }
         Relationships: []
       }
@@ -217,6 +226,7 @@ export type Database = {
           post_id: string
           updated_at: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           content: string
@@ -225,6 +235,7 @@ export type Database = {
           post_id: string
           updated_at?: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           content?: string
@@ -233,6 +244,7 @@ export type Database = {
           post_id?: string
           updated_at?: string
           user_id?: string
+          user_name?: string | null
         }
         Relationships: []
       }
@@ -250,6 +262,7 @@ export type Database = {
           rating: number | null
           updated_at: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           book_author?: string | null
@@ -264,6 +277,7 @@ export type Database = {
           rating?: number | null
           updated_at?: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           book_author?: string | null
@@ -278,6 +292,7 @@ export type Database = {
           rating?: number | null
           updated_at?: string
           user_id?: string
+          user_name?: string | null
         }
         Relationships: []
       }
@@ -359,6 +374,7 @@ export type Database = {
           id: string
           message_type: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           content: string
@@ -367,6 +383,7 @@ export type Database = {
           id?: string
           message_type?: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           content?: string
@@ -375,6 +392,7 @@ export type Database = {
           id?: string
           message_type?: string
           user_id?: string
+          user_name?: string | null
         }
         Relationships: [
           {
@@ -392,18 +410,21 @@ export type Database = {
           event_id: string
           id: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           created_at?: string
           event_id: string
           id?: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           created_at?: string
           event_id?: string
           id?: string
           user_id?: string
+          user_name?: string | null
         }
         Relationships: [
           {
@@ -457,6 +478,7 @@ export type Database = {
           joined_at: string
           role: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           group_id: string
@@ -464,6 +486,7 @@ export type Database = {
           joined_at?: string
           role?: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           group_id?: string
@@ -471,6 +494,7 @@ export type Database = {
           joined_at?: string
           role?: string
           user_id?: string
+          user_name?: string | null
         }
         Relationships: [
           {
@@ -490,6 +514,7 @@ export type Database = {
           id: string
           message_type: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           content: string
@@ -498,6 +523,7 @@ export type Database = {
           id?: string
           message_type?: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           content?: string
@@ -506,6 +532,7 @@ export type Database = {
           id?: string
           message_type?: string
           user_id?: string
+          user_name?: string | null
         }
         Relationships: [
           {
@@ -547,6 +574,7 @@ export type Database = {
           page_number: string | null
           quote_text: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           book_author?: string | null
@@ -556,6 +584,7 @@ export type Database = {
           page_number?: string | null
           quote_text: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           book_author?: string | null
@@ -565,6 +594,7 @@ export type Database = {
           page_number?: string | null
           quote_text?: string
           user_id?: string
+          user_name?: string | null
         }
         Relationships: []
       }
@@ -636,6 +666,7 @@ export type Database = {
           status: string
           updated_at: string
           user_id: string
+          user_name: string | null
           year: number
         }
         Insert: {
@@ -648,6 +679,7 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id: string
+          user_name?: string | null
           year: number
         }
         Update: {
@@ -660,6 +692,7 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+          user_name?: string | null
           year?: number
         }
         Relationships: []
@@ -699,6 +732,10 @@ export type Database = {
       }
       generate_username: {
         Args: { first_name_input?: string; last_name_input?: string }
+        Returns: string
+      }
+      get_user_display_name: {
+        Args: { user_uuid: string }
         Returns: string
       }
     }
