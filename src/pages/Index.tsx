@@ -179,14 +179,16 @@ const Index = () => {
                 {user && !loading ? 'Go to Dashboard' : 'Start Your Journey'}
                 <ArrowRight className="h-5 w-5" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="xl"
-                onClick={handleLearnMore}
-                className="bg-background/20 text-primary-foreground border-primary-foreground/30 hover:bg-background/30 backdrop-blur-sm"
-              >
-                Learn More
-              </Button>
+              {!user && !loading && (
+                <Button 
+                  variant="outline" 
+                  size="xl"
+                  onClick={() => navigate('/auth')}
+                  className="relative overflow-hidden bg-gradient-to-br from-blue-400/20 via-blue-500/20 to-blue-600/20 text-primary-foreground border border-blue-400/40 backdrop-blur-md hover:from-blue-400/30 hover:via-blue-500/30 hover:to-blue-600/30 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
+                >
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         </div>
