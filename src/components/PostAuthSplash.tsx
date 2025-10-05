@@ -39,7 +39,7 @@ const PostAuthSplash: React.FC<PostAuthSplashProps> = ({ onComplete }) => {
               id="dashed" 
               opacity="0.15" 
               fill="none" 
-              stroke="#FFFFFF" 
+              stroke="#10b981" 
               strokeWidth="15" 
               strokeMiterlimit="10" 
               strokeDasharray="6.5548" 
@@ -49,38 +49,38 @@ const PostAuthSplash: React.FC<PostAuthSplashProps> = ({ onComplete }) => {
             />
             <g id="stud_whole" style={{ display: 'none' }}>
               <g id="stud_body">
-                <path fill="#FFFFFF" d="M300,323v-9.401c300,268.536,255,131,232,280.241,232,300l0.2,0.2
+                <path fill="#10b981" d="M300,323v-9.401c300,268.536,255,131,232,280.241,232,300l0.2,0.2
                   C143.809,232.268.536,99,313.599Y323.302v-269c-3.4,0-6.2-2.8-6.2-6.2C270.599,268.8,273.399,266,276.799,266z" />
               </g>
               <g id="stud_head">
-                <path fill="#FFFFFF" d="M276.799,255.131,232,280.241,232,300l0.2,0.2
+                <path fill="#10b981" d="M276.799,255.131,232,280.241,232,300l0.2,0.2
                   C273.535,183.9-66.8,183.9-63.2,180.3z M57.203,85.067H41.504V72.542h15.699V85.067L57.203,85.067z" />
               </g>
             </g>
             <g id="reflection">
-              <path fill="#FFFFFF" opacity="0.45" d="M200.011,57.057C200.011,57.057,200.011,57.057,200.011,57.057" />
+              <path fill="#10b981" opacity="0.45" d="M200.011,57.057C200.011,57.057,200.011,57.057,200.011,57.057" />
             </g>
             <g id="hair">
-              <circle fill="#FFFFFF" cx="200" cy="150" r="25" className="animate-pulse" />
+              <circle fill="#10b981" cx="200" cy="150" r="25" className="animate-pulse" />
             </g>
             <g id="stud_body">
-              <rect fill="#FFFFFF" x="175" y="200" width="50" height="80" rx="10" className="animate-float" />
+              <rect fill="#10b981" x="175" y="200" width="50" height="80" rx="10" className="animate-float" />
             </g>
             <g id="pageFold">
-              <polygon fill="#FFFFFF" opacity="0.8" points="220,240 260,220 260,320 220,320" className="animate-page-turn" />
+              <polygon fill="#10b981" opacity="0.8" points="220,240 260,220 260,320 220,320" className="animate-page-turn" />
             </g>
             <g id="stars">
-              <circle fill="#FFFFFF" cx="120" cy="100" r="2" className="animate-twinkle" />
-              <circle fill="#FFFFFF" cx="280" cy="120" r="1.5" className="animate-twinkle-delay" />
-              <circle fill="#FFFFFF" cx="320" cy="280" r="2" className="animate-twinkle" />
-              <circle fill="#FFFFFF" cx="80" cy="300" r="1.5" className="animate-twinkle-delay" />
+              <circle fill="#10b981" cx="120" cy="100" r="2" className="animate-twinkle" />
+              <circle fill="#10b981" cx="280" cy="120" r="1.5" className="animate-twinkle-delay" />
+              <circle fill="#10b981" cx="320" cy="280" r="2" className="animate-twinkle" />
+              <circle fill="#10b981" cx="80" cy="300" r="1.5" className="animate-twinkle-delay" />
             </g>
             <g id="circle">
-              <circle fill="none" stroke="#FFFFFF" strokeWidth="2" cx="200" cy="200" r="150" className="animate-draw-circle" />
+              <circle fill="none" stroke="#10b981" strokeWidth="2" cx="200" cy="200" r="150" className="animate-draw-circle" />
             </g>
             <g id="services_icon">
               <g id="dashed_services_icon">
-                <circle fill="none" stroke="#FFFFFF" strokeWidth="3" strokeDasharray="8,4" cx="320" cy="180" r="20" className="animate-rotate" />
+                <circle fill="none" stroke="#10b981" strokeWidth="3" strokeDasharray="8,4" cx="320" cy="180" r="20" className="animate-rotate" />
               </g>
             </g>
           </svg>
@@ -88,13 +88,13 @@ const PostAuthSplash: React.FC<PostAuthSplashProps> = ({ onComplete }) => {
         
         {/* Loading Text */}
         <div className="text-center mt-8">
-          <h2 className="text-2xl font-bold text-white animate-pulse">
+          <h2 className="text-2xl font-bold text-green-500 animate-pulse">
             Preparing Your Library...
           </h2>
           <div className="mt-4 flex justify-center space-x-1">
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
           </div>
         </div>
       </div>
