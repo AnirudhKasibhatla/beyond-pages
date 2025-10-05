@@ -723,7 +723,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          bio: string | null
+          country: string | null
+          created_at: string | null
+          display_name: string | null
+          name: string | null
+          profile_picture_url: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Insert: {
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          name?: string | null
+          profile_picture_url?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Update: {
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          name?: string | null
+          profile_picture_url?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_username_availability: {

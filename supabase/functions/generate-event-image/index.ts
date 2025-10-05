@@ -7,6 +7,52 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Input validation schema
+interface EventImageRequest {
+  eventId: string;
+  title: string;
+  description?: string;
+  date: string;
+  time: string;
+  location: string;
+}
+
+const validateInput = (data: any): EventImageRequest => {
+  const { eventId, title, description, date, time, location } = data;
+  
+  // Validate required fields
+  if (!eventId || typeof eventId !== 'string' || !eventId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+    throw new Error('Invalid or missing eventId');
+  }
+  if (!title || typeof title !== 'string' || title.length === 0 || title.length > 200) {
+    throw new Error('Title must be between 1 and 200 characters');
+  }
+  if (description && (typeof description !== 'string' || description.length > 1000)) {
+    throw new Error('Description must be less than 1000 characters');
+  }
+  if (!date || typeof date !== 'string' || !date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    throw new Error('Invalid date format (expected YYYY-MM-DD)');
+  }
+  if (!time || typeof time !== 'string' || time.length > 50) {
+    throw new Error('Time must be less than 50 characters');
+  }
+  if (!location || typeof location !== 'string' || location.length > 200) {
+    throw new Error('Location must be less than 200 characters');
+  }
+  
+  return { eventId, title, description, date, time, location };
+};
+
+// Sanitize input to prevent prompt injection
+const sanitize = (str: string): string => {
+  return str
+    .replace(/["\\]/g, '')  // Remove quotes and backslashes
+    .replace(/\n/g, ' ')    // Replace newlines with spaces
+    .replace(/\r/g, '')     // Remove carriage returns
+    .trim()
+    .slice(0, 500);         // Limit length as extra safety
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -24,23 +70,72 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
-    const { eventId, title, description, date, time, location } = await req.json();
-
-    if (!eventId || !title) {
-      throw new Error('Event ID and title are required');
+    // Get and validate authorization
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // Extract book name from description (look for patterns like "book:", "reading", etc.)
-    const bookNameMatch = description?.match(/(?:book|reading|novel|story|author)[\s:]*([^.!?]+)/i);
-    const bookName = bookNameMatch ? bookNameMatch[1].trim() : '';
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      return new Response(JSON.stringify({ error: 'Invalid authorization token' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    // Parse and validate input
+    const rawInput = await req.json();
+    const validated = validateInput(rawInput);
+    const { eventId, title, description, date, time, location } = validated;
+    
+    // Verify user owns the event (authorization check)
+    const { data: event, error: eventError } = await supabase
+      .from('book_events')
+      .select('creator_id')
+      .eq('id', eventId)
+      .single();
+    
+    if (eventError || !event) {
+      console.error('Event lookup error:', eventError);
+      return new Response(JSON.stringify({ error: 'Event not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    if (event.creator_id !== user.id) {
+      console.error('Authorization failed: user', user.id, 'tried to generate image for event owned by', event.creator_id);
+      return new Response(JSON.stringify({ error: 'Unauthorized: You do not own this event' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
-    // Create a comprehensive prompt for the image
+    // Sanitize inputs before using in prompt
+    const safeTitle = sanitize(title);
+    const safeDescription = description ? sanitize(description) : '';
+    const safeDate = sanitize(date);
+    const safeTime = sanitize(time);
+    const safeLocation = sanitize(location);
+
+    // Extract book name from description (look for patterns like "book:", "reading", etc.)
+    const bookNameMatch = safeDescription?.match(/(?:book|reading|novel|story|author)[\s:]*([^.!?]+)/i);
+    const bookName = bookNameMatch ? bookNameMatch[1].trim().slice(0, 100) : '';
+
+    // Create a comprehensive prompt for the image with sanitized inputs
     const prompt = `Create a beautiful, professional book event poster with these details: 
-    Event: "${title}"
-    ${bookName ? `Book: "${bookName}"` : ''}
-    Date: ${date}
-    Time: ${time}
-    Location: ${location}
+    Event: ${safeTitle}
+    ${bookName ? `Book: ${bookName}` : ''}
+    Date: ${safeDate}
+    Time: ${safeTime}
+    Location: ${safeLocation}
     
     Style: Modern, clean design with book-themed elements like bookshelves, reading symbols, or literary motifs. 
     Use warm, inviting colors that convey a sense of community and learning. 
@@ -48,7 +143,7 @@ serve(async (req) => {
     The image should feel welcoming and sophisticated, suitable for a book club or literary event.
     Ultra high resolution.`;
 
-    console.log('Generating image with prompt:', prompt);
+    console.log('Generating image for event:', eventId, 'by user:', user.id);
 
     // Generate image using OpenAI API
     const imageResponse = await fetch('https://api.openai.com/v1/images/generations', {
