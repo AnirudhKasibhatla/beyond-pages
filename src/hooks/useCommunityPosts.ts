@@ -107,7 +107,7 @@ export const useCommunityPosts = () => {
           content: reply.content,
           created_at: reply.created_at,
           author: {
-            name: replyProfile?.name || 'Anonymous',
+            name: reply.user_name || replyProfile?.name || 'Anonymous',
             username: replyProfile?.username,
           },
         });
@@ -131,7 +131,7 @@ export const useCommunityPosts = () => {
           is_repost: post.is_repost,
           original_post_id: post.original_post_id,
           author: {
-            name: profile?.name || 'Anonymous',
+            name: post.user_name || profile?.name || 'Anonymous',
             username: profile?.username,
             level: 1, // Default level for now
             isFollowing: false, // Default for now
@@ -301,7 +301,7 @@ export const useCommunityPosts = () => {
         content: data.content,
         created_at: data.created_at,
         author: {
-          name: profileData?.name || 'Anonymous',
+          name: data.user_name || profileData?.name || 'Anonymous',
           username: profileData?.username,
         },
       };
