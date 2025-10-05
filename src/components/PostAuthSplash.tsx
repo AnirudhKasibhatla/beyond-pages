@@ -18,7 +18,7 @@ const PostAuthSplash: React.FC<PostAuthSplashProps> = ({ onComplete }) => {
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-[#192b40] transition-opacity duration-500 ${
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-sky-200 via-emerald-100 to-orange-100 transition-opacity duration-500 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
