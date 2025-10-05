@@ -156,6 +156,7 @@ export type Database = {
           genres: string[] | null
           id: string
           isbn: string | null
+          Name: string | null
           progress: string | null
           rating: number | null
           review_text: string | null
@@ -163,7 +164,6 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
-          user_name: string | null
         }
         Insert: {
           author: string
@@ -171,6 +171,7 @@ export type Database = {
           genres?: string[] | null
           id?: string
           isbn?: string | null
+          Name?: string | null
           progress?: string | null
           rating?: number | null
           review_text?: string | null
@@ -178,7 +179,6 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
-          user_name?: string | null
         }
         Update: {
           author?: string
@@ -186,6 +186,7 @@ export type Database = {
           genres?: string[] | null
           id?: string
           isbn?: string | null
+          Name?: string | null
           progress?: string | null
           rating?: number | null
           review_text?: string | null
@@ -193,7 +194,6 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
-          user_name?: string | null
         }
         Relationships: []
       }
