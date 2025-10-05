@@ -16,6 +16,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Auth = lazy(() => import("./pages/Auth"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const SplashScreen = lazy(() => import("./pages/SplashScreen"));
+const UserProfile = lazy(() => import("./pages/UserProfile"));
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const AppContent = () => {
             path="/dashboard" 
             element={<Dashboard />} 
           />
+          <Route path="/profile/:userId" element={<UserProfile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

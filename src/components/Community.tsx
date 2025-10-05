@@ -115,7 +115,7 @@ export const Community = () => {
   };
 
   const handleUserClick = (userId: string) => {
-    setUserProfileView({ isOpen: true, userId });
+    navigate(`/profile/${userId}`);
   };
 
   if (loading) {
@@ -347,12 +347,6 @@ export const Community = () => {
       <CreatePostDialog
         open={isCreatePostOpen}
         onOpenChange={setIsCreatePostOpen}
-      />
-
-      <UserProfileView
-        isOpen={userProfileView.isOpen}
-        onClose={() => setUserProfileView({ isOpen: false, userId: null })}
-        userId={userProfileView.userId}
       />
     </div>
   );
