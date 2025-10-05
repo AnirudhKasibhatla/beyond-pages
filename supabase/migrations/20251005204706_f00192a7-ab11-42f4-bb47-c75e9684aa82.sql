@@ -1,9 +1,9 @@
 -- Ensure all existing community_posts have user_name populated from profiles
 UPDATE public.community_posts cp
-SET cp.user_name = p.name
+SET user_name = p.name
 FROM public.profiles p
 WHERE cp.user_id = p.user_id 
-AND (cp.user_name IS !NULL OR cp.user_name != 'Anonymous');
+AND (cp.user_name IS NULL OR cp.user_name = 'Anonymous');
 
 -- Ensure all existing community_post_replies have user_name populated from profiles
 UPDATE public.community_post_replies cpr
