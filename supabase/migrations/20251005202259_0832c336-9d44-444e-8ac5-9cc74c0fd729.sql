@@ -13,8 +13,8 @@ BEGIN
   FROM public.profiles
   WHERE user_id = NEW.user_id;
   
- // -- Set the user_name on the reply
-//  NEW.user_name := COALESCE(profile_name, 'Anonymous');
+  -- Set the user_name on the reply
+  NEW.user_name := COALESCE(profile_name, 'Anonymous');
   
   RETURN NEW;
 END;
