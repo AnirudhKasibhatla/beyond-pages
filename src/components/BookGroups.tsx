@@ -57,6 +57,29 @@ export const BookGroups = () => {
     if (user) {
       loadUserMemberships();
     }
+
+    // Set up real-time subscription for groups
+    const channel = supabase
+      .channel('book-groups-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'book_groups'
+        },
+        () => {
+          loadGroups();
+          if (user) {
+            loadUserMemberships();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const loadGroups = async () => {

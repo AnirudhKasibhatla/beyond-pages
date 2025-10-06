@@ -235,6 +235,22 @@ export const Community = () => {
               </Card>
             )}
 
+            {/* Group info */}
+            {post.group && (
+              <Card className="p-3 mb-4 bg-accent/20 border-l-4 border-l-accent">
+                <div className="flex items-center gap-2">
+                  <Home className="h-4 w-4 text-accent" />
+                  <span className="text-sm text-muted-foreground">Posted in:</span>
+                  <button
+                    onClick={() => navigate('/groups')}
+                    className="font-medium text-sm text-accent hover:underline"
+                  >
+                    {post.group.name}
+                  </button>
+                </div>
+              </Card>
+            )}
+
             <p className="text-card-foreground mb-4 leading-relaxed">{post.content}</p>
 
               <div className="flex items-center justify-between">

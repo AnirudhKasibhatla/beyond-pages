@@ -10,6 +10,7 @@ export interface CommunityPost {
   book_author?: string;
   rating?: number;
   book_id?: string;
+  group_id?: string;
   created_at: string;
   updated_at: string;
   likes_count: number;
@@ -25,6 +26,10 @@ export interface CommunityPost {
   };
   user_liked: boolean;
   replies: CommunityReply[];
+  group?: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface CommunityReply {
@@ -114,9 +119,21 @@ export const useCommunityPosts = () => {
         return acc;
       }, {} as Record<string, CommunityReply[]>);
 
+      // Get group data for posts with group_id
+      const groupIds = [...new Set(postsData?.filter(p => p.group_id).map(p => p.group_id) || [])];
+      let groupsMap = new Map();
+      if (groupIds.length > 0) {
+        const { data: groupsData } = await supabase
+          .from('book_groups')
+          .select('id, name')
+          .in('id', groupIds);
+        groupsMap = new Map(groupsData?.map(group => [group.id, group]) || []);
+      }
+
       // Transform posts
       const transformedPosts = (postsData || []).map(post => {
         const profile = profilesMap.get(post.user_id);
+        const group = post.group_id ? groupsMap.get(post.group_id) : null;
         return {
           id: post.id,
           user_id: post.user_id,
@@ -125,6 +142,7 @@ export const useCommunityPosts = () => {
           book_author: post.book_author,
           rating: post.rating,
           book_id: post.book_id,
+          group_id: post.group_id,
           created_at: post.created_at,
           updated_at: post.updated_at,
           likes_count: post.likes_count,
@@ -138,6 +156,7 @@ export const useCommunityPosts = () => {
           },
           user_liked: user ? userLikedPosts.has(post.id) : false,
           replies: repliesByPost[post.id] || [],
+          group: group ? { id: group.id, name: group.name } : undefined,
         };
       });
 

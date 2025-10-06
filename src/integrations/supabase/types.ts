@@ -255,6 +255,7 @@ export type Database = {
           book_title: string | null
           content: string
           created_at: string
+          group_id: string | null
           id: string
           is_repost: boolean
           likes_count: number
@@ -270,6 +271,7 @@ export type Database = {
           book_title?: string | null
           content: string
           created_at?: string
+          group_id?: string | null
           id?: string
           is_repost?: boolean
           likes_count?: number
@@ -285,6 +287,7 @@ export type Database = {
           book_title?: string | null
           content?: string
           created_at?: string
+          group_id?: string | null
           id?: string
           is_repost?: boolean
           likes_count?: number
@@ -294,7 +297,15 @@ export type Database = {
           user_id?: string
           user_name?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "book_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       event_details: {
         Row: {
