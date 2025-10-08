@@ -63,7 +63,8 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
         genres: formData.genres || [],
         progress: formData.progress,
         rating: formData.rating,
-        review_text: formData.reviewText
+        review_text: formData.reviewText,
+        cover_url: formData.coverUrl
       };
       
       await addBookToDb(bookData);
@@ -102,7 +103,8 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
           genres: importedBook.genres || [],
           progress: importedBook.progress,
           rating: importedBook.rating,
-          review_text: importedBook.reviewText || importedBook.review_text
+          review_text: importedBook.reviewText || importedBook.review_text,
+          cover_url: importedBook.coverUrl || importedBook.cover_url
         };
         
         await addBookToDb(bookData);
@@ -272,6 +274,7 @@ export const BookList = ({ highlightButtons = false }: BookListProps) => {
         author: rec.author,
         status: 'to-read' as const,
         genres: [rec.genre],
+        cover_url: undefined
       };
       await addBookToDb(bookData);
     } catch (error) {

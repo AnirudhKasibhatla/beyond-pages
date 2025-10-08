@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { useHighlightFollows } from "@/hooks/useHighlightFollows";
+import { useUserFollows } from "@/hooks/useUserFollows";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Book, Award, TrendingUp, Star } from "lucide-react";
+import { ArrowLeft, Book, Award, TrendingUp, Star, UserPlus, UserMinus, Users } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserHighlight {
@@ -28,13 +29,16 @@ interface UserBook {
   created_at: string;
   status: string;
   progress: string | null;
+  cover_url: string | null;
 }
 
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { profile, loading: profileLoading } = useProfile(userId);
-  const { follows, toggleFollow, isFollowing, loading: followLoading } = useHighlightFollows();
+  const { follows, toggleFollow: toggleHighlightFollow, isFollowing, loading: followLoading } = useHighlightFollows();
+  const { isFollowing: isFollowingUser, followerCount, followingCount, loading: userFollowLoading, toggleFollow: toggleUserFollow } = useUserFollows(userId);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [highlights, setHighlights] = useState<UserHighlight[]>([]);
   const [highlightsLoading, setHighlightsLoading] = useState(true);
   const [books, setBooks] = useState<UserBook[]>([]);
@@ -42,6 +46,14 @@ export default function UserProfile() {
   const [readingBooks, setReadingBooks] = useState<UserBook[]>([]);
   const [readingBooksLoading, setReadingBooksLoading] = useState(true);
   const [showAllBooks, setShowAllBooks] = useState(false);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -61,7 +73,7 @@ export default function UserProfile() {
         // Fetch all books
         const { data: booksData, error: booksError } = await supabase
           .from('books')
-          .select('id, title, author, rating, review_text, created_at, status, progress, genres')
+          .select('id, title, author, rating, review_text, created_at, status, progress, genres, cover_url')
           .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
@@ -153,7 +165,7 @@ export default function UserProfile() {
       {/* Profile Header */}
       <Card className="p-6 mb-6">
         <div className="flex items-start gap-6">
-          <Avatar className="h-24 w-24">
+          <Avatar className="h-24 w-24 cursor-pointer" onClick={() => navigate(`/user/${userId}`)}>
             <AvatarImage src={profile.profile_picture_url || undefined} />
             <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
               {profile.name?.charAt(0).toUpperCase() || 'U'}
@@ -161,13 +173,49 @@ export default function UserProfile() {
           </Avatar>
           
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-foreground mb-1">{profile.name || 'Anonymous'}</h1>
-            {profile.username && (
-              <p className="text-muted-foreground mb-3">@{profile.username}</p>
-            )}
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <h1 className="text-3xl font-bold text-foreground mb-1">{profile.name || 'Anonymous'}</h1>
+                {profile.username && (
+                  <p className="text-muted-foreground mb-3">@{profile.username}</p>
+                )}
+              </div>
+              {currentUserId && currentUserId !== userId && (
+                <Button
+                  onClick={toggleUserFollow}
+                  disabled={userFollowLoading}
+                  variant={isFollowingUser ? "outline" : "default"}
+                >
+                  {isFollowingUser ? (
+                    <>
+                      <UserMinus className="h-4 w-4 mr-2" />
+                      Unfollow
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Follow
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+            
             {profile.bio && (
               <p className="text-card-foreground mb-4">{profile.bio}</p>
             )}
+            
+            <div className="flex items-center gap-4 mb-3">
+              <div className="flex items-center gap-2 text-sm">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="font-semibold text-foreground">{followerCount}</span>
+                <span className="text-muted-foreground">Followers</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="font-semibold text-foreground">{followingCount}</span>
+                <span className="text-muted-foreground">Following</span>
+              </div>
+            </div>
             
             <div className="flex items-center gap-3">
               <Badge variant="secondary" className="text-sm">
@@ -218,10 +266,18 @@ export default function UserProfile() {
               {readingBooks.map((book) => (
                 <div key={book.id} className="relative group">
                   <div className="aspect-[2/3] bg-muted rounded-lg flex items-center justify-center overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow">
-                    <div className="text-center p-2">
-                      <p className="text-xs font-medium text-foreground line-clamp-2 mb-1">{book.title}</p>
-                      <p className="text-[10px] text-muted-foreground line-clamp-1">{book.author}</p>
-                    </div>
+                    {book.cover_url ? (
+                      <img 
+                        src={book.cover_url} 
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="text-center p-2">
+                        <p className="text-xs font-medium text-foreground line-clamp-2 mb-1">{book.title}</p>
+                        <p className="text-[10px] text-muted-foreground line-clamp-1">{book.author}</p>
+                      </div>
+                    )}
                   </div>
                   {book.progress && (
                     <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-[10px] text-center py-0.5 rounded-b-lg">
@@ -252,25 +308,41 @@ export default function UserProfile() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {(showAllBooks ? books : books.slice(0, 10)).map((book) => (
                 <div key={book.id} className="relative group">
-                  <div className="aspect-[2/3] bg-muted rounded-lg flex flex-col items-center justify-between overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow p-3">
-                    <div className="text-center flex-1 flex flex-col justify-center">
-                      <p className="text-xs font-medium text-foreground line-clamp-3 mb-2">{book.title}</p>
-                      <p className="text-[10px] text-muted-foreground line-clamp-2 mb-2">{book.author}</p>
-                      {book.rating && (
-                        <div className="flex items-center justify-center gap-0.5 mb-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${
-                                i < book.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                  <div className="aspect-[2/3] bg-muted rounded-lg flex flex-col overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow">
+                    {book.cover_url ? (
+                      <div className="flex-1 relative">
+                        <img 
+                          src={book.cover_url} 
+                          alt={book.title}
+                          className="w-full h-full object-cover"
+                        />
+                        {book.rating && (
+                          <div className="absolute top-2 right-2 bg-background/90 rounded px-2 py-1 flex items-center gap-0.5">
+                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                            <span className="text-xs font-medium">{book.rating}</span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex-1 flex flex-col items-center justify-center p-3">
+                        <p className="text-xs font-medium text-foreground line-clamp-3 mb-2 text-center">{book.title}</p>
+                        <p className="text-[10px] text-muted-foreground line-clamp-2 mb-2 text-center">{book.author}</p>
+                        {book.rating && (
+                          <div className="flex items-center justify-center gap-0.5">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${
+                                  i < book.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                     {book.review_text && (
-                      <div className="w-full bg-primary/10 text-[10px] text-center py-1 px-1 rounded">
+                      <div className="w-full bg-primary/10 text-[10px] text-center py-1 px-2">
                         <p className="line-clamp-2 text-foreground">{book.review_text}</p>
                       </div>
                     )}
@@ -329,7 +401,7 @@ export default function UserProfile() {
                     <Button
                       variant={following ? "outline" : "default"}
                       size="sm"
-                      onClick={() => toggleFollow(highlight.id)}
+                      onClick={() => toggleHighlightFollow(highlight.id)}
                       disabled={followLoading}
                     >
                       <Star className={`h-4 w-4 mr-1 ${following ? 'fill-current' : ''}`} />

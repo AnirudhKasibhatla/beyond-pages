@@ -25,6 +25,7 @@ interface Book {
   progress?: string;
   rating?: number;
   reviewText?: string;
+  coverUrl?: string;
 }
 
 interface AddBookFormProps {
@@ -47,7 +48,8 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
     genres: [],
     progress: '',
     rating: undefined,
-    reviewText: ''
+    reviewText: '',
+    coverUrl: ''
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState<'book' | 'author'>('book');
@@ -229,7 +231,8 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
       title: book.title,
       author: book.author,
       isbn: book.isbn || '',
-      genres: book.subjects || []
+      genres: book.subjects || [],
+      coverUrl: book.cover || ''
     });
     setSearchResults([]);
     setShowManualForm(true);
@@ -277,7 +280,8 @@ export const AddBookForm = ({ onAddBook, onCancel }: AddBookFormProps) => {
       genres: formData.genres,
       progress: formData.progress,
       rating: formData.rating,
-      reviewText: formData.reviewText
+      reviewText: formData.reviewText,
+      coverUrl: formData.coverUrl
     });
   };
 

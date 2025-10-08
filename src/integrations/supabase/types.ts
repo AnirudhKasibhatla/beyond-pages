@@ -152,6 +152,7 @@ export type Database = {
       books: {
         Row: {
           author: string
+          cover_url: string | null
           created_at: string
           genres: string[] | null
           id: string
@@ -167,6 +168,7 @@ export type Database = {
         }
         Insert: {
           author: string
+          cover_url?: string | null
           created_at?: string
           genres?: string[] | null
           id?: string
@@ -182,6 +184,7 @@ export type Database = {
         }
         Update: {
           author?: string
+          cover_url?: string | null
           created_at?: string
           genres?: string[] | null
           id?: string
@@ -729,6 +732,27 @@ export type Database = {
           earned_at?: string
           id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
         }
         Relationships: []
       }

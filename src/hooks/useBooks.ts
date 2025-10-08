@@ -12,6 +12,7 @@ export interface Book {
   progress?: string;
   rating?: number;
   review_text?: string;
+  cover_url?: string;
   created_at: string;
   updated_at: string;
   user_id: string;
@@ -63,6 +64,7 @@ export const useBooks = () => {
           progress: book.progress || null,
           rating: book.rating || null,
           review_text: book.review_text || null,
+          cover_url: book.cover_url || null,
           user_id: user.id
         })
         .select()
