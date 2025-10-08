@@ -69,7 +69,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         isLoaded && 'opacity-100 transition-opacity duration-300'
       )}
       loading={loading}
-      fetchPriority={fetchPriority}
       onLoad={handleLoad}
       onError={handleError}
     />

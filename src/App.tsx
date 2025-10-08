@@ -62,6 +62,7 @@ const AppContent = () => {
           />
           <Route path="/profile/:userId" element={<UserProfile />} />
           <Route path="/user/:userId" element={<UserProfile />} />
+          <Route path="/book/search" element={<BookDetails />} />
           <Route path="/book/:bookId" element={<BookDetails />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

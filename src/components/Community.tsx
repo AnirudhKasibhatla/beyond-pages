@@ -216,24 +216,39 @@ export const Community = () => {
             {post.book_title && (
               <Card 
                 className="p-3 mb-4 bg-secondary/30 border-l-4 border-l-primary cursor-pointer hover:bg-secondary/50 transition-colors"
-                onClick={() => post.book_id && navigate(`/book/${post.book_id}`)}
+                onClick={() => {
+                  if (post.book_id) {
+                    navigate(`/book/${post.book_id}`);
+                  } else if (post.book_title && post.book_author) {
+                    // Navigate using title and author as fallback
+                    const searchParams = new URLSearchParams({
+                      title: post.book_title,
+                      author: post.book_author
+                    });
+                    navigate(`/book/search?${searchParams.toString()}`);
+                  }
+                }}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <Book className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-sm">{post.book_title}</span>
-                  {post.book_author && (
-                    <span className="text-sm text-muted-foreground">by {post.book_author}</span>
-                  )}
-                  {post.rating && (
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`h-3 w-3 ${i < post.rating! ? 'fill-accent text-accent' : 'text-muted-foreground'}`} 
-                        />
-                      ))}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-sm">{post.book_title}</span>
+                      {post.book_author && (
+                        <span className="text-sm text-muted-foreground">by {post.book_author}</span>
+                      )}
                     </div>
-                  )}
+                    {post.rating && (
+                      <div className="flex items-center gap-1 mt-1">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`h-3 w-3 ${i < post.rating! ? 'fill-accent text-accent' : 'text-muted-foreground'}`} 
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </Card>
             )}

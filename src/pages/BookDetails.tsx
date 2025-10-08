@@ -32,18 +32,39 @@ export default function BookDetails() {
   const [book, setBook] = useState<BookReview | null>(null);
   const [reviews, setReviews] = useState<BookReview[]>([]);
   const [loading, setLoading] = useState(true);
+  const searchParams = new URLSearchParams(window.location.search);
+  const titleParam = searchParams.get('title');
+  const authorParam = searchParams.get('author');
 
   useEffect(() => {
     const fetchBookDetails = async () => {
-      if (!bookId) return;
+      if (!bookId && !titleParam) return;
 
       try {
-        // Fetch the main book details
-        const { data: bookData, error: bookError } = await supabase
-          .from('books')
-          .select('*')
-          .eq('id', bookId)
-          .single();
+        let bookData;
+        let bookError;
+
+        if (bookId) {
+          // Fetch by book ID
+          const result = await supabase
+            .from('books')
+            .select('*')
+            .eq('id', bookId)
+            .single();
+          bookData = result.data;
+          bookError = result.error;
+        } else if (titleParam && authorParam) {
+          // Fetch by title and author
+          const result = await supabase
+            .from('books')
+            .select('*')
+            .eq('title', titleParam)
+            .eq('author', authorParam)
+            .limit(1)
+            .single();
+          bookData = result.data;
+          bookError = result.error;
+        }
 
         if (bookError) throw bookError;
 
@@ -91,7 +112,7 @@ export default function BookDetails() {
     };
 
     fetchBookDetails();
-  }, [bookId]);
+  }, [bookId, titleParam, authorParam]);
 
   if (loading) {
     return (
