@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunity } from "@/context/CommunityContext";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Heart, 
   MessageCircle, 
@@ -28,6 +29,7 @@ import type { CommunityPost } from "@/context/CommunityContext";
 
 export const Community = () => {
   const { posts, loading, createPost, toggleLike, addReply } = useCommunity();
+  const { user } = useAuth();
   const [replyInputs, setReplyInputs] = useState<{ [key: string]: string }>({});
   const [showReplyForm, setShowReplyForm] = useState<{ [key: string]: boolean }>({});
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
@@ -38,6 +40,10 @@ export const Community = () => {
   });
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const getDisplayName = (authorName: string, userId: string) => {
+    return user?.id === userId ? "Me" : authorName;
+  };
 
   const handleToggleLike = (postId: string) => {
     toggleLike(postId);
@@ -185,7 +191,7 @@ export const Community = () => {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <ClickableUserName
-                    name={post.author.name}
+                    name={getDisplayName(post.author.name, post.user_id)}
                     userId={post.user_id}
                     onUserClick={handleUserClick}
                     className="font-semibold text-card-foreground"
@@ -327,7 +333,7 @@ export const Community = () => {
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2">
                           <ClickableUserName
-                            name={reply.author.name}
+                            name={getDisplayName(reply.author.name, reply.user_id)}
                             userId={reply.user_id}
                             onUserClick={handleUserClick}
                             className="font-medium text-sm"
