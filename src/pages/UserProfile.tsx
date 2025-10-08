@@ -23,9 +23,11 @@ interface UserBook {
   id: string;
   title: string;
   author: string;
-  rating: number;
+  rating: number | null;
   review_text: string | null;
   created_at: string;
+  status: string;
+  progress: string | null;
 }
 
 export default function UserProfile() {
@@ -37,6 +39,8 @@ export default function UserProfile() {
   const [highlightsLoading, setHighlightsLoading] = useState(true);
   const [books, setBooks] = useState<UserBook[]>([]);
   const [booksLoading, setBooksLoading] = useState(true);
+  const [readingBooks, setReadingBooks] = useState<UserBook[]>([]);
+  const [readingBooksLoading, setReadingBooksLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -56,7 +60,7 @@ export default function UserProfile() {
         // Fetch books with reviews
         const { data: booksData, error: booksError } = await supabase
           .from('books')
-          .select('id, title, author, rating, review_text, created_at')
+          .select('id, title, author, rating, review_text, created_at, status, progress')
           .eq('user_id', userId)
           .eq('status', 'read')
           .not('rating', 'is', null)
@@ -64,11 +68,24 @@ export default function UserProfile() {
 
         if (booksError) throw booksError;
         setBooks(booksData || []);
+
+        // Fetch currently reading books
+        const { data: readingData, error: readingError } = await supabase
+          .from('books')
+          .select('id, title, author, rating, review_text, created_at, status, progress')
+          .eq('user_id', userId)
+          .eq('status', 'reading')
+          .order('created_at', { ascending: false })
+          .limit(6);
+
+        if (readingError) throw readingError;
+        setReadingBooks(readingData || []);
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
         setHighlightsLoading(false);
         setBooksLoading(false);
+        setReadingBooksLoading(false);
       }
     };
 
@@ -178,31 +195,61 @@ export default function UserProfile() {
         {renderStatCard(
           <Book className="h-6 w-6 text-primary" />,
           "Books Read",
-          0
+          books.length
         )}
         {renderStatCard(
-          <Award className="h-6 w-6 text-accent" />,
-          "Badges Earned",
-          0
+          <TrendingUp className="h-6 w-6 text-primary" />,
+          "Currently Reading",
+          readingBooks.length
         )}
         {renderStatCard(
-          <TrendingUp className="h-6 w-6 text-success" />,
-          "Reading Streak",
-          "0 days"
+          <Star className="h-6 w-6 text-primary" />,
+          "Highlights Shared",
+          highlights.length
         )}
       </div>
 
-      {/* Favorite Genres */}
-      <Card className="p-6 mb-6">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Favorite Genres</h2>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary">No data</Badge>
-        </div>
-      </Card>
+      {/* Currently Reading Library */}
+      {readingBooks.length > 0 && (
+        <Card className="p-6 mb-6 bg-gradient-to-br from-background to-muted/20">
+          <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Book className="h-5 w-5 text-primary" />
+            Currently Reading
+          </h2>
+          {readingBooksLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {readingBooks.map((book) => (
+                <div key={book.id} className="relative group">
+                  <div className="aspect-[2/3] bg-muted rounded-lg flex items-center justify-center overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow">
+                    <div className="text-center p-2">
+                      <p className="text-xs font-medium text-foreground line-clamp-2 mb-1">{book.title}</p>
+                      <p className="text-[10px] text-muted-foreground line-clamp-1">{book.author}</p>
+                    </div>
+                  </div>
+                  {book.progress && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-[10px] text-center py-0.5 rounded-b-lg">
+                      {book.progress}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* Books & Reviews */}
-      <Card className="p-6 mb-6">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Books & Reviews</h2>
+      <Card className="p-6 mb-6 bg-gradient-to-br from-background to-muted/20">
+        <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+          <Star className="h-5 w-5 text-primary" />
+          Books & Reviews
+        </h2>
         {booksLoading ? (
           <div className="space-y-3">
             {[...Array(2)].map((_, i) => (
@@ -241,8 +288,11 @@ export default function UserProfile() {
       </Card>
 
       {/* Shared Highlights */}
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Shared Highlights</h2>
+      <Card className="p-6 bg-gradient-to-br from-background to-muted/20">
+        <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+          <Book className="h-5 w-5 text-primary" />
+          Shared Highlights
+        </h2>
         {highlightsLoading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
