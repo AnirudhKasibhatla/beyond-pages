@@ -793,6 +793,10 @@ export type Database = {
       }
     }
     Functions: {
+      apply_badges_to_existing_users: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       check_username_availability: {
         Args: { username_input: string }
         Returns: boolean

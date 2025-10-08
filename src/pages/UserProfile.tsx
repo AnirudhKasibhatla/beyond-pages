@@ -10,6 +10,7 @@ import { useUserFollows } from "@/hooks/useUserFollows";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Book, Award, TrendingUp, Star, UserPlus, UserMinus, Users } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import BadgeDisplay from "@/components/BadgeDisplay";
 
 interface UserHighlight {
   id: string;
@@ -208,11 +209,12 @@ export default function UserProfile() {
             <div className="flex items-center gap-4 mb-3">
               <div className="flex items-center gap-2 text-sm">
                 <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="font-semibold text-foreground">{followerCount}</span>
+                <span className="font-semibold text-foreground">{followerCount || 0}</span>
                 <span className="text-muted-foreground">Followers</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <span className="font-semibold text-foreground">{followingCount}</span>
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="font-semibold text-foreground">{followingCount || 0}</span>
                 <span className="text-muted-foreground">Following</span>
               </div>
             </div>
@@ -228,6 +230,9 @@ export default function UserProfile() {
           </div>
         </div>
       </Card>
+
+      {/* Badges Section */}
+      <BadgeDisplay userId={userId} />
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -308,7 +313,10 @@ export default function UserProfile() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {(showAllBooks ? books : books.slice(0, 10)).map((book) => (
                 <div key={book.id} className="relative group">
-                  <div className="aspect-[2/3] bg-muted rounded-lg flex flex-col overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow">
+                  <div 
+                    className="aspect-[2/3] bg-muted rounded-lg flex flex-col overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/book/${book.id}`)}
+                  >
                     {book.cover_url ? (
                       <div className="flex-1 relative">
                         <img 

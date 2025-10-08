@@ -214,7 +214,10 @@ export const Community = () => {
 
             {/* Book info */}
             {post.book_title && (
-              <Card className="p-3 mb-4 bg-secondary/30 border-l-4 border-l-primary">
+              <Card 
+                className="p-3 mb-4 bg-secondary/30 border-l-4 border-l-primary cursor-pointer hover:bg-secondary/50 transition-colors"
+                onClick={() => post.book_id && navigate(`/book/${post.book_id}`)}
+              >
                 <div className="flex items-center gap-2">
                   <Book className="h-4 w-4 text-primary" />
                   <span className="font-medium text-sm">{post.book_title}</span>
