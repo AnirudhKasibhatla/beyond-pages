@@ -26,6 +26,7 @@ import { useGuestAuth } from "@/hooks/useGuestAuth";
 import { ReadingChallengeModal } from "@/components/ReadingChallengeModal";
 import SecurityNotice from "@/components/SecurityNotice";
 import { TimedSignUpModal } from "@/components/TimedSignUpModal";
+import { FirstTimeUsernamePrompt } from "@/components/FirstTimeUsernamePrompt";
 
 type ViewType = 'books' | 'community' | 'profile' | 'tournament' | 'events' | 'groups' | 'settings' | 'challenges' | 'highlights';
 
@@ -263,6 +264,9 @@ const Dashboard = () => {
           
           {/* Timed Sign Up Modal */}
           <TimedSignUpModal />
+          
+          {/* First Time Username Prompt */}
+          {!isGuest && <FirstTimeUsernamePrompt />}
         </div>
       </CommunityProvider>
     );
@@ -291,6 +295,9 @@ const Dashboard = () => {
         
         {/* Timed Sign Up Modal */}
         <TimedSignUpModal />
+        
+        {/* First Time Username Prompt */}
+        {!isGuest && <FirstTimeUsernamePrompt />}
       </div>
     </CommunityProvider>
   );

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,17 +8,20 @@ import { useToast } from "@/hooks/use-toast";
 import { User, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-interface EditUsernameDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export const EditUsernameDialog = ({ isOpen, onClose }: EditUsernameDialogProps) => {
+export const FirstTimeUsernamePrompt = () => {
   const { profile, updateProfile } = useProfile();
-  const [username, setUsername] = useState(profile?.username || '');
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [username, setUsername] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Show prompt if user has no username set
+    if (profile && !profile.username) {
+      setShowPrompt(true);
+    }
+  }, [profile]);
 
   const validateUsername = (value: string) => {
     if (value.length < 3) return 'Username must be at least 3 characters';
@@ -44,20 +47,20 @@ export const EditUsernameDialog = ({ isOpen, onClose }: EditUsernameDialogProps)
         if (error.code === '23505' || (error as any).message === 'Username is already taken') {
           setError('Username already exists');
         } else {
-          setError('Failed to update username. Please try again.');
+          setError('Failed to set username. Please try again.');
         }
         return;
       }
 
       toast({
-        title: "Username Updated!",
-        description: `Your username has been changed to @${username}`,
+        title: "Username Set!",
+        description: `Your username is now @${username}`,
       });
 
-      onClose();
+      setShowPrompt(false);
     } catch (error) {
-      console.error('Error updating username:', error);
-      setError('Failed to update username. Please try again.');
+      console.error('Error setting username:', error);
+      setError('Failed to set username. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -69,17 +72,26 @@ export const EditUsernameDialog = ({ isOpen, onClose }: EditUsernameDialogProps)
     setError('');
   };
 
+  const handleSkip = () => {
+    setShowPrompt(false);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={showPrompt} onOpenChange={setShowPrompt}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
               <User className="h-5 w-5 text-primary" />
             </div>
-            <DialogTitle className="text-xl">
-              Edit Username
-            </DialogTitle>
+            <div>
+              <DialogTitle className="text-xl">
+                Welcome! Set Your Username
+              </DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground mt-1">
+                Choose a unique username for your profile
+              </DialogDescription>
+            </div>
           </div>
         </DialogHeader>
 
@@ -122,18 +134,18 @@ export const EditUsernameDialog = ({ isOpen, onClose }: EditUsernameDialogProps)
         <div className="flex gap-3 pt-4">
           <Button
             variant="outline"
-            onClick={onClose}
+            onClick={handleSkip}
             className="flex-1"
             disabled={isSubmitting}
           >
-            Cancel
+            Skip for Now
           </Button>
           <Button
             onClick={handleSubmit}
             className="flex-1"
             disabled={isSubmitting || !username || !!validateUsername(username)}
           >
-            {isSubmitting ? 'Updating...' : 'Update Username'}
+            {isSubmitting ? 'Setting...' : 'Set Username'}
           </Button>
         </div>
       </DialogContent>
