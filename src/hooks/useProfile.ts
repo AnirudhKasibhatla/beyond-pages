@@ -90,7 +90,10 @@ export const useProfile = (userId?: string) => {
   }, [targetUserId]);
 
   const updateProfile = async (updates: Partial<Profile>) => {
-    if (!user || !profile) return;
+    if (!user) {
+      console.error('Update profile failed: No user authenticated');
+      return { data: null, error: new Error('User not authenticated') };
+    }
 
     try {
       // Sanitize all text inputs
@@ -132,6 +135,7 @@ export const useProfile = (userId?: string) => {
         .single();
 
       if (error) {
+        console.error('Update profile error:', error);
         throw error;
       }
 
@@ -141,6 +145,7 @@ export const useProfile = (userId?: string) => {
       });
       return { data, error: null };
     } catch (error) {
+      console.error('Update profile failed:', error);
       return { data: null, error };
     }
   };
