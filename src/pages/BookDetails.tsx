@@ -38,11 +38,16 @@ export default function BookDetails() {
 
   useEffect(() => {
     const fetchBookDetails = async () => {
-      if (!bookId && !titleParam) return;
+      if (!bookId && !titleParam) {
+        setLoading(false);
+        return;
+      }
 
       try {
         let bookData;
         let bookError;
+
+        console.log('Fetching book details:', { bookId, titleParam, authorParam });
 
         if (bookId) {
           // Fetch by book ID
@@ -50,7 +55,7 @@ export default function BookDetails() {
             .from('books')
             .select('*')
             .eq('id', bookId)
-            .single();
+            .maybeSingle();
           bookData = result.data;
           bookError = result.error;
         } else if (titleParam && authorParam) {
@@ -61,19 +66,30 @@ export default function BookDetails() {
             .eq('title', titleParam)
             .eq('author', authorParam)
             .limit(1)
-            .single();
+            .maybeSingle();
           bookData = result.data;
           bookError = result.error;
         }
 
-        if (bookError) throw bookError;
+        if (bookError) {
+          console.error('Error fetching book:', bookError);
+          throw bookError;
+        }
+
+        if (!bookData) {
+          console.log('No book data found');
+          setLoading(false);
+          return;
+        }
+
+        console.log('Book data found:', bookData);
 
         // Fetch user profile for the book owner
         const { data: profileData } = await supabase
           .from('profiles')
           .select('name, username, profile_picture_url')
           .eq('user_id', bookData.user_id)
-          .single();
+          .maybeSingle();
 
         setBook({ ...bookData, user_profile: profileData || undefined });
 
