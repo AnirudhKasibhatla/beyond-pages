@@ -41,6 +41,7 @@ export default function UserProfile() {
   const [booksLoading, setBooksLoading] = useState(true);
   const [readingBooks, setReadingBooks] = useState<UserBook[]>([]);
   const [readingBooksLoading, setReadingBooksLoading] = useState(true);
+  const [showAllBooks, setShowAllBooks] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -241,37 +242,54 @@ export default function UserProfile() {
           Books & Reviews
         </h2>
         {booksLoading ? (
-          <div className="space-y-3">
-            {[...Array(2)].map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-48 w-full" />
             ))}
           </div>
         ) : books.length > 0 ? (
-          <div className="space-y-4">
-            {books.map((book) => (
-              <Card key={book.id} className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-foreground mb-1">{book.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">by {book.author}</p>
-                    <div className="flex items-center gap-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < book.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'
-                          }`}
-                        />
-                      ))}
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {(showAllBooks ? books : books.slice(0, 10)).map((book) => (
+                <div key={book.id} className="relative group">
+                  <div className="aspect-[2/3] bg-muted rounded-lg flex flex-col items-center justify-between overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow p-3">
+                    <div className="text-center flex-1 flex flex-col justify-center">
+                      <p className="text-xs font-medium text-foreground line-clamp-3 mb-2">{book.title}</p>
+                      <p className="text-[10px] text-muted-foreground line-clamp-2 mb-2">{book.author}</p>
+                      {book.rating && (
+                        <div className="flex items-center justify-center gap-0.5 mb-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-3 w-3 ${
+                                i < book.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                     {book.review_text && (
-                      <p className="text-sm text-card-foreground mt-2 italic">"{book.review_text}"</p>
+                      <div className="w-full bg-primary/10 text-[10px] text-center py-1 px-1 rounded">
+                        <p className="line-clamp-2 text-foreground">{book.review_text}</p>
+                      </div>
                     )}
                   </div>
                 </div>
-              </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+            {books.length > 10 && (
+              <div className="mt-4 text-center">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAllBooks(!showAllBooks)}
+                  className="w-full md:w-auto"
+                >
+                  {showAllBooks ? 'View Less' : `View More (${books.length - 10} more)`}
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <p className="text-muted-foreground">No books reviewed yet</p>
         )}
