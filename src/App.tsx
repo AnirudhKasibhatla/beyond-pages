@@ -10,14 +10,35 @@ import { useAuth } from "@/hooks/useAuth";
 import { useGuestAuth } from "@/hooks/useGuestAuth";
 import PostAuthSplash from "@/components/PostAuthSplash";
 
-// Lazy load pages for better performance
-const Index = lazy(() => import("./pages/Index"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Auth = lazy(() => import("./pages/Auth"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const SplashScreen = lazy(() => import("./pages/SplashScreen"));
-const UserProfile = lazy(() => import("./pages/UserProfile"));
-const BookDetails = lazy(() => import("./pages/BookDetails"));
+// Lazy load pages for better performance with retry logic
+const Index = lazy(() => import("./pages/Index").catch(() => {
+  console.error('Failed to load Index page, retrying...');
+  return import("./pages/Index");
+}));
+const Dashboard = lazy(() => import("./pages/Dashboard").catch(() => {
+  console.error('Failed to load Dashboard page, retrying...');
+  return import("./pages/Dashboard");
+}));
+const Auth = lazy(() => import("./pages/Auth").catch(() => {
+  console.error('Failed to load Auth page, retrying...');
+  return import("./pages/Auth");
+}));
+const NotFound = lazy(() => import("./pages/NotFound").catch(() => {
+  console.error('Failed to load NotFound page, retrying...');
+  return import("./pages/NotFound");
+}));
+const SplashScreen = lazy(() => import("./pages/SplashScreen").catch(() => {
+  console.error('Failed to load SplashScreen page, retrying...');
+  return import("./pages/SplashScreen");
+}));
+const UserProfile = lazy(() => import("./pages/UserProfile").catch(() => {
+  console.error('Failed to load UserProfile page, retrying...');
+  return import("./pages/UserProfile");
+}));
+const BookDetails = lazy(() => import("./pages/BookDetails").catch(() => {
+  console.error('Failed to load BookDetails page, retrying...');
+  return import("./pages/BookDetails");
+}));
 
 const queryClient = new QueryClient();
 
