@@ -17,6 +17,7 @@ import { EditUsernameDialog } from "./EditUsernameDialog";
 import { ProfilePictureUpload } from "./ProfilePictureUpload";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useBooks } from "@/hooks/useBooks";
 import badgeImage from "@/assets/badge-reading.png";
 
 interface UserProfile {
@@ -40,6 +41,7 @@ interface UserProfile {
 export const Profile = () => {
   const { user } = useAuth();
   const { profile: dbProfile, updateProfile } = useProfile();
+  const { books } = useBooks();
   const { toast } = useToast();
   
   const [profile, setProfile] = useState<UserProfile>({
@@ -67,10 +69,12 @@ export const Profile = () => {
   // Update profile when database profile changes
   useEffect(() => {
     if (dbProfile) {
+      const booksReadCount = books.filter(book => book.status === 'finished').length;
       const updatedProfile: UserProfile = {
         ...profile,
         name: dbProfile.name || dbProfile.first_name || 'Guest Reader',
         bio: dbProfile.bio || 'Welcome to your reading journey! Edit your profile to get started.',
+        booksRead: booksReadCount,
       };
       setProfile(updatedProfile);
       setEditForm(updatedProfile);
@@ -83,7 +87,7 @@ export const Profile = () => {
         setEditForm(parsed);
       }
     }
-  }, [dbProfile]);
+  }, [dbProfile, books]);
 
   // Calculate XP progress to next level
   const xpForCurrentLevel = (profile.level - 1) * 50 + 50; // 50 XP for level 1, then +50 per level

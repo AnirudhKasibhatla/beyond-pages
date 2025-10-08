@@ -68,7 +68,7 @@ export default function UserProfile() {
         
         // Separate books by status
         const allBooks = booksData || [];
-        setBooks(allBooks.filter(book => book.status === 'read'));
+        setBooks(allBooks.filter(book => book.status === 'finished'));
         setReadingBooks(allBooks.filter(book => book.status === 'reading'));
       } catch (error) {
         console.error('Error fetching user data:', error);
