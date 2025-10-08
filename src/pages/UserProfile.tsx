@@ -19,6 +19,15 @@ interface UserHighlight {
   created_at: string;
 }
 
+interface UserBook {
+  id: string;
+  title: string;
+  author: string;
+  rating: number;
+  review_text: string | null;
+  created_at: string;
+}
+
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
@@ -26,28 +35,44 @@ export default function UserProfile() {
   const { follows, toggleFollow, isFollowing, loading: followLoading } = useHighlightFollows();
   const [highlights, setHighlights] = useState<UserHighlight[]>([]);
   const [highlightsLoading, setHighlightsLoading] = useState(true);
+  const [books, setBooks] = useState<UserBook[]>([]);
+  const [booksLoading, setBooksLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserHighlights = async () => {
+    const fetchUserData = async () => {
       if (!userId) return;
       
       try {
-        const { data, error } = await supabase
+        // Fetch highlights
+        const { data: highlightsData, error: highlightsError } = await supabase
           .from('highlights')
           .select('id, quote_text, book_title, book_author, page_number, created_at')
           .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        setHighlights(data || []);
+        if (highlightsError) throw highlightsError;
+        setHighlights(highlightsData || []);
+
+        // Fetch books with reviews
+        const { data: booksData, error: booksError } = await supabase
+          .from('books')
+          .select('id, title, author, rating, review_text, created_at')
+          .eq('user_id', userId)
+          .eq('status', 'read')
+          .not('rating', 'is', null)
+          .order('created_at', { ascending: false });
+
+        if (booksError) throw booksError;
+        setBooks(booksData || []);
       } catch (error) {
-        console.error('Error fetching user highlights:', error);
+        console.error('Error fetching user data:', error);
       } finally {
         setHighlightsLoading(false);
+        setBooksLoading(false);
       }
     };
 
-    fetchUserHighlights();
+    fetchUserData();
   }, [userId]);
 
   if (!userId) {
@@ -175,12 +200,44 @@ export default function UserProfile() {
         </div>
       </Card>
 
-      {/* Badges */}
+      {/* Books & Reviews */}
       <Card className="p-6 mb-6">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Badges</h2>
-        <div className="flex flex-wrap gap-3">
-          <p className="text-muted-foreground">No badges earned yet</p>
-        </div>
+        <h2 className="text-xl font-semibold text-foreground mb-4">Books & Reviews</h2>
+        {booksLoading ? (
+          <div className="space-y-3">
+            {[...Array(2)].map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+        ) : books.length > 0 ? (
+          <div className="space-y-4">
+            {books.map((book) => (
+              <Card key={book.id} className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground mb-1">{book.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-2">by {book.author}</p>
+                    <div className="flex items-center gap-1 mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < book.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {book.review_text && (
+                      <p className="text-sm text-card-foreground mt-2 italic">"{book.review_text}"</p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">No books reviewed yet</p>
+        )}
       </Card>
 
       {/* Shared Highlights */}
