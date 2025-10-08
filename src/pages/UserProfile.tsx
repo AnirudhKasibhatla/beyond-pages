@@ -57,29 +57,19 @@ export default function UserProfile() {
         if (highlightsError) throw highlightsError;
         setHighlights(highlightsData || []);
 
-        // Fetch books with reviews
+        // Fetch all books
         const { data: booksData, error: booksError } = await supabase
           .from('books')
-          .select('id, title, author, rating, review_text, created_at, status, progress')
+          .select('id, title, author, rating, review_text, created_at, status, progress, genres')
           .eq('user_id', userId)
-          .eq('status', 'read')
-          .not('rating', 'is', null)
           .order('created_at', { ascending: false });
 
         if (booksError) throw booksError;
-        setBooks(booksData || []);
-
-        // Fetch currently reading books
-        const { data: readingData, error: readingError } = await supabase
-          .from('books')
-          .select('id, title, author, rating, review_text, created_at, status, progress')
-          .eq('user_id', userId)
-          .eq('status', 'reading')
-          .order('created_at', { ascending: false })
-          .limit(6);
-
-        if (readingError) throw readingError;
-        setReadingBooks(readingData || []);
+        
+        // Separate books by status
+        const allBooks = booksData || [];
+        setBooks(allBooks.filter(book => book.status === 'read'));
+        setReadingBooks(allBooks.filter(book => book.status === 'reading'));
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
