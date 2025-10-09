@@ -23,7 +23,7 @@ export const SignUpPromptDialog: React.FC<SignUpPromptDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-background/40 backdrop-blur-xl border-white/20 shadow-elegant">
         <DialogHeader>
           <DialogTitle className="text-center text-xl">Join Beyond Pages</DialogTitle>
           <DialogDescription className="text-center">
@@ -32,7 +32,7 @@ export const SignUpPromptDialog: React.FC<SignUpPromptDialogProps> = ({
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <Card className="p-4 bg-gradient-card">
+          <Card className="p-4 bg-white/10 backdrop-blur-md border-white/20">
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Users className="h-4 w-4 text-primary" />

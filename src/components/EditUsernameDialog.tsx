@@ -71,10 +71,10 @@ export const EditUsernameDialog = ({ isOpen, onClose }: EditUsernameDialogProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-background/40 backdrop-blur-xl border-white/20 shadow-elegant">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
               <User className="h-5 w-5 text-primary" />
             </div>
             <DialogTitle className="text-xl">
@@ -111,7 +111,7 @@ export const EditUsernameDialog = ({ isOpen, onClose }: EditUsernameDialogProps)
             </Alert>
           )}
 
-          <div className="bg-muted/50 p-4 rounded-lg">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-lg">
             <div className="text-sm">
               <div className="font-medium mb-1">Preview:</div>
               <div className="text-muted-foreground">@{username || 'username'}</div>
